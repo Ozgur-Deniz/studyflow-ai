@@ -3,6 +3,11 @@
 import { useState, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Mail, Lock, Sparkles, BookOpen, BarChart3, XCircle } from "lucide-react";
+import { AuthBrandingPanel } from "../../components/auth/AuthBrandingPanel";
+import { InputField } from "../../components/ui/InputField";
+import { GradientButton } from "../../components/ui/GradientButton";
+import { Logo } from "../../components/ui/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,88 +33,135 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error(data.message || "Login Failed");
       }
-      alert("Login successful! Redirecting to homepage.");
       router.push("/");
     } catch (err: any) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
-
-    // Geçici bekleme efekti
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-100 dark:border-gray-700">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-white">
-          Login to StudyFlow AI
-        </h2>
+    <div className="flex min-h-screen bg-white">
+      <AuthBrandingPanel
+        title={
+          <>
+            Study Smarter,
+            <br />
+            <span className="text-white/80">Not Harder</span>
+          </>
+        }
+        description="Let AI create personalized study plans, track your progress, and optimize your entire learning journey."
+        gradient="indigo"
+        features={[
+          {
+            icon: Sparkles,
+            label: "AI-Powered Learning",
+            desc: "Smart recommendations",
+          },
+          {
+            icon: BookOpen,
+            label: "Adaptive Study Plans",
+            desc: "Personalized for you",
+          },
+          {
+            icon: BarChart3,
+            label: "Progress Analytics",
+            desc: "Track every milestone",
+          },
+        ]}
+      />
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
-            {error}
+      {/* Right Panel — Login Form */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-16">
+        <div className="w-full max-w-[420px] animate-slide-in-right">
+          {/* Mobile Logo */}
+          <div className="lg:hidden mb-10">
+            <Logo size="sm" />
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <input
+          <h2 className="text-[28px] font-extrabold text-[#0f172a] mb-1.5 tracking-tight">
+            Welcome back 👋
+          </h2>
+          <p className="text-[15px] text-[#64748b] mb-8 font-medium">
+            Sign in to continue your learning journey
+          </p>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-5 p-4 bg-[#fff1f2] border border-[#fecdd3] text-[#e11d48] rounded-xl text-[13px] font-semibold flex items-center gap-2.5 animate-scale-in">
+              <XCircle size={18} />
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <InputField
               id="email"
+              label="Email Address"
               type="email"
+              icon={Mail}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-              placeholder="example@email.com"
+              placeholder="you@example.com"
               required
+              focusColor="indigo"
             />
-          </div>
 
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
+            <InputField
               id="password"
+              label="Password"
               type="password"
+              icon={Lock}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
               placeholder="••••••••"
               required
+              focusColor="indigo"
             />
+
+            <GradientButton
+              type="submit"
+              isLoading={isLoading}
+              loadingText="Signing in..."
+              gradient="indigo"
+            >
+              Sign in
+            </GradientButton>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center my-7">
+            <div className="flex-1 h-px bg-[#e2e8f0]" />
+            <span className="px-4 text-[12px] text-[#94a3b8] font-medium">
+              or
+            </span>
+            <div className="flex-1 h-px bg-[#e2e8f0]" />
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?{" "}
-          <Link
-            href="/register"
-            className="text-blue-600 hover:underline dark:text-blue-400"
-          >
-            Register
-          </Link>
-        </p>
+          <p className="text-center text-[14px] text-[#64748b] font-medium">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="text-[#6366f1] hover:text-[#4f46e5] font-bold transition-colors inline-flex items-center gap-1 group"
+            >
+              Create account
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="group-hover:translate-x-1 transition-transform duration-300"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
