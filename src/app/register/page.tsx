@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Mail, Lock, User, Shield, Globe, Users, XCircle } from "lucide-react";
+import { AuthBrandingPanel } from "../../components/auth/AuthBrandingPanel";
+import { InputField } from "../../components/ui/InputField";
+import { GradientButton } from "../../components/ui/GradientButton";
+import { Logo } from "../../components/ui/Logo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,7 +22,6 @@ export default function RegisterPage() {
     setIsLoading(true);
     setError("");
     try {
-      // Backend API'ye verileri gönderiyoruz
       const response = await fetch("api/auth/register", {
         method: "POST",
         headers: {
@@ -26,9 +31,10 @@ export default function RegisterPage() {
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || "An error occurred during registration.");
+        throw new Error(
+          data.message || "An error occurred during registration.",
+        );
       }
-      alert("Registration successful! You can now log in.");
       router.push("/login");
     } catch (err: any) {
       setError(err.message);
@@ -38,81 +44,138 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-100 dark:border-gray-700">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-white">
-          Register
-        </h2>
+    <div className="flex min-h-screen bg-white">
+      <AuthBrandingPanel
+        title={
+          <>
+            Begin Your
+            <br />
+            <span className="text-white/80">Learning Journey</span>
+          </>
+        }
+        description="Join thousands of students using AI to achieve their academic goals faster and more effectively."
+        gradient="purple"
+        features={[
+          {
+            icon: Users,
+            label: "10K+ Students",
+            desc: "Active community",
+          },
+          {
+            icon: Shield,
+            label: "100% Secure",
+            desc: "Your data is safe",
+          },
+          {
+            icon: Globe,
+            label: "Available Everywhere",
+            desc: "Study from any device",
+          },
+        ]}
+      />
 
-        {!!error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
-            {error}
+      {/* Right Panel — Register Form */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-16">
+        <div className="w-full max-w-[420px] animate-slide-in-right">
+          {/* Mobile Logo */}
+          <div className="lg:hidden mb-10">
+            <Logo size="sm" />
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              htmlFor="name"
-            >
-              Name
-            </label>
-            <input
+          <h2 className="text-[28px] font-extrabold text-[#0f172a] mb-1.5 tracking-tight">
+            Create your account ✨
+          </h2>
+          <p className="text-[15px] text-[#64748b] mb-8 font-medium">
+            Get started with your personalized study experience
+          </p>
+
+          {/* Error Message */}
+          {!!error && (
+            <div className="mb-5 p-4 bg-[#fff1f2] border border-[#fecdd3] text-[#e11d48] rounded-xl text-[13px] font-semibold flex items-center gap-2.5 animate-scale-in">
+              <XCircle size={18} />
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <InputField
               id="name"
+              label="Full Name"
               type="text"
+              icon={User}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-              placeholder="Your Full Name"
+              placeholder="John Doe"
               required
+              focusColor="purple"
             />
-          </div>
 
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <input
+            <InputField
               id="email"
+              label="Email Address"
               type="email"
+              icon={Mail}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-              placeholder="example@email.com"
+              placeholder="you@example.com"
               required
+              focusColor="purple"
             />
-          </div>
 
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
+            <InputField
               id="password"
+              label="Password"
               type="password"
+              icon={Lock}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
               placeholder="••••••••"
               required
+              focusColor="purple"
             />
+
+            <GradientButton
+              type="submit"
+              isLoading={isLoading}
+              loadingText="Creating account..."
+              gradient="purple"
+            >
+              Create account
+            </GradientButton>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center my-7">
+            <div className="flex-1 h-px bg-[#e2e8f0]" />
+            <span className="px-4 text-[12px] text-[#94a3b8] font-medium">
+              or
+            </span>
+            <div className="flex-1 h-px bg-[#e2e8f0]" />
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all active:scale-[0.98]"
-          >
-            {isLoading ? "Registering..." : "Register"}
-          </button>
-        </form>
+          <p className="text-center text-[14px] text-[#64748b] font-medium">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-[#8b5cf6] hover:text-[#7c3aed] font-bold transition-colors inline-flex items-center gap-1 group"
+            >
+              Sign in
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="group-hover:translate-x-1 transition-transform duration-300"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
