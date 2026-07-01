@@ -553,9 +553,6 @@ export default function AIAssistantPage() {
               <h1 className="text-lg font-bold leading-tight text-slate-950">
                 StudyFlow AI
               </h1>
-              <p className="text-xs font-medium text-slate-500">
-                Gemini 2.5 Flash
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
