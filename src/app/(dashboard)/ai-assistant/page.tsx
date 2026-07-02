@@ -12,14 +12,18 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import {
+  BookOpen,
   Bot,
+  Lightbulb,
   Loader2,
   MessageSquare,
   MessageSquarePlus,
   Send,
   Sparkles,
+  Target,
   Trash2,
   User,
+  Zap,
 } from "lucide-react";
 
 interface Message {
@@ -70,6 +74,25 @@ const formatConversationDate = (value: string) => {
     minute: "2-digit",
   }).format(new Date(value));
 };
+
+const quickPrompts = [
+  {
+    icon: Target,
+    text: "Bugün ne çalışmalıyım? Aktif planlarıma göre bana tavsiye ver.",
+  },
+  {
+    icon: Lightbulb,
+    text: "Verimli çalışmak için bana modern bir teknik öner.",
+  },
+  {
+    icon: BookOpen,
+    text: "Aktif çalışma planlarımı kısaca özetle.",
+  },
+  {
+    icon: Zap,
+    text: "Motivasyona ihtiyacım var, beni motive et.",
+  },
+];
 
 const createMarkdownComponents = (isUser: boolean): Components => ({
   p: ({ children }) => (
@@ -369,10 +392,8 @@ export default function AIAssistantPage() {
     }
   };
 
-  const handleSendMessage = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const messageText = input.trim();
+  const sendMessage = async (text: string) => {
+    const messageText = text.trim();
 
     if (!messageText || isLoading) {
       return;
@@ -464,6 +485,18 @@ export default function AIAssistantPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSendMessage = async (
+    eventOrText: FormEvent<HTMLFormElement> | string,
+  ) => {
+    if (typeof eventOrText === "string") {
+      await sendMessage(eventOrText);
+      return;
+    }
+
+    eventOrText.preventDefault();
+    await sendMessage(input);
   };
 
   return (
@@ -581,17 +614,39 @@ export default function AIAssistantPage() {
 
           {messages.length === 0 && !isFetchingHistory ? (
             <div className="flex h-full items-center justify-center">
-              <div className="max-w-md text-center">
+              <div className="w-full max-w-2xl text-center">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
                   <Sparkles className="h-6 w-6 text-indigo-600" />
                 </div>
                 <h2 className="text-xl font-bold text-slate-950">
-                  Start a new study chat
+                  Hoş geldiniz
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Ask about a topic, plan, exam strategy, summary, or coding
-                  assignment.
+                  Çalışma planların, hedeflerin ve günlük programın için hemen
+                  destek al.
                 </p>
+                <div className="mt-8 grid grid-cols-1 gap-4 text-left md:grid-cols-2">
+                  {quickPrompts.map((prompt) => {
+                    const Icon = prompt.icon;
+
+                    return (
+                      <button
+                        key={prompt.text}
+                        type="button"
+                        onClick={() => void handleSendMessage(prompt.text)}
+                        disabled={isLoading}
+                        className="group flex flex-col items-start rounded-2xl border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/60 p-5 text-left shadow-sm shadow-indigo-100/50 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.015] hover:border-indigo-300 hover:from-indigo-50 hover:to-violet-50 hover:shadow-lg hover:shadow-indigo-200/60 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white text-indigo-600 shadow-sm ring-1 ring-indigo-100 transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white group-hover:ring-indigo-200">
+                          <Icon className="h-4 w-4 transition-transform duration-300 group-hover:rotate-6" />
+                        </div>
+                        <p className="text-sm font-semibold leading-5 text-slate-800 transition-colors duration-300 group-hover:text-indigo-950">
+                          {prompt.text}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ) : (

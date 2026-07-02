@@ -6,6 +6,24 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 const SYSTEM_INSTRUCTION =
   "You are StudyFlow AI, a helpful, focused, and supportive study assistant. Provide clear, practical, and accurate guidance for learning, planning, and studying.";
 
+const formatActiveStudyPlans = (
+  plans: Array<{ title: string; description: string | null }>,
+) => {
+  if (plans.length === 0) {
+    return "The user currently has no active study plans.";
+  }
+
+  return plans
+    .map((plan, index) => {
+      const description = plan.description?.trim()
+        ? plan.description.trim()
+        : "No topic or duration details provided.";
+
+      return `${index + 1}. Title: ${plan.title}\nTopic and duration details: ${description}`;
+    })
+    .join("\n\n");
+};
+
 export async function POST(request: Request) {
   try {
     const userId = request.headers.get("x-user-id");
@@ -16,6 +34,22 @@ export async function POST(request: Request) {
         headers: { "Content-Type": "application/json" },
       });
     }
+
+    const activeStudyPlans = await prisma.studyPlan.findMany({
+      where: {
+        userId,
+        isCompleted: false,
+      },
+      select: {
+        title: true,
+        description: true,
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    const activePlansContext = formatActiveStudyPlans(activeStudyPlans);
 
     const body = await request.json();
     const { message, conversationId } = body as {
@@ -70,12 +104,16 @@ export async function POST(request: Request) {
       },
     });
 
+    const systemInstructionWithContext = `${SYSTEM_INSTRUCTION}
+
+Here are the user's current active study plans from the database: ${activePlansContext}. Use this context to provide personalized advice when the user asks about what to study, their progress, or their schedule. Do not list the plans automatically unless specifically asked, just be aware of them.`;
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
     });
 
     const result = await model.generateContentStream(
-      `${SYSTEM_INSTRUCTION}\n\nUser message:\n${message}`,
+      `${systemInstructionWithContext}\n\nUser message:\n${message}`,
     );
 
     const encoder = new TextEncoder();
