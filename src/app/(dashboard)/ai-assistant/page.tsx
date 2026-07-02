@@ -18,11 +18,13 @@ import {
   Loader2,
   MessageSquare,
   MessageSquarePlus,
+  Paperclip,
   Send,
   Sparkles,
   Target,
   Trash2,
   User,
+  X,
   Zap,
 } from "lucide-react";
 
@@ -56,6 +58,12 @@ interface HistoryResponse {
 
 interface ConversationsResponse {
   conversations?: Conversation[];
+}
+
+interface AttachedFilePayload {
+  base64: string;
+  mimeType: string;
+  name: string;
 }
 
 const createMessageId = () => {
@@ -93,6 +101,27 @@ const quickPrompts = [
     text: "Motivasyona ihtiyacım var, beni motive et.",
   },
 ];
+
+const readFileAsBase64 = (file: File) => {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+        return;
+      }
+
+      reject(new Error("FileReader returned an unsupported result type."));
+    };
+
+    reader.onerror = () => {
+      reject(reader.error ?? new Error("Failed to read the selected file."));
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
 
 const createMarkdownComponents = (isUser: boolean): Components => ({
   p: ({ children }) => (
@@ -196,8 +225,10 @@ export default function AIAssistantPage() {
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
   >(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const userIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -348,6 +379,21 @@ export default function AIAssistantPage() {
     setCurrentConversationId(null);
     setMessages([]);
     setInput("");
+    setSelectedFile(null);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setSelectedFile(file);
+    event.target.value = "";
+  };
+
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleDeleteConversation = async (
@@ -393,16 +439,37 @@ export default function AIAssistantPage() {
   };
 
   const sendMessage = async (text: string) => {
-    const messageText = text.trim();
+    const fileToSend = selectedFile;
+    const messageText =
+      text.trim() || (fileToSend ? "Lütfen ekteki dosyayı incele." : "");
 
     if (!messageText || isLoading) {
       return;
     }
 
+    let attachedFile: AttachedFilePayload | null = null;
+
+    if (fileToSend) {
+      try {
+        const base64Data = await readFileAsBase64(fileToSend);
+
+        attachedFile = {
+          base64: base64Data,
+          mimeType: fileToSend.type || "application/octet-stream",
+          name: fileToSend.name,
+        };
+      } catch (error) {
+        console.error("Failed to read selected file:", error);
+        return;
+      }
+    }
+
     const userMessage: Message = {
       id: createMessageId(),
       role: "user",
-      content: messageText,
+      content: attachedFile
+        ? `📎 **Dosya Eklendi:** ${attachedFile.name}\n\n${messageText}`
+        : messageText,
     };
     const assistantMessageId = createMessageId();
     const assistantMessage: Message = {
@@ -417,6 +484,7 @@ export default function AIAssistantPage() {
       assistantMessage,
     ]);
     setInput("");
+    setSelectedFile(null);
     setIsLoading(true);
 
     try {
@@ -430,6 +498,7 @@ export default function AIAssistantPage() {
         body: JSON.stringify({
           message: messageText,
           conversationId: currentConversationId,
+          ...(attachedFile ? { file: attachedFile } : {}),
         }),
       });
 
@@ -710,7 +779,42 @@ export default function AIAssistantPage() {
         </div>
 
         <div className="border-t border-slate-200 bg-white p-4">
+          {selectedFile && (
+            <div className="mb-3 flex max-w-full items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 shadow-sm">
+                <Paperclip className="h-4 w-4 shrink-0" />
+                <span className="max-w-[18rem] truncate">
+                  {selectedFile.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={clearSelectedFile}
+                  className="ml-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-indigo-500 transition hover:bg-indigo-100 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  aria-label="Remove selected file"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSendMessage} className="flex items-end gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+              aria-label="Attach file"
+            >
+              <Paperclip className="h-5 w-5" />
+            </button>
             <textarea
               value={input}
               onChange={(event) => setInput(event.target.value)}
@@ -718,7 +822,7 @@ export default function AIAssistantPage() {
                 if (event.key === "Enter" && !event.shiftKey) {
                   event.preventDefault();
 
-                  if (!isLoading && input.trim()) {
+                  if (!isLoading && (input.trim() || selectedFile)) {
                     event.currentTarget.form?.requestSubmit();
                   }
                 }
@@ -729,7 +833,7 @@ export default function AIAssistantPage() {
             />
             <button
               type="submit"
-              disabled={!input.trim() || isLoading}
+              disabled={(!input.trim() && !selectedFile) || isLoading}
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:bg-slate-300"
               aria-label="Send message"
             >

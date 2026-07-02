@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
 import { prisma } from "@/lib/prisma";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
@@ -22,6 +22,29 @@ const formatActiveStudyPlans = (
       return `${index + 1}. Title: ${plan.title}\nTopic and duration details: ${description}`;
     })
     .join("\n\n");
+};
+
+interface UploadedFile {
+  base64: string;
+  mimeType: string;
+  name: string;
+}
+
+const isUploadedFile = (file: unknown): file is UploadedFile => {
+  if (!file || typeof file !== "object") {
+    return false;
+  }
+
+  const candidate = file as Record<string, unknown>;
+
+  return (
+    typeof candidate.base64 === "string" &&
+    candidate.base64.trim().length > 0 &&
+    typeof candidate.mimeType === "string" &&
+    candidate.mimeType.trim().length > 0 &&
+    typeof candidate.name === "string" &&
+    candidate.name.trim().length > 0
+  );
 };
 
 export async function POST(request: Request) {
@@ -52,9 +75,10 @@ export async function POST(request: Request) {
     const activePlansContext = formatActiveStudyPlans(activeStudyPlans);
 
     const body = await request.json();
-    const { message, conversationId } = body as {
+    const { message, conversationId, file } = body as {
       message?: unknown;
       conversationId?: unknown;
+      file?: unknown;
     };
 
     if (typeof message !== "string" || message.trim().length === 0) {
@@ -81,6 +105,26 @@ export async function POST(request: Request) {
       );
     }
 
+    if (file !== undefined && file !== null && !isUploadedFile(file)) {
+      return new Response(
+        JSON.stringify({
+          error: "File must include base64, mimeType, and name.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const uploadedFile = isUploadedFile(file)
+      ? {
+          base64: file.base64.trim().replace(/^data:.*,/, ""),
+          mimeType: file.mimeType.trim(),
+          name: file.name.trim(),
+        }
+      : null;
+
     let activeConversationId: string;
 
     if (typeof conversationId === "string" && conversationId.length > 0) {
@@ -98,7 +142,9 @@ export async function POST(request: Request) {
 
     await prisma.message.create({
       data: {
-        content: message,
+        content: uploadedFile
+          ? `📎 **Dosya Eklendi:** ${uploadedFile.name}\n\n${message}`
+          : message,
         role: "USER",
         conversationId: activeConversationId,
       },
@@ -108,13 +154,24 @@ export async function POST(request: Request) {
 
 Here are the user's current active study plans from the database: ${activePlansContext}. Use this context to provide personalized advice when the user asks about what to study, their progress, or their schedule. Do not list the plans automatically unless specifically asked, just be aware of them.`;
 
+    const prompt = `${systemInstructionWithContext}\n\nUser message:\n${message}`;
+    const geminiRequestParts: Array<string | Part> = uploadedFile
+      ? [
+          prompt,
+          {
+            inlineData: {
+              data: uploadedFile.base64,
+              mimeType: uploadedFile.mimeType,
+            },
+          },
+        ]
+      : [prompt];
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
     });
 
-    const result = await model.generateContentStream(
-      `${systemInstructionWithContext}\n\nUser message:\n${message}`,
-    );
+    const result = await model.generateContentStream(geminiRequestParts);
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
