@@ -6,13 +6,13 @@ import {
   LayoutDashboard,
   BookOpen,
   Sparkles,
-  Settings,
   LogOut,
   ChevronDown,
+  Layers,
+  ClipboardList,
 } from "lucide-react";
 import { Logo } from "../ui/Logo";
 import { UserAvatar } from "../ui/UserAvatar";
-import { UpgradeCard } from "./UpgradeCard";
 
 interface SidebarProps {
   userName: string;
@@ -32,8 +32,9 @@ export function Sidebar({
   const menuItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Study Plans", path: "/study-plans", icon: BookOpen },
+    { name: "Flashcards", path: "/flashcards", icon: Layers },
+    { name: "Quizzes", path: "/quizzes", icon: ClipboardList },
     { name: "AI Assistant", path: "/ai-assistant", icon: Sparkles },
-    { name: "Settings", path: "/settings", icon: Settings },
   ];
 
   return (
@@ -80,9 +81,6 @@ export function Sidebar({
           );
         })}
       </nav>
-
-      {/* Upgrade Card */}
-      <UpgradeCard />
 
       {/* User Profile & Logout */}
       <div className="p-3 border-t border-[#e2e8f0]">

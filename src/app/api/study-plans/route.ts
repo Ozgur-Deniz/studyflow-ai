@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "@/lib/prisma";
+import { getUserIdFromRequest, AuthError } from "@/lib/auth";
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -10,16 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     console.log("[Study Plans API] Received request to generate a new plan...");
 
-    // 1. Authenticate User via Token
-    const token = request.cookies.get("token")?.value;
-    if (!token) {
-      console.warn("[Study Plans API] Unauthorized access attempt.");
-      return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-    }
-
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-    const userId = payload.id as string;
+    const userId = await getUserIdFromRequest(request);
 
     // 2. Parse Request Body
     const body = await request.json();
@@ -40,9 +31,9 @@ export async function POST(request: NextRequest) {
     );
 
     // 3. Prepare AI Prompt & Config
-    // generationConfig içine responseMimeType ekleyerek Gemini'ı JSON dönmeye zorluyoruz!
+    // Add responseMimeType to generationConfig to force Gemini to return JSON.
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash", // Hangi model ismi sende çalıştıysa o kalsın
+      model: "gemini-2.5-flash",
       generationConfig: {
         responseMimeType: "application/json",
       },
@@ -66,7 +57,7 @@ export async function POST(request: NextRequest) {
     const aiResponse = await model.generateContent(prompt);
     let responseText = aiResponse.response.text().trim();
 
-    // Güvenlik Duvarı: Model inat edip markdown yollarsa diye temizlik yapıyoruz
+    // Safety cleanup in case the model still returns Markdown.
     responseText = responseText
       .replace(/```json/gi, "")
       .replace(/```/g, "")
@@ -80,6 +71,7 @@ export async function POST(request: NextRequest) {
       console.error(
         "[Study Plans API] Failed to parse JSON. Cleaned response:",
         responseText,
+        parseError,
       );
       return NextResponse.json(
         {
@@ -103,6 +95,10 @@ export async function POST(request: NextRequest) {
     );
     return NextResponse.json({ success: true, plan: newPlan }, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
+
     console.error("[Study Plans API] Critical internal server error:", error);
     return NextResponse.json(
       { message: "An error occurred while generating your study plan." },
@@ -111,19 +107,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET Metodu: Kullanıcının mevcut planlarını veritabanından çekmek için
+// GET method: fetch the user's current plans from the database.
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("token")?.value;
-    if (!token) {
-      return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-    }
+    const userId = await getUserIdFromRequest(request);
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-    const userId = payload.id as string;
-
-    // Veritabanından kullanıcının tüm planlarını en yeniden en eskiye doğru sıralayarak getir
+    // Fetch all user plans from newest to oldest.
     const userPlans = await prisma.studyPlan.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -131,6 +120,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ plans: userPlans }, { status: 200 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
+
     console.error("[Study Plans API] Error fetching plans:", error);
     return NextResponse.json(
       { message: "An error occurred while fetching your plans." },

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 
 export function AIRecommendationCard() {
@@ -31,16 +32,22 @@ export function AIRecommendationCard() {
         </p>
 
         <div className="flex items-center gap-3">
-          <button className="group bg-white text-[#6366f1] text-[13px] font-bold px-6 py-3 rounded-xl hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 active:scale-[0.97] flex items-center gap-2">
+          <Link
+            href="/study-plans"
+            className="group bg-white text-[#6366f1] text-[13px] font-bold px-6 py-3 rounded-xl hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 active:scale-[0.97] flex items-center gap-2"
+          >
             Get Started
             <ArrowRight
               size={16}
               className="group-hover:translate-x-1 transition-transform duration-300"
             />
-          </button>
-          <button className="text-[13px] font-semibold text-white/80 hover:text-white px-4 py-3 rounded-xl border border-white/20 hover:bg-white/10 transition-all duration-300">
-            Learn More
-          </button>
+          </Link>
+          <Link
+            href="/ai-assistant"
+            className="text-[13px] font-semibold text-white/80 hover:text-white px-4 py-3 rounded-xl border border-white/20 hover:bg-white/10 transition-all duration-300"
+          >
+            AI Assistant
+          </Link>
         </div>
       </div>
     </div>

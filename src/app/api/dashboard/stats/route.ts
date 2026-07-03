@@ -1,28 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
+import { getUserIdFromRequest, AuthError } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("token")?.value;
-    if (!token) {
-      console.warn("[Dashboard Stats API] Unauthorized access attempt.");
-      return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
-    }
+    const userId = await getUserIdFromRequest(request);
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-    const userId = payload.id as string;
-
-    if (!userId) {
-      return NextResponse.json(
-        { message: "Invalid token payload." },
-        { status: 400 },
-      );
-    }
-
-    // 3. Prisma ile veritabanından istatistikleri çek
-    const [activePlansCount, conversationsCount, sessionsAggr] =
+    // Fetch all stats in parallel for performance
+    const [activePlansCount, conversationsCount, sessionsAggr, flashcardDecksCount, quizzesCount] =
       await Promise.all([
         prisma.studyPlan.count({
           where: { userId, isCompleted: false },
@@ -34,16 +19,23 @@ export async function GET(request: NextRequest) {
           _sum: { duration: true },
           where: { userId },
         }),
+        prisma.flashcardDeck.count({
+          where: { userId },
+        }),
+        prisma.quiz.count({
+          where: { userId },
+        }),
       ]);
 
     const totalStudyHours = sessionsAggr._sum.duration || 0;
 
-    // Frontend'e gönderilecek veri objesi
     const statsData = {
       activeStudyPlans: activePlansCount,
       aiConversations: conversationsCount,
       totalStudyHours: totalStudyHours,
       currentStreak: 0,
+      flashcardDecks: flashcardDecksCount,
+      quizzesSolved: quizzesCount,
     };
 
     console.log(
@@ -51,6 +43,10 @@ export async function GET(request: NextRequest) {
     );
     return NextResponse.json({ stats: statsData }, { status: 200 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
+
     console.error("[Dashboard Stats API] Internal server error:", error);
     return NextResponse.json(
       { message: "An error occurred while fetching dashboard statistics." },

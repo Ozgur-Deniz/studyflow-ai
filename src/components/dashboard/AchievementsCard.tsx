@@ -1,6 +1,23 @@
 import { Trophy } from "lucide-react";
 
-export function AchievementsCard() {
+interface AchievementsCardProps {
+  stats?: {
+    activeStudyPlans: number;
+    aiConversations: number;
+    flashcardDecks: number;
+    quizzesSolved: number;
+  };
+}
+
+export function AchievementsCard({ stats }: AchievementsCardProps) {
+  const planProgress = stats && stats.activeStudyPlans > 0 ? 100 : 0;
+  const flashcardProgress = stats
+    ? Math.min((stats.flashcardDecks / 5) * 100, 100)
+    : 0;
+  const quizProgress = stats
+    ? Math.min((stats.quizzesSolved / 3) * 100, 100)
+    : 0;
+
   const achievements = [
     {
       name: "First Login",
@@ -12,14 +29,21 @@ export function AchievementsCard() {
     {
       name: "Create a Plan",
       desc: "Set up your first study plan",
-      progress: 0,
+      progress: planProgress,
       color: "from-[#06b6d4] to-[#0891b2]",
       emoji: "📚",
     },
     {
-      name: "Study Streak",
-      desc: "Study 7 days in a row",
-      progress: 0,
+      name: "Flashcard Master",
+      desc: "Create 5 flashcard decks",
+      progress: Math.round(flashcardProgress),
+      color: "from-[#f59e0b] to-[#d97706]",
+      emoji: "🃏",
+    },
+    {
+      name: "Quiz Champion",
+      desc: "Complete 3 quizzes",
+      progress: Math.round(quizProgress),
       color: "from-[#f43f5e] to-[#e11d48]",
       emoji: "🔥",
     },

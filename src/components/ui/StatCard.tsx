@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LucideIcon, TrendingUp } from "lucide-react";
 
 interface StatCardProps {
@@ -8,6 +9,7 @@ interface StatCardProps {
   gradient: string;
   iconBg: string;
   shadowColor: string;
+  href?: string;
 }
 
 export function StatCard({
@@ -18,11 +20,10 @@ export function StatCard({
   gradient,
   iconBg,
   shadowColor,
+  href,
 }: StatCardProps) {
-  return (
-    <div
-      className={`bg-white p-5 rounded-2xl border border-[#e2e8f0] card-hover group cursor-default ${shadowColor}`}
-    >
+  const content = (
+    <>
       <div className="flex items-start justify-between mb-4">
         <div
           className={`w-12 h-12 ${iconBg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300`}
@@ -44,6 +45,20 @@ export function StatCard({
       <p className="text-[12px] text-[#94a3b8] font-semibold uppercase tracking-wider">
         {title}
       </p>
-    </div>
+    </>
   );
+
+  const className = `bg-white p-5 rounded-2xl border border-[#e2e8f0] card-hover group ${shadowColor} ${
+    href ? "cursor-pointer" : "cursor-default"
+  }`;
+
+  if (href) {
+    return (
+      <Link href={href} className={`block ${className}`}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{content}</div>;
 }

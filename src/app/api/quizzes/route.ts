@@ -6,29 +6,27 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromRequest(request);
 
-    const conversations = await prisma.conversation.findMany({
+    const quizzes = await prisma.quiz.findMany({
       where: {
         userId,
       },
-      select: {
-        id: true,
-        title: true,
-        updatedAt: true,
+      include: {
+        questions: true,
       },
       orderBy: {
-        updatedAt: "desc",
+        createdAt: "desc",
       },
     });
 
-    return NextResponse.json({ conversations }, { status: 200 });
+    return NextResponse.json({ quizzes }, { status: 200 });
   } catch (error) {
     if (error instanceof AuthError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode });
     }
 
-    console.error("Failed to fetch AI assistant conversations:", error);
+    console.error("Failed to fetch quizzes:", error);
     return NextResponse.json(
-      { error: "An unexpected error occurred while fetching conversations." },
+      { error: "An error occurred while fetching quizzes." },
       { status: 500 },
     );
   }

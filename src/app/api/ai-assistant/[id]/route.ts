@@ -1,4 +1,6 @@
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUserIdFromRequest, AuthError } from "@/lib/auth";
 
 interface RouteContext {
   params: Promise<{
@@ -6,18 +8,13 @@ interface RouteContext {
   }>;
 }
 
-export async function GET(request: Request, { params }: RouteContext) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const userId = request.headers.get("x-user-id");
-
-    if (!userId) {
-      return Response.json({ error: "Unauthorized." }, { status: 401 });
-    }
-
+    const userId = await getUserIdFromRequest(request);
     const resolvedParams = await params;
 
     if (!resolvedParams.id) {
-      return Response.json(
+      return NextResponse.json(
         { error: "Conversation ID is required." },
         { status: 400 },
       );
@@ -35,29 +32,27 @@ export async function GET(request: Request, { params }: RouteContext) {
       },
     });
 
-    return Response.json({ messages }, { status: 200 });
+    return NextResponse.json({ messages }, { status: 200 });
   } catch (error) {
-    console.error("Failed to fetch AI assistant messages:", error);
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
 
-    return Response.json(
+    console.error("Failed to fetch AI assistant messages:", error);
+    return NextResponse.json(
       { error: "An unexpected error occurred while fetching messages." },
       { status: 500 },
     );
   }
 }
 
-export async function DELETE(request: Request, { params }: RouteContext) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
-    const userId = request.headers.get("x-user-id");
-
-    if (!userId) {
-      return Response.json({ error: "Unauthorized." }, { status: 401 });
-    }
-
+    const userId = await getUserIdFromRequest(request);
     const resolvedParams = await params;
 
     if (!resolvedParams.id) {
-      return Response.json(
+      return NextResponse.json(
         { error: "Conversation ID is required." },
         { status: 400 },
       );
@@ -70,11 +65,14 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       },
     });
 
-    return Response.json({ success: true }, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Failed to delete AI assistant conversation:", error);
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
+    }
 
-    return Response.json(
+    console.error("Failed to delete AI assistant conversation:", error);
+    return NextResponse.json(
       { error: "An unexpected error occurred while deleting the conversation." },
       { status: 500 },
     );

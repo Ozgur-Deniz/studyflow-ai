@@ -1,9 +1,16 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { GeneratePlanForm } from "@/components/study-plans/GeneratePlanForm";
 import { ActivePlansList } from "@/components/study-plans/ActivePlansList";
 
 export default function StudyPlansPage() {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handlePlanGenerated = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1);
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-fade-in-up">
       <div>
@@ -17,10 +24,10 @@ export default function StudyPlansPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         <div className="lg:col-span-2">
-          <GeneratePlanForm />
+          <GeneratePlanForm onPlanGenerated={handlePlanGenerated} />
         </div>
         <div className="lg:col-span-1">
-          <ActivePlansList />
+          <ActivePlansList refreshTrigger={refreshTrigger} />
         </div>
       </div>
     </div>
