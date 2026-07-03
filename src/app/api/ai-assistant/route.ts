@@ -1,7 +1,12 @@
 import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUserIdFromRequest, AuthError } from "@/lib/auth";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
+
+const DEFAULT_CHAT_MODEL = "gemini-3.5-flash";
+const FALLBACK_CHAT_MODEL = "gemini-3.1-flash-lite";
 
 const SYSTEM_INSTRUCTION =
   "You are StudyFlow AI, a helpful, focused, and supportive study assistant. Provide clear, practical, and accurate guidance for learning, planning, and studying.";
@@ -47,16 +52,126 @@ const isUploadedFile = (file: unknown): file is UploadedFile => {
   );
 };
 
-export async function POST(request: Request) {
-  try {
-    const userId = request.headers.get("x-user-id");
+const getRequestedModel = (model: unknown) => {
+  if (typeof model !== "string") {
+    return DEFAULT_CHAT_MODEL;
+  }
 
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "Unauthorized." }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+  const trimmedModel = model.trim();
+
+  return trimmedModel.length > 0 ? trimmedModel : DEFAULT_CHAT_MODEL;
+};
+
+const getErrorText = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return "Unknown error";
+  }
+};
+
+const isRetryableModelFailure = (error: unknown) => {
+  const errorText = getErrorText(error).toLowerCase();
+
+  return [
+    "429",
+    "503",
+    "quota",
+    "exhausted",
+    "overloaded",
+    "resource_exhausted",
+    "service unavailable",
+    "rate limit",
+    "api",
+    "rejected",
+  ].some((keyword) => errorText.includes(keyword));
+};
+
+const startGeminiChatStream = async ({
+  modelName,
+  systemInstruction,
+  parts,
+}: {
+  modelName: string;
+  systemInstruction: string;
+  parts: Array<string | Part>;
+}) => {
+  const model = genAI.getGenerativeModel({
+    model: modelName,
+    systemInstruction,
+  });
+  const chat = model.startChat();
+
+  return chat.sendMessageStream(parts);
+};
+
+const createAssistantStreamResponse = ({
+  result,
+  activeConversationId,
+  exhaustedModel,
+}: {
+  result: Awaited<ReturnType<typeof startGeminiChatStream>>;
+  activeConversationId: string;
+  exhaustedModel?: string;
+}) => {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      let assistantMessage = "";
+
+      try {
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+
+          if (!chunkText) {
+            continue;
+          }
+
+          assistantMessage += chunkText;
+          controller.enqueue(encoder.encode(chunkText));
+        }
+
+        await prisma.message.create({
+          data: {
+            content: assistantMessage,
+            role: "ASSISTANT",
+            conversationId: activeConversationId,
+          },
+        });
+
+        controller.close();
+      } catch (error) {
+        console.error("Error occurred while streaming AI response:", error);
+        controller.error(error);
+      }
+    },
+  });
+
+  const headers = new Headers({
+    "Content-Type": "text/plain; charset=utf-8",
+    "x-conversation-id": activeConversationId,
+  });
+
+  if (exhaustedModel) {
+    headers.set("X-Exhausted-Model", exhaustedModel);
+  }
+
+  return new Response(stream, {
+    headers,
+  });
+};
+
+export async function POST(request: NextRequest) {
+  try {
+    const userId = await getUserIdFromRequest(request);
 
     const activeStudyPlans = await prisma.studyPlan.findMany({
       where: {
@@ -75,11 +190,13 @@ export async function POST(request: Request) {
     const activePlansContext = formatActiveStudyPlans(activeStudyPlans);
 
     const body = await request.json();
-    const { message, conversationId, file } = body as {
+    const { message, conversationId, file, model } = body as {
       message?: unknown;
       conversationId?: unknown;
       file?: unknown;
+      model?: unknown;
     };
+    const requestedModel = getRequestedModel(model);
 
     if (typeof message !== "string" || message.trim().length === 0) {
       return new Response(
@@ -143,7 +260,7 @@ export async function POST(request: Request) {
     await prisma.message.create({
       data: {
         content: uploadedFile
-          ? `📎 **Dosya Eklendi:** ${uploadedFile.name}\n\n${message}`
+          ? `File Attached: ${uploadedFile.name}\n\n${message}`
           : message,
         role: "USER",
         conversationId: activeConversationId,
@@ -154,10 +271,9 @@ export async function POST(request: Request) {
 
 Here are the user's current active study plans from the database: ${activePlansContext}. Use this context to provide personalized advice when the user asks about what to study, their progress, or their schedule. Do not list the plans automatically unless specifically asked, just be aware of them.`;
 
-    const prompt = `${systemInstructionWithContext}\n\nUser message:\n${message}`;
     const geminiRequestParts: Array<string | Part> = uploadedFile
       ? [
-          prompt,
+          message,
           {
             inlineData: {
               data: uploadedFile.base64,
@@ -165,54 +281,60 @@ Here are the user's current active study plans from the database: ${activePlansC
             },
           },
         ]
-      : [prompt];
+      : [message];
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-    });
+    try {
+      const result = await startGeminiChatStream({
+        modelName: requestedModel,
+        systemInstruction: systemInstructionWithContext,
+        parts: geminiRequestParts,
+      });
 
-    const result = await model.generateContentStream(geminiRequestParts);
+      return createAssistantStreamResponse({
+        result,
+        activeConversationId,
+      });
+    } catch (error) {
+      if (
+        requestedModel === FALLBACK_CHAT_MODEL ||
+        !isRetryableModelFailure(error)
+      ) {
+        throw error;
+      }
 
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream<Uint8Array>({
-      async start(controller) {
-        let assistantMessage = "";
+      console.error(
+        `Primary Gemini model failed. Retrying with fallback model. Exhausted model: ${requestedModel}`,
+        error,
+      );
 
-        try {
-          for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
+      try {
+        const fallbackResult = await startGeminiChatStream({
+          modelName: FALLBACK_CHAT_MODEL,
+          systemInstruction: systemInstructionWithContext,
+          parts: geminiRequestParts,
+        });
 
-            if (!chunkText) {
-              continue;
-            }
-
-            assistantMessage += chunkText;
-            controller.enqueue(encoder.encode(chunkText));
-          }
-
-          await prisma.message.create({
-            data: {
-              content: assistantMessage,
-              role: "ASSISTANT",
-              conversationId: activeConversationId,
-            },
-          });
-
-          controller.close();
-        } catch (error) {
-          console.error("Error occurred while streaming AI response:", error);
-          controller.error(error);
-        }
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "x-conversation-id": activeConversationId,
-      },
-    });
+        return createAssistantStreamResponse({
+          result: fallbackResult,
+          activeConversationId,
+          exhaustedModel: requestedModel,
+        });
+      } catch (fallbackError) {
+        console.error("Fallback Gemini model failed:", fallbackError);
+        throw fallbackError;
+      }
+    }
   } catch (error) {
+    if (error instanceof AuthError) {
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        {
+          status: error.statusCode,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     console.error("AI assistant request failed:", error);
 
     return new Response(

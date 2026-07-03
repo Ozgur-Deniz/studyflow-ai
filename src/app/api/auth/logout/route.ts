@@ -9,7 +9,7 @@ export async function POST() {
     response.cookies.delete("token");
 
     return response;
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { message: "An error occurred during logout." },
       { status: 500 },

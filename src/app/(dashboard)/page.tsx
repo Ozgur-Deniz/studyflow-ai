@@ -1,33 +1,41 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookOpen, MessageSquare, Clock, Flame } from "lucide-react";
+import { BookOpen, MessageSquare, Layers, ClipboardList } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { AIRecommendationCard } from "@/components/dashboard/AIRecommendationCard";
 import { AchievementsCard } from "@/components/dashboard/AchievementsCard";
+import { QuickActionsGrid } from "@/components/dashboard/QuickActionsGrid";
+
+interface DashboardStats {
+  activeStudyPlans: number;
+  aiConversations: number;
+  totalStudyHours: number;
+  currentStreak: number;
+  flashcardDecks: number;
+  quizzesSolved: number;
+}
 
 export default function DashboardPage() {
   const [userName, setUserName] = useState("");
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashboardStats>({
     activeStudyPlans: 0,
     aiConversations: 0,
     totalStudyHours: 0,
     currentStreak: 0,
+    flashcardDecks: 0,
+    quizzesSolved: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        console.log("[Dashboard] Initiating data fetch sequence...");
-
         // 1. Fetch Session
         const sessionRes = await fetch("/api/auth/session");
         if (sessionRes.ok) {
           const sessionData = await sessionRes.json();
           setUserName(sessionData.user.name);
-        } else {
-          console.warn("[Dashboard] Session fetch failed.");
         }
 
         // 2. Fetch Stats
@@ -35,14 +43,9 @@ export default function DashboardPage() {
         if (statsRes.ok) {
           const statsData = await statsRes.json();
           setStats(statsData.stats);
-          console.log("[Dashboard] Stats successfully loaded from database.");
-        } else {
-          console.warn(
-            `[Dashboard] Stats fetch failed with status: ${statsRes.status}`,
-          );
         }
       } catch (error) {
-        console.error("[Dashboard] Critical error during data fetch:", error);
+        console.error("[Dashboard] Error during data fetch:", error);
       } finally {
         setIsLoading(false);
       }
@@ -80,6 +83,7 @@ export default function DashboardPage() {
           gradient="from-[#6366f1] to-[#8b5cf6]"
           iconBg="bg-[#eef2ff]"
           shadowColor="hover:shadow-indigo-100"
+          href="/study-plans"
         />
         <StatCard
           title="AI CONVERSATIONS"
@@ -89,26 +93,32 @@ export default function DashboardPage() {
           gradient="from-[#06b6d4] to-[#0891b2]"
           iconBg="bg-[#ecfeff]"
           shadowColor="hover:shadow-cyan-100"
+          href="/ai-assistant"
         />
         <StatCard
-          title="TOTAL STUDY HOURS"
-          value={isLoading ? "..." : stats.totalStudyHours.toFixed(1)}
+          title="FLASHCARD DECKS"
+          value={isLoading ? "..." : stats.flashcardDecks.toString()}
           change="+0%"
-          icon={Clock}
+          icon={Layers}
           gradient="from-[#f59e0b] to-[#d97706]"
           iconBg="bg-[#fffbeb]"
           shadowColor="hover:shadow-amber-100"
+          href="/flashcards"
         />
         <StatCard
-          title="CURRENT STREAK"
-          value={isLoading ? "..." : stats.currentStreak.toString()}
-          change="days"
-          icon={Flame}
-          gradient="from-[#f43f5e] to-[#e11d48]"
-          iconBg="bg-[#fff1f2]"
-          shadowColor="hover:shadow-rose-100"
+          title="QUIZZES COMPLETED"
+          value={isLoading ? "..." : stats.quizzesSolved.toString()}
+          change="+0%"
+          icon={ClipboardList}
+          gradient="from-[#10b981] to-[#059669]"
+          iconBg="bg-[#ecfdf5]"
+          shadowColor="hover:shadow-emerald-100"
+          href="/quizzes"
         />
       </div>
+
+      {/* Quick Actions */}
+      <QuickActionsGrid />
 
       {/* Bottom Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -116,7 +126,7 @@ export default function DashboardPage() {
           <AIRecommendationCard />
         </div>
         <div className="lg:col-span-1 flex">
-          <AchievementsCard />
+          <AchievementsCard stats={stats} />
         </div>
       </div>
     </div>

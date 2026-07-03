@@ -6,29 +6,32 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromRequest(request);
 
-    const conversations = await prisma.conversation.findMany({
+    const decks = await prisma.flashcardDeck.findMany({
       where: {
         userId,
       },
-      select: {
-        id: true,
-        title: true,
-        updatedAt: true,
+      include: {
+        flashcards: true,
       },
       orderBy: {
-        updatedAt: "desc",
+        createdAt: "desc",
       },
     });
 
-    return NextResponse.json({ conversations }, { status: 200 });
+    const formattedDecks = decks.map((deck) => ({
+      ...deck,
+      cards: deck.flashcards,
+    }));
+
+    return NextResponse.json({ decks: formattedDecks }, { status: 200 });
   } catch (error) {
     if (error instanceof AuthError) {
       return NextResponse.json({ error: error.message }, { status: error.statusCode });
     }
 
-    console.error("Failed to fetch AI assistant conversations:", error);
+    console.error("Failed to fetch flashcard decks:", error);
     return NextResponse.json(
-      { error: "An unexpected error occurred while fetching conversations." },
+      { error: "An error occurred while fetching flashcard decks." },
       { status: 500 },
     );
   }

@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { Sparkles, Target, Clock } from "lucide-react";
 
-export function GeneratePlanForm() {
+interface GeneratePlanFormProps {
+  onPlanGenerated?: () => void;
+}
+
+export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
   const [topic, setTopic] = useState("");
   const [timeframe, setTimeframe] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -13,8 +17,6 @@ export function GeneratePlanForm() {
     setIsGenerating(true);
 
     try {
-      console.log("[Study Plans Page] Submitting prompt data to API...");
-
       const response = await fetch("/api/study-plans", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,8 +34,8 @@ export function GeneratePlanForm() {
         setTopic("");
         setTimeframe("");
 
-        // Sayfayı yenile veya listeyi güncelle (Şimdilik veritabanına kaydolduğunu teyit etmek için sayfayı yenileyelim)
-        window.location.reload();
+        // Notify the parent component that a new plan was created
+        onPlanGenerated?.();
       } else {
         const errorData = await response.json();
         alert(errorData.message || "Something went wrong.");

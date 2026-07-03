@@ -1,4 +1,5 @@
-import { Sparkles, ArrowRight, Target, Brain, Calendar, BarChart3 } from "lucide-react";
+import Link from "next/link";
+import { Sparkles, ArrowRight, Target, Brain, Layers, ClipboardList } from "lucide-react";
 
 export function QuickActionsGrid() {
   const quickActions = [
@@ -9,6 +10,7 @@ export function QuickActionsGrid() {
       color: "text-[#6366f1]",
       bg: "bg-[#eef2ff]",
       hoverBg: "hover:bg-[#e0e7ff]",
+      href: "/study-plans",
     },
     {
       title: "Start AI Session",
@@ -17,22 +19,25 @@ export function QuickActionsGrid() {
       color: "text-[#8b5cf6]",
       bg: "bg-[#f5f3ff]",
       hoverBg: "hover:bg-[#ede9fe]",
+      href: "/ai-assistant",
     },
     {
-      title: "Schedule Review",
-      description: "Set up spaced repetition reminders",
-      icon: Calendar,
+      title: "Study Flashcards",
+      description: "Review flashcards for active recall",
+      icon: Layers,
       color: "text-[#06b6d4]",
       bg: "bg-[#ecfeff]",
       hoverBg: "hover:bg-[#cffafe]",
+      href: "/flashcards",
     },
     {
-      title: "View Analytics",
-      description: "Track your learning progress",
-      icon: BarChart3,
+      title: "Solve a Quiz",
+      description: "Test your knowledge with quizzes",
+      icon: ClipboardList,
       color: "text-[#10b981]",
       bg: "bg-[#ecfdf5]",
       hoverBg: "hover:bg-[#d1fae5]",
+      href: "/quizzes",
     },
   ];
 
@@ -46,8 +51,9 @@ export function QuickActionsGrid() {
         {quickActions.map((action) => {
           const Icon = action.icon;
           return (
-            <button
+            <Link
               key={action.title}
+              href={action.href}
               className={`group text-left p-5 rounded-2xl border border-[#e2e8f0] bg-white card-hover transition-all duration-300 ${action.hoverBg}`}
             >
               <div
@@ -65,7 +71,7 @@ export function QuickActionsGrid() {
               <p className="text-[12px] text-[#94a3b8] font-medium">
                 {action.description}
               </p>
-            </button>
+            </Link>
           );
         })}
       </div>

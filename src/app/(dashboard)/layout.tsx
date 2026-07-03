@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Sidebar } from "../../components/layout/Sidebar";
 import { DashboardHeader } from "../../components/layout/DashboardHeader";

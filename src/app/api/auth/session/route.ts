@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const { payload } = await jwtVerify(token, secret);
 
     return NextResponse.json({ user: payload }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Invalid or expired session." },
       { status: 401 },
