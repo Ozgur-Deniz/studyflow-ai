@@ -20,7 +20,6 @@ model User {
   studyPlans     StudyPlan[]
   sessions       StudySession[]
   conversations  Conversation[]
-  achievements   Achievement[]
   flashcardDecks FlashcardDeck[]
   quizzes        Quiz[]
 }
@@ -76,20 +75,6 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-}
-
-model Achievement {
-  id         String  @id @default(cuid())
-  title      String // Örn: "First Login", "Study Streak"
-  progress   Int     @default(0) // Yüzde veya sayısal ilerleme
-  isUnlocked Boolean @default(false)
-
-  // User Relation
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model FlashcardDeck {

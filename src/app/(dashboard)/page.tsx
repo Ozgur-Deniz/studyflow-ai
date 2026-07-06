@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookOpen, MessageSquare, Layers, ClipboardList } from "lucide-react";
-import { StatCard } from "@/components/ui/StatCard";
 import { AIRecommendationCard } from "@/components/dashboard/AIRecommendationCard";
-import { AchievementsCard } from "@/components/dashboard/AchievementsCard";
 import { QuickActionsGrid } from "@/components/dashboard/QuickActionsGrid";
 
 interface DashboardStats {
@@ -73,61 +70,11 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Dynamic Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="ACTIVE STUDY PLANS"
-          value={isLoading ? "..." : stats.activeStudyPlans.toString()}
-          change="+0%"
-          icon={BookOpen}
-          gradient="from-[#6366f1] to-[#8b5cf6]"
-          iconBg="bg-[#eef2ff]"
-          shadowColor="hover:shadow-indigo-100"
-          href="/study-plans"
-        />
-        <StatCard
-          title="AI CONVERSATIONS"
-          value={isLoading ? "..." : stats.aiConversations.toString()}
-          change="+0%"
-          icon={MessageSquare}
-          gradient="from-[#06b6d4] to-[#0891b2]"
-          iconBg="bg-[#ecfeff]"
-          shadowColor="hover:shadow-cyan-100"
-          href="/ai-assistant"
-        />
-        <StatCard
-          title="FLASHCARD DECKS"
-          value={isLoading ? "..." : stats.flashcardDecks.toString()}
-          change="+0%"
-          icon={Layers}
-          gradient="from-[#f59e0b] to-[#d97706]"
-          iconBg="bg-[#fffbeb]"
-          shadowColor="hover:shadow-amber-100"
-          href="/flashcards"
-        />
-        <StatCard
-          title="QUIZZES COMPLETED"
-          value={isLoading ? "..." : stats.quizzesSolved.toString()}
-          change="+0%"
-          icon={ClipboardList}
-          gradient="from-[#10b981] to-[#059669]"
-          iconBg="bg-[#ecfdf5]"
-          shadowColor="hover:shadow-emerald-100"
-          href="/quizzes"
-        />
-      </div>
-
       {/* Quick Actions */}
-      <QuickActionsGrid />
+      <QuickActionsGrid stats={stats} isLoading={isLoading} />
 
-      {/* Bottom Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 flex">
-          <AIRecommendationCard />
-        </div>
-        <div className="lg:col-span-1 flex">
-          <AchievementsCard stats={stats} />
-        </div>
+      <div className="flex">
+        <AIRecommendationCard />
       </div>
     </div>
   );

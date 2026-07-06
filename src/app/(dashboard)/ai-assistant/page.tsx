@@ -158,24 +158,36 @@ const readFileAsBase64 = (file: File) => {
 };
 
 const createMarkdownComponents = (isUser: boolean): Components => ({
-  p: ({ children }) => <p className="mb-3 last:mb-0 first:mt-0">{children}</p>,
+  p: ({ children }) => (
+    <p
+      className={`mb-3.5 text-[15px] leading-7 last:mb-0 first:mt-0 ${
+        isUser ? "font-medium text-white" : "font-medium text-[#273244]"
+      }`}
+    >
+      {children}
+    </p>
+  ),
   ul: ({ children }) => (
-    <ul className="mb-3 list-disc space-y-1 pl-5 last:mb-0">{children}</ul>
+    <ul className="mb-4 list-disc space-y-1.5 pl-5 last:mb-0">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="mb-3 list-decimal space-y-1 pl-5 last:mb-0">{children}</ol>
+    <ol className="mb-4 list-decimal space-y-1.5 pl-5 last:mb-0">{children}</ol>
   ),
-  li: ({ children }) => <li className="pl-1">{children}</li>,
+  li: ({ children }) => (
+    <li className="pl-1 text-[15px] leading-7">{children}</li>
+  ),
   h1: ({ children }) => (
-    <h1 className="mb-3 mt-1 text-xl font-bold leading-tight">{children}</h1>
+    <h1 className="mb-4 mt-1 text-2xl font-black leading-tight tracking-tight">
+      {children}
+    </h1>
   ),
   h2: ({ children }) => (
-    <h2 className="mb-2 mt-4 text-lg font-bold leading-tight first:mt-0">
+    <h2 className="mb-3 mt-6 text-xl font-black leading-tight tracking-tight first:mt-0">
       {children}
     </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="mb-2 mt-3 text-base font-bold leading-tight first:mt-0">
+    <h3 className="mb-2 mt-4 text-base font-extrabold leading-tight first:mt-0">
       {children}
     </h3>
   ),
@@ -192,7 +204,7 @@ const createMarkdownComponents = (isUser: boolean): Components => ({
     </div>
   ),
   thead: ({ children }) => (
-    <thead className={isUser ? "bg-white/10" : "bg-indigo-50"}>
+    <thead className={isUser ? "bg-white/10" : "bg-primary-soft"}>
       {children}
     </thead>
   ),
@@ -211,7 +223,7 @@ const createMarkdownComponents = (isUser: boolean): Components => ({
       className={`border p-2 text-sm font-bold ${
         isUser
           ? "border-white/30 bg-white/10 text-white"
-          : "border-gray-300 bg-indigo-50 text-slate-900"
+          : "border-gray-300 bg-primary-soft text-slate-900"
       }`}
     >
       {children}
@@ -259,7 +271,7 @@ const createMarkdownComponents = (isUser: boolean): Components => ({
     return (
       <code
         className={`rounded-md px-1.5 py-0.5 font-mono text-[0.9em] ${
-          isUser ? "bg-white/20 text-white" : "bg-indigo-50 text-slate-800"
+          isUser ? "bg-white/20 text-white" : "bg-primary-soft text-slate-800"
         }`}
       >
         {children}
@@ -812,9 +824,9 @@ export default function AIAssistantPage() {
   };
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-8rem)] max-w-7xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm animate-fade-in-up">
+    <div className="mx-auto flex h-[calc(100vh-8rem)] max-w-7xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/76 shadow-soft-lg backdrop-blur-xl animate-fade-in-up">
       {resourceToast && (
-        <div className="fixed right-5 top-5 z-50 w-[calc(100vw-2.5rem)] max-w-sm rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
+        <div className="fixed right-5 top-5 z-50 w-[calc(100vw-2.5rem)] max-w-sm rounded-3xl border border-border bg-white/90 p-4 shadow-soft-lg backdrop-blur-xl animate-slide-up">
           <div className="flex items-start gap-3">
             <div
               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
@@ -839,7 +851,7 @@ export default function AIAssistantPage() {
               {resourceToast.href && resourceToast.actionLabel && (
                 <a
                   href={resourceToast.href}
-                  className="mt-3 inline-flex h-9 items-center justify-center rounded-xl bg-indigo-600 px-3 text-xs font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                  className="mt-3 inline-flex h-9 items-center justify-center rounded-full bg-foreground px-4 text-xs font-black text-white shadow-soft-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
                 >
                   {resourceToast.actionLabel}
                 </a>
@@ -848,7 +860,7 @@ export default function AIAssistantPage() {
             <button
               type="button"
               onClick={() => setResourceToast(null)}
-              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200"
               aria-label="Close notification"
             >
               <X className="h-4 w-4" />
@@ -857,30 +869,30 @@ export default function AIAssistantPage() {
         </div>
       )}
 
-      <aside className="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
-        <div className="border-b border-slate-200 p-4">
+      <aside className="hidden w-80 shrink-0 flex-col border-r border-white/70 bg-surface/72 backdrop-blur md:flex">
+        <div className="border-b border-border/70 p-4">
           <button
             type="button"
             onClick={handleNewChat}
-            className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:from-indigo-600 hover:to-violet-600 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100"
+            className="group flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-foreground text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.015] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
           >
-            <MessageSquarePlus className="h-4 w-4" />
+            <MessageSquarePlus className="h-4 w-4 transition-transform group-hover:rotate-6" />
             New Chat
           </button>
         </div>
 
-        <div className="flex items-center justify-between px-4 pb-2 pt-4">
-          <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+        <div className="flex items-center justify-between px-5 pb-3 pt-5">
+          <h2 className="text-xs font-black uppercase tracking-[0.18em] text-muted">
             Chat History
           </h2>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
+          <span className="rounded-full border border-border bg-white px-2.5 py-1 text-[11px] font-black text-muted shadow-soft-sm">
             {conversations.length}
           </span>
         </div>
 
-        <div className="flex-1 space-y-2 overflow-y-auto px-3 pb-4">
+        <div className="flex-1 space-y-2 overflow-y-auto px-4 pb-5">
           {conversations.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm leading-5 text-slate-500">
+            <div className="rounded-2xl border border-dashed border-border bg-surface-muted/70 px-4 py-5 text-sm font-medium leading-6 text-muted">
               No previous chats yet.
             </div>
           ) : (
@@ -890,10 +902,10 @@ export default function AIAssistantPage() {
               return (
                 <div
                   key={conversation.id}
-                  className={`group flex items-start gap-2 rounded-xl px-3 py-3 transition ${
+                  className={`group flex items-start gap-2 rounded-2xl px-3 py-3 transition-all duration-200 ${
                     isActive
-                      ? "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200"
-                      : "text-slate-700 hover:bg-slate-50"
+                      ? "bg-primary-soft text-primary shadow-soft-sm ring-1 ring-primary/10"
+                      : "text-slate-700 hover:bg-white hover:shadow-soft-sm"
                   }`}
                 >
                   <button
@@ -908,7 +920,7 @@ export default function AIAssistantPage() {
                       </p>
                       <p
                         className={`mt-1 text-xs ${
-                          isActive ? "text-indigo-500" : "text-slate-400"
+                          isActive ? "text-primary" : "text-slate-400"
                         }`}
                       >
                         {formatConversationDate(conversation.updatedAt)}
@@ -932,35 +944,38 @@ export default function AIAssistantPage() {
         </div>
       </aside>
 
-      <section className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
+      <section className="flex min-w-0 flex-1 flex-col bg-white/42">
+        <div className="flex items-center justify-between border-b border-white/70 bg-white/70 px-6 py-4 backdrop-blur-xl">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50">
-              <Sparkles className="h-5 w-5 text-indigo-600" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-white shadow-soft-sm">
+              <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight text-slate-950">
+              <h1 className="text-lg font-black leading-tight tracking-tight text-foreground">
                 StudyFlow AI
               </h1>
+              <p className="text-xs font-bold text-muted">
+                Premium study assistant workspace
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleNewChat}
-              className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-slate-200 px-3 text-xs font-bold text-slate-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 md:hidden"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-white px-3 text-xs font-black text-slate-700 shadow-soft-sm transition-all duration-200 hover:scale-[1.02] hover:text-primary md:hidden"
             >
               <MessageSquarePlus className="h-4 w-4" />
               New
             </button>
-            <div className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 sm:flex">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <div className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1.5 text-xs font-black text-emerald-700 shadow-soft-sm sm:flex">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-slow" />
               Online
             </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto bg-slate-50 px-4 py-6 sm:px-6">
+        <div className="flex-1 overflow-y-auto bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-4 py-7 scroll-smooth sm:px-8">
           {isFetchingHistory && (
             <div className="mb-4 flex items-center justify-center gap-2 text-sm font-medium text-slate-500">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -971,14 +986,16 @@ export default function AIAssistantPage() {
           {messages.length === 0 && !isFetchingHistory ? (
             <div className="flex h-full items-center justify-center">
               <div className="w-full max-w-2xl text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
-                  <Sparkles className="h-6 w-6 text-indigo-600" />
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-3xl bg-foreground text-white shadow-soft">
+                  <Sparkles className="h-6 w-6" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-950">Welcome</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
+                <h2 className="text-3xl font-black tracking-tight text-foreground">
+                  Welcome
+                </h2>
+                <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-muted">
                   Get help with your study plans, goals, and daily schedule.
                 </p>
-                <div className="mt-8 grid grid-cols-1 gap-4 text-left md:grid-cols-2">
+                <div className="mt-8 grid grid-cols-1 gap-3 text-left md:grid-cols-2">
                   {quickPrompts.map((prompt) => {
                     const Icon = prompt.icon;
 
@@ -988,12 +1005,12 @@ export default function AIAssistantPage() {
                         type="button"
                         onClick={() => void handleSendMessage(prompt.text)}
                         disabled={isLoading}
-                        className="group flex cursor-pointer flex-col items-start rounded-2xl border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/60 p-5 text-left shadow-sm shadow-indigo-100/50 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.015] hover:border-indigo-300 hover:from-indigo-50 hover:to-violet-50 hover:shadow-lg hover:shadow-indigo-200/60 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="group flex cursor-pointer flex-col items-start rounded-3xl border border-border bg-white/80 p-5 text-left shadow-soft-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white text-indigo-600 shadow-sm ring-1 ring-indigo-100 transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white group-hover:ring-indigo-200">
+                        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary shadow-soft-sm transition-all duration-300 group-hover:scale-105 group-hover:bg-foreground group-hover:text-white">
                           <Icon className="h-4 w-4 transition-transform duration-300 group-hover:rotate-6" />
                         </div>
-                        <p className="text-sm font-semibold leading-5 text-slate-800 transition-colors duration-300 group-hover:text-indigo-950">
+                        <p className="text-sm font-bold leading-5 text-[#273244] transition-colors duration-300 group-hover:text-foreground">
                           {prompt.text}
                         </p>
                       </button>
@@ -1003,7 +1020,7 @@ export default function AIAssistantPage() {
               </div>
             </div>
           ) : (
-            <div>
+            <div className="mx-auto w-full max-w-4xl">
               {messages.map((message) => {
                 const isUser = message.role === "user";
                 const isEmptyAssistantMessage =
@@ -1014,29 +1031,29 @@ export default function AIAssistantPage() {
                 return (
                   <div
                     key={message.id}
-                    className={`flex w-full ${
+                    className={`flex w-full animate-fade-in-up ${
                       isUser ? "justify-end" : "justify-start"
-                    } mb-6`}
+                    } mb-7`}
                   >
                     <div
                       className={
                         isUser
-                          ? "max-w-[85%] rounded-3xl rounded-br-sm bg-indigo-600 px-5 py-4 text-white shadow-md md:max-w-[75%]"
-                          : "max-w-[85%] rounded-3xl rounded-bl-sm border border-indigo-100 bg-[#f8fafc] px-5 py-4 text-slate-800 shadow-sm md:max-w-[75%]"
+                          ? "max-w-[86%] rounded-[1.75rem] rounded-br-md bg-foreground px-5 py-4 text-white shadow-soft md:max-w-[72%]"
+                          : "max-w-[92%] rounded-[1.75rem] rounded-bl-md border border-white/80 bg-white/86 px-5 py-4 text-[#273244] shadow-soft-sm backdrop-blur md:max-w-[78%]"
                       }
                     >
                       {!isUser && (
-                        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-indigo-500">
+                        <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-primary">
                           <Bot className="h-4 w-4" />
                           StudyFlow AI
                         </div>
                       )}
 
                       {isEmptyAssistantMessage ? (
-                        <div className="flex h-5 items-center gap-1.5">
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:0ms]" />
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:150ms]" />
-                          <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:300ms]" />
+                        <div className="flex h-7 items-center gap-2">
+                          <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:0ms]" />
+                          <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:150ms]" />
+                          <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:300ms]" />
                         </div>
                       ) : (
                         <div
@@ -1061,10 +1078,10 @@ export default function AIAssistantPage() {
           )}
         </div>
 
-        <div className="border-t border-slate-200 bg-white p-4">
+        <div className="border-t border-white/70 bg-white/72 p-4 backdrop-blur-xl sm:p-5">
           {selectedFile && (
             <div className="mb-3 flex max-w-full items-center gap-2">
-              <div className="flex min-w-0 items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 shadow-sm">
+              <div className="flex min-w-0 items-center gap-2 rounded-full border border-primary/15 bg-primary-soft px-3 py-2 text-sm font-bold text-primary shadow-soft-sm">
                 <Paperclip className="h-4 w-4 shrink-0" />
                 <span className="max-w-[18rem] truncate">
                   {selectedFile.name}
@@ -1072,7 +1089,7 @@ export default function AIAssistantPage() {
                 <button
                   type="button"
                   onClick={clearSelectedFile}
-                  className="ml-1 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-indigo-500 transition-all duration-200 hover:scale-110 hover:bg-indigo-100 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  className="ml-1 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-primary transition-all duration-200 hover:scale-110 hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
                   aria-label="Remove selected file"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -1082,17 +1099,17 @@ export default function AIAssistantPage() {
           )}
 
           {hasLinkedToolContext && (
-            <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <div className="mb-3 rounded-3xl border border-border bg-white/78 p-3 shadow-soft-sm backdrop-blur">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 items-center gap-2">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-indigo-600 ring-1 ring-indigo-100">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                     <Zap className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">
                       Linked Tools
                     </p>
-                    <p className="mt-0.5 truncate text-xs font-medium text-slate-600">
+                    <p className="mt-0.5 truncate text-xs font-bold text-[#667085]">
                       {linkedToolSourceLabel}: {linkedToolSourceName}
                     </p>
                   </div>
@@ -1103,7 +1120,7 @@ export default function AIAssistantPage() {
                     type="button"
                     onClick={() => void handleGenerateResource("flashcard")}
                     disabled={isGeneratingResource}
-                    className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-indigo-100 bg-white px-3 text-xs font-bold text-indigo-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-50 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-sm"
+                    className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full border border-primary/15 bg-white px-3 text-xs font-black text-primary shadow-soft-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {generatingResourceType === "flashcard" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -1116,7 +1133,7 @@ export default function AIAssistantPage() {
                     type="button"
                     onClick={() => void handleGenerateResource("quiz")}
                     disabled={isGeneratingResource}
-                    className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-sm"
+                    className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-white px-3 text-xs font-black text-slate-700 shadow-soft-sm transition-all duration-200 hover:scale-[1.02] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {generatingResourceType === "quiz" ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -1132,7 +1149,7 @@ export default function AIAssistantPage() {
 
           <form
             onSubmit={handleSendMessage}
-            className="relative flex w-full items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm"
+            className="relative mx-auto flex w-full max-w-4xl items-center gap-3 rounded-full border border-white/80 bg-white/88 px-4 py-3 shadow-glow backdrop-blur-xl transition-all duration-300 focus-within:max-w-[66rem] focus-within:border-primary/20 focus-within:bg-white focus-within:shadow-soft-lg"
           >
             <input
               ref={fileInputRef}
@@ -1145,7 +1162,7 @@ export default function AIAssistantPage() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading}
-              className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted transition hover:bg-surface-muted hover:text-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
               aria-label="Attach file"
             >
               <Plus className="h-6 w-6" />
@@ -1164,7 +1181,7 @@ export default function AIAssistantPage() {
                 }
               }}
               placeholder="Ask about a topic, plan, exam, or assignment..."
-              className="ai-chat-input min-w-0 flex-1 border-none bg-transparent font-sans text-[17px] font-medium leading-6 tracking-[0.01em] text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-none focus:outline-none focus:ring-0"
+              className="ai-chat-input min-w-0 flex-1 border-none bg-transparent font-sans text-[17px] font-semibold leading-6 tracking-[0.01em] text-foreground outline-none ring-0 placeholder:text-subtle focus:border-none focus:outline-none focus:ring-0"
             />
             <div ref={modelMenuRef} className="relative shrink-0">
               <button
@@ -1172,8 +1189,10 @@ export default function AIAssistantPage() {
                 onClick={() =>
                   setIsModelMenuOpen((currentState) => !currentState)
                 }
-                className={`flex cursor-pointer items-center gap-1 text-sm font-medium focus:outline-none ${
-                  isSelectedModelExhausted ? "text-red-600" : "text-slate-600"
+                className={`flex cursor-pointer items-center gap-1 rounded-full px-2 py-1 text-sm font-black transition focus:outline-none ${
+                  isSelectedModelExhausted
+                    ? "text-red-600"
+                    : "text-muted hover:bg-surface-muted hover:text-foreground"
                 }`}
                 aria-expanded={isModelMenuOpen}
                 aria-haspopup="menu"
@@ -1191,7 +1210,7 @@ export default function AIAssistantPage() {
 
               {isModelMenuOpen && (
                 <div
-                  className="absolute bottom-[calc(100%+0.85rem)] right-0 z-30 w-72 rounded-xl border border-slate-200 bg-white p-2 shadow-xl"
+                  className="absolute bottom-[calc(100%+0.85rem)] right-0 z-30 w-72 rounded-3xl border border-border bg-white/94 p-2 shadow-soft-lg backdrop-blur-xl animate-slide-up"
                   role="menu"
                 >
                   {chatModels.map((model) => {
@@ -1203,9 +1222,9 @@ export default function AIAssistantPage() {
                         key={model.id}
                         type="button"
                         onClick={() => handleSelectModel(model.id)}
-                        className={`flex w-full cursor-pointer items-start justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-100 ${
+                        className={`flex w-full cursor-pointer items-start justify-between gap-3 rounded-2xl px-3 py-2.5 text-left transition hover:bg-primary-soft focus:outline-none focus:ring-2 focus:ring-primary/10 ${
                           isActive
-                            ? "bg-indigo-50 text-indigo-700"
+                            ? "bg-primary-soft text-primary"
                             : "text-slate-700"
                         } ${
                           isExhausted
@@ -1226,7 +1245,7 @@ export default function AIAssistantPage() {
                           )}
                         </span>
                         {isActive && (
-                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
+                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
                         )}
                       </button>
                     );
@@ -1237,8 +1256,10 @@ export default function AIAssistantPage() {
             <button
               type="submit"
               disabled={(!input.trim() && !selectedFile) || isLoading}
-              className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center focus:outline-none disabled:cursor-not-allowed ${
-                input.trim() ? "text-indigo-600" : "text-slate-300"
+              className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition focus:outline-none disabled:cursor-not-allowed ${
+                input.trim() || selectedFile
+                  ? "bg-primary-soft text-primary hover:bg-primary hover:text-white"
+                  : "text-slate-300"
               }`}
               aria-label="Send message"
             >

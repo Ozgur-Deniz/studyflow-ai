@@ -1,42 +1,64 @@
 import Link from "next/link";
 import { Sparkles, ArrowRight, Target, Brain, Layers, ClipboardList } from "lucide-react";
 
-export function QuickActionsGrid() {
+interface QuickActionsGridProps {
+  stats: {
+    activeStudyPlans: number;
+    aiConversations: number;
+    flashcardDecks: number;
+    quizzesSolved: number;
+  };
+  isLoading?: boolean;
+}
+
+export function QuickActionsGrid({ stats, isLoading = false }: QuickActionsGridProps) {
   const quickActions = [
     {
       title: "Create Study Plan",
       description: "AI generates a personalized schedule",
+      metricLabel: "Active plans",
+      metricValue: stats.activeStudyPlans,
       icon: Target,
       color: "text-[#6366f1]",
       bg: "bg-[#eef2ff]",
-      hoverBg: "hover:bg-[#e0e7ff]",
+      ring: "ring-[#c7d2fe]",
+      accent: "from-[#6366f1]",
       href: "/study-plans",
     },
     {
       title: "Start AI Session",
       description: "Chat with your AI study assistant",
+      metricLabel: "AI conversations",
+      metricValue: stats.aiConversations,
       icon: Brain,
       color: "text-[#8b5cf6]",
       bg: "bg-[#f5f3ff]",
-      hoverBg: "hover:bg-[#ede9fe]",
+      ring: "ring-[#ddd6fe]",
+      accent: "from-[#8b5cf6]",
       href: "/ai-assistant",
     },
     {
       title: "Study Flashcards",
       description: "Review flashcards for active recall",
+      metricLabel: "Flashcard decks",
+      metricValue: stats.flashcardDecks,
       icon: Layers,
-      color: "text-[#06b6d4]",
-      bg: "bg-[#ecfeff]",
-      hoverBg: "hover:bg-[#cffafe]",
+      color: "text-[#f59e0b]",
+      bg: "bg-[#fffbeb]",
+      ring: "ring-[#fde68a]",
+      accent: "from-[#f59e0b]",
       href: "/flashcards",
     },
     {
       title: "Solve a Quiz",
       description: "Test your knowledge with quizzes",
+      metricLabel: "Quizzes completed",
+      metricValue: stats.quizzesSolved,
       icon: ClipboardList,
       color: "text-[#10b981]",
       bg: "bg-[#ecfdf5]",
-      hoverBg: "hover:bg-[#d1fae5]",
+      ring: "ring-[#a7f3d0]",
+      accent: "from-[#10b981]",
       href: "/quizzes",
     },
   ];
@@ -54,23 +76,36 @@ export function QuickActionsGrid() {
             <Link
               key={action.title}
               href={action.href}
-              className={`group text-left p-5 rounded-2xl border border-[#e2e8f0] bg-white card-hover transition-all duration-300 ${action.hoverBg}`}
+              className="group relative flex min-h-[190px] flex-col overflow-hidden text-left p-5 rounded-2xl border border-[#e2e8f0] bg-white card-hover transition-all duration-300 hover:border-[#cbd5e1]"
             >
               <div
-                className={`w-11 h-11 ${action.bg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}
-              >
-                <Icon size={20} className={action.color} />
+                className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${action.accent} to-transparent rounded-bl-full opacity-40 transition-all duration-300 group-hover:opacity-55 group-hover:scale-110`}
+              />
+              <div className="relative flex h-full flex-col">
+                <div
+                  className={`w-12 h-12 ${action.bg} rounded-xl flex items-center justify-center mb-4 ring-1 ${action.ring} group-hover:scale-110 transition-transform duration-300`}
+                >
+                  <Icon size={20} className={action.color} />
+                </div>
+                <p className="text-[15px] font-bold text-[#0f172a] mb-1 flex items-center gap-1">
+                  {action.title}
+                  <ArrowRight
+                    size={14}
+                    className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-[#94a3b8]"
+                  />
+                </p>
+                <p className="text-[12px] leading-5 text-[#64748b] font-medium">
+                  {action.description}
+                </p>
+                <div className="mt-auto pt-5 flex items-end justify-between gap-3">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#94a3b8]">
+                    {action.metricLabel}
+                  </span>
+                  <span className={`text-3xl font-black leading-none ${action.color}`}>
+                    {isLoading ? "..." : action.metricValue}
+                  </span>
+                </div>
               </div>
-              <p className="text-[14px] font-bold text-[#0f172a] mb-1 flex items-center gap-1">
-                {action.title}
-                <ArrowRight
-                  size={14}
-                  className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-[#94a3b8]"
-                />
-              </p>
-              <p className="text-[12px] text-[#94a3b8] font-medium">
-                {action.description}
-              </p>
             </Link>
           );
         })}

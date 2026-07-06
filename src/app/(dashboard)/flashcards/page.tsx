@@ -184,52 +184,58 @@ function FlashcardsContent() {
   return (
     <>
     <div className="mx-auto max-w-7xl animate-fade-in-up space-y-8">
-      <div>
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-[#0f172a]">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-muted shadow-soft-sm">
+          <Layers className="h-3.5 w-3.5 text-primary" />
+          Memory Studio
+        </div>
+        <h1 className="mb-2 text-4xl font-black tracking-tight text-foreground">
           Flashcards
         </h1>
-        <p className="text-[#64748b]">
+        <p className="max-w-2xl text-sm font-medium leading-6 text-muted">
           Review your saved decks with focused, interactive study cards.
         </p>
+        </div>
       </div>
 
-      <div className="grid min-h-[calc(100vh-14rem)] grid-cols-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[20rem_1fr]">
-        <aside className="border-b border-slate-200 bg-white lg:border-b-0 lg:border-r">
-          <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+      <div className="grid min-h-[calc(100vh-14rem)] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white/75 shadow-soft-lg backdrop-blur-xl lg:grid-cols-[21rem_1fr]">
+        <aside className="border-b border-white/70 bg-surface/72 backdrop-blur lg:border-b-0 lg:border-r">
+          <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                 <Layers className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-950">Decks</h2>
-                <p className="text-xs text-slate-500">{decks.length} saved</p>
+                <h2 className="text-sm font-black text-foreground">Decks</h2>
+                <p className="text-xs font-bold text-muted">{decks.length} saved</p>
               </div>
             </div>
           </div>
 
-          <div className="border-b border-slate-200 p-4">
+          <div className="border-b border-border/70 p-4">
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-bold text-white shadow-sm transition hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100"
+              className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.015] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
             >
-              <Sparkles className="h-4 w-4" />
+              <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-6" />
               Generate with AI
             </button>
           </div>
 
           <div className="max-h-[22rem] space-y-2 overflow-y-auto p-4 lg:max-h-none">
             {isLoading ? (
-              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-500">
+              <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-muted px-4 py-3 text-sm font-bold text-muted">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading decks...
               </div>
             ) : error ? (
-              <div className="rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
+              <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600">
                 {error}
               </div>
             ) : decks.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-sm leading-6 text-slate-500">
+              <div className="rounded-2xl border border-dashed border-border bg-surface-muted/70 px-4 py-5 text-sm font-medium leading-6 text-muted">
                 No flashcard decks yet.
               </div>
             ) : (
@@ -242,16 +248,16 @@ function FlashcardsContent() {
                     key={deck.id}
                     type="button"
                     onClick={() => handleSelectDeck(deck)}
-                    className={`w-full rounded-xl border px-4 py-3 text-left transition ${
+                    className={`w-full rounded-2xl border px-4 py-3 text-left transition-all duration-300 hover:-translate-y-0.5 ${
                       isSelected
-                        ? "border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-indigo-100 hover:bg-slate-50"
+                        ? "border-primary/20 bg-primary-soft text-primary shadow-soft-sm"
+                        : "border-border bg-white/80 text-slate-700 hover:border-primary/15 hover:bg-white hover:shadow-soft-sm"
                     }`}
                   >
-                    <p className="truncate text-sm font-bold">{deck.title}</p>
+                    <p className="truncate text-sm font-black">{deck.title}</p>
                     <p
-                      className={`mt-1 text-xs ${
-                        isSelected ? "text-indigo-500" : "text-slate-400"
+                      className={`mt-1 text-xs font-bold ${
+                        isSelected ? "text-primary" : "text-subtle"
                       }`}
                     >
                       {cards.length} cards
@@ -263,35 +269,35 @@ function FlashcardsContent() {
           </div>
         </aside>
 
-        <section className="flex min-h-[34rem] flex-col items-center justify-center bg-slate-50 px-5 py-8">
+        <section className="flex min-h-[34rem] flex-col items-center justify-center bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-5 py-8">
           {!selectedDeck ? (
             <div className="max-w-md text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-foreground text-white shadow-soft">
                 <Layers className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-bold text-slate-950">
+              <h2 className="text-2xl font-black tracking-tight text-foreground">
                 Select a deck
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm font-medium leading-6 text-muted">
                 Choose a flashcard deck from the left panel to start studying.
               </p>
             </div>
           ) : currentCards.length === 0 ? (
             <div className="max-w-md text-center">
-              <h2 className="text-xl font-bold text-slate-950">
+              <h2 className="text-2xl font-black tracking-tight text-foreground">
                 This deck is empty
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm font-medium leading-6 text-muted">
                 Generate or add cards before starting a review session.
               </p>
             </div>
           ) : (
             <div className="flex w-full flex-col items-center">
               <div className="mb-6 text-center">
-                <h2 className="text-2xl font-bold text-slate-950">
+                <h2 className="text-3xl font-black tracking-tight text-foreground">
                   {selectedDeck.title}
                 </h2>
-                <p className="mt-1 text-sm font-medium text-slate-500">
+                <p className="mt-2 text-sm font-bold text-muted">
                   Card {currentCardIndex + 1} of {currentCards.length}
                 </p>
               </div>
@@ -299,33 +305,42 @@ function FlashcardsContent() {
               <button
                 type="button"
                 onClick={() => setIsFlipped((current) => !current)}
-                className="h-64 w-full max-w-md [perspective:1000px]"
+                className="group h-80 w-full max-w-xl cursor-pointer [perspective:1400px]"
                 aria-label="Flip flashcard"
               >
                 <div
-                  className={`relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d] ${
-                    isFlipped ? "[transform:rotateY(180deg)]" : ""
+                  key={currentCard?.id}
+                  className={`relative h-full w-full animate-scale-in transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] [transform-style:preserve-3d] ${
+                    isFlipped
+                      ? "[transform:rotateY(180deg)] group-hover:[transform:translateY(-0.5rem)_rotateY(180deg)]"
+                      : "group-hover:[transform:translateY(-0.5rem)]"
                   }`}
                 >
-                  <div className="absolute flex h-full w-full cursor-pointer items-center justify-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm [backface-visibility:hidden] dark:bg-[#09090b]">
-                    <p className="text-xl font-bold leading-8 text-slate-900 dark:text-slate-100">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-soft-lg backdrop-blur [backface-visibility:hidden]">
+                    <div className="absolute left-6 top-6 rounded-full border border-border bg-surface-muted px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-muted">
+                      Front
+                    </div>
+                    <p className="max-w-md text-2xl font-black leading-9 tracking-tight text-foreground">
                       {currentCard?.frontText}
                     </p>
                   </div>
-                  <div className="absolute flex h-full w-full cursor-pointer items-center justify-center rounded-2xl border border-indigo-200 bg-indigo-50 p-8 text-center text-indigo-700 shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)] dark:bg-indigo-900/20 dark:text-indigo-300">
-                    <p className="text-lg font-semibold leading-8">
+                  <div className="absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-primary/20 bg-primary-soft p-10 text-center text-primary shadow-soft-lg [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                    <div className="absolute left-6 top-6 rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-primary">
+                      Back
+                    </div>
+                    <p className="max-w-md text-xl font-extrabold leading-8">
                       {currentCard?.backText}
                     </p>
                   </div>
                 </div>
               </button>
 
-              <div className="mt-8 flex w-full max-w-md items-center justify-between gap-3">
+              <div className="mt-8 flex w-full max-w-xl items-center justify-between gap-3">
                 <button
                   type="button"
                   onClick={goToPreviousCard}
                   disabled={isFirstCard}
-                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-black text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous Card
@@ -334,7 +349,7 @@ function FlashcardsContent() {
                   type="button"
                   onClick={goToNextCard}
                   disabled={isLastCard}
-                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Next Card
                   <ChevronRight className="h-4 w-4" />
@@ -346,17 +361,17 @@ function FlashcardsContent() {
       </div>
     </div>
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-md">
+          <div className="w-full max-w-md rounded-[2rem] border border-white/70 bg-white/95 p-6 shadow-soft-lg backdrop-blur-xl animate-slide-up">
             <div className="mb-5 flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-slate-950">
+                <h2 className="text-lg font-black tracking-tight text-foreground">
                   Generate Flashcards with AI
                 </h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1 text-sm font-medium leading-6 text-muted">
                   Enter the topic you want to study, and StudyFlow AI will
                   prepare a deck for you.
                 </p>
@@ -367,7 +382,7 @@ function FlashcardsContent() {
               <div>
                 <label
                   htmlFor="flashcard-topic"
-                  className="mb-2 block text-sm font-bold text-slate-700"
+                  className="mb-2 block text-sm font-black text-foreground"
                 >
                   Topic
                 </label>
@@ -376,7 +391,7 @@ function FlashcardsContent() {
                   value={generateTopic}
                   onChange={(event) => setGenerateTopic(event.target.value)}
                   placeholder="e.g., React Hooks, Ottoman history, SQL joins..."
-                  className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                  className="h-12 w-full rounded-2xl border border-border bg-surface-muted px-4 text-sm font-semibold text-foreground outline-none transition placeholder:text-subtle focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10"
                 />
               </div>
 
@@ -385,14 +400,14 @@ function FlashcardsContent() {
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isGenerating}
-                  className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-10 rounded-full border border-border bg-white px-4 text-sm font-black text-muted transition hover:bg-surface-muted focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!generateTopic.trim() || isGenerating}
-                  className="flex h-10 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-10 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-black text-white shadow-soft-sm transition hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isGenerating ? "Generating Cards..." : "Generate Cards"}
@@ -411,7 +426,7 @@ export default function FlashcardsPage() {
     <Suspense
       fallback={
         <div className="mx-auto flex min-h-[24rem] max-w-7xl items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </div>
       }
     >
