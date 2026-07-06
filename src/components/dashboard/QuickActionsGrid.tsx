@@ -9,9 +9,16 @@ interface QuickActionsGridProps {
     quizzesSolved: number;
   };
   isLoading?: boolean;
+  isRevealed?: boolean;
+  shouldReduceMotion?: boolean;
 }
 
-export function QuickActionsGrid({ stats, isLoading = false }: QuickActionsGridProps) {
+export function QuickActionsGrid({
+  stats,
+  isLoading = false,
+  isRevealed = true,
+  shouldReduceMotion = false,
+}: QuickActionsGridProps) {
   const quickActions = [
     {
       title: "Create Study Plan",
@@ -62,21 +69,35 @@ export function QuickActionsGrid({ stats, isLoading = false }: QuickActionsGridP
       href: "/quizzes",
     },
   ];
+  const shouldShow = isRevealed || shouldReduceMotion;
 
   return (
-    <div className="animate-fade-in-up" style={{ animationDelay: "0.3s", opacity: 0 }}>
-      <h2 className="text-[18px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
+    <div>
+      <h2
+        className={`text-[18px] font-bold text-[#0f172a] mb-4 flex items-center gap-2 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          shouldShow ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+        }`}
+      >
         <Sparkles size={18} className="text-[#6366f1]" />
         Quick Actions
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {quickActions.map((action) => {
+        {quickActions.map((action, index) => {
           const Icon = action.icon;
           return (
             <Link
               key={action.title}
               href={action.href}
-              className="group relative flex min-h-[190px] flex-col overflow-hidden text-left p-5 rounded-2xl border border-[#e2e8f0] bg-white card-hover transition-all duration-300 hover:border-[#cbd5e1]"
+              className={`group relative flex min-h-[190px] flex-col overflow-hidden text-left p-5 rounded-2xl border border-[#e2e8f0] bg-white card-hover transition-[opacity,transform,border-color,box-shadow] duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#cbd5e1] ${
+                shouldShow
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }`}
+              style={{
+                transitionDelay: shouldReduceMotion
+                  ? "0ms"
+                  : `${180 + index * 130}ms`,
+              }}
             >
               <div
                 className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${action.accent} to-transparent rounded-bl-full opacity-40 transition-all duration-300 group-hover:opacity-55 group-hover:scale-110`}
