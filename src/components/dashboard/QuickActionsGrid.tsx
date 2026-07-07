@@ -59,7 +59,7 @@ export function QuickActionsGrid({
     {
       title: "Solve a Quiz",
       description: "Test your knowledge with quizzes",
-      metricLabel: "Quizzes completed",
+      metricLabel: "Total quizzes",
       metricValue: stats.quizzesSolved,
       icon: ClipboardList,
       color: "text-[#10b981]",

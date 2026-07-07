@@ -16,6 +16,7 @@ import {
   ClipboardList,
   Loader2,
   Sparkles,
+  Trash2,
   XCircle,
 } from "lucide-react";
 
@@ -41,6 +42,10 @@ interface QuizzesResponse {
 }
 
 interface GenerateQuizResponse {
+  quiz?: Quiz;
+}
+
+interface QuizResponse {
   quiz?: Quiz;
 }
 
@@ -84,6 +89,8 @@ function QuizzesContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generateTopic, setGenerateTopic] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [completingQuizId, setCompletingQuizId] = useState<string | null>(null);
+  const [deletingQuizId, setDeletingQuizId] = useState<string | null>(null);
 
   const questions = selectedQuiz?.questions ?? [];
   const currentQuestion = questions[currentQuestionIndex] ?? null;
@@ -242,6 +249,94 @@ function QuizzesContent() {
     );
   };
 
+  const handleFinishQuiz = async () => {
+    if (!selectedQuiz || completingQuizId) {
+      return;
+    }
+
+    setCompletingQuizId(selectedQuiz.id);
+
+    try {
+      const response = await fetch(`/api/quizzes/${selectedQuiz.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isCompleted: true,
+          score: results.correct,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Complete quiz request failed with status ${response.status}.`,
+        );
+      }
+
+      const data = (await response.json()) as QuizResponse;
+      const completedQuiz =
+        data.quiz ?? { ...selectedQuiz, isCompleted: true, score: results.correct };
+
+      setQuizzes((currentQuizzes) =>
+        currentQuizzes.map((quiz) =>
+          quiz.id === completedQuiz.id ? completedQuiz : quiz,
+        ),
+      );
+      setSelectedQuiz(completedQuiz);
+      setIsFinished(true);
+    } catch (completeError) {
+      console.error("Failed to complete quiz:", completeError);
+      window.alert("Quiz could not be marked as completed.");
+    } finally {
+      setCompletingQuizId(null);
+    }
+  };
+
+  const handleDeleteQuiz = async (quiz: Quiz) => {
+    if (deletingQuizId || !quiz.isCompleted) {
+      return;
+    }
+
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this completed quiz?",
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setDeletingQuizId(quiz.id);
+
+    try {
+      const response = await fetch(`/api/quizzes/${quiz.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Delete quiz request failed with status ${response.status}.`,
+        );
+      }
+
+      const nextQuizzes = quizzes.filter(
+        (currentQuiz) => currentQuiz.id !== quiz.id,
+      );
+
+      setQuizzes(nextQuizzes);
+
+      if (selectedQuiz?.id === quiz.id) {
+        setSelectedQuiz(nextQuizzes[0] ?? null);
+        resetQuizState();
+      }
+    } catch (deleteError) {
+      console.error("Failed to delete quiz:", deleteError);
+      window.alert("Completed quiz could not be deleted.");
+    } finally {
+      setDeletingQuizId(null);
+    }
+  };
+
   return (
     <>
       <div className="mx-auto max-w-7xl animate-fade-in-up space-y-8">
@@ -309,27 +404,62 @@ function QuizzesContent() {
                   const isSelected = quiz.id === selectedQuiz?.id;
 
                   return (
-                    <button
+                    <div
                       key={quiz.id}
-                      type="button"
-                      onClick={() => handleSelectQuiz(quiz)}
-                      className={`w-full rounded-2xl border px-4 py-3 text-left transition-all duration-300 hover:-translate-y-0.5 ${
+                      className={`group relative rounded-2xl border transition-all duration-300 hover:-translate-y-0.5 ${
                         isSelected
                           ? "border-primary/20 bg-primary-soft text-primary shadow-soft-sm"
                           : "border-border bg-white/80 text-slate-700 hover:border-primary/15 hover:bg-white hover:shadow-soft-sm"
                       }`}
                     >
-                      <p className="truncate text-sm font-black">
-                        {quiz.title}
-                      </p>
-                      <p
-                        className={`mt-1 text-xs font-bold ${
-                          isSelected ? "text-primary" : "text-subtle"
-                        }`}
+                      <button
+                        type="button"
+                        onClick={() => handleSelectQuiz(quiz)}
+                        className="w-full cursor-pointer px-4 py-3 pr-12 text-left"
                       >
-                        {quiz.questions.length} questions
-                      </p>
-                    </button>
+                        <div className="flex min-w-0 items-start gap-2">
+                          <p className="min-w-0 flex-1 truncate text-sm font-black">
+                            {quiz.title}
+                          </p>
+                          {quiz.isCompleted && (
+                            <span
+                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.12em] ${
+                                isSelected
+                                  ? "bg-white/70 text-primary"
+                                  : "bg-emerald-50 text-emerald-600"
+                              }`}
+                            >
+                              <CheckCircle2 className="h-3 w-3" />
+                              Done
+                            </span>
+                          )}
+                        </div>
+                        <p
+                          className={`mt-1 text-xs font-bold ${
+                            isSelected ? "text-primary" : "text-subtle"
+                          }`}
+                        >
+                          {quiz.questions.length} questions
+                          {quiz.score !== null && ` · ${quiz.score} correct`}
+                        </p>
+                      </button>
+
+                      {quiz.isCompleted && (
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteQuiz(quiz)}
+                          disabled={deletingQuizId === quiz.id}
+                          className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          aria-label="Delete completed quiz"
+                        >
+                          {deletingQuizId === quiz.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
+                    </div>
                   );
                 })
               )}
@@ -529,11 +659,21 @@ function QuizzesContent() {
                   {isLastQuestion ? (
                     <button
                       type="button"
-                      onClick={() => setIsFinished(true)}
-                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      onClick={() => void handleFinishQuiz()}
+                      disabled={completingQuizId === selectedQuiz.id}
+                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      Finish Quiz
-                      <CheckCircle2 className="h-4 w-4" />
+                      {completingQuizId === selectedQuiz.id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          Finish Quiz
+                          <CheckCircle2 className="h-4 w-4" />
+                        </>
+                      )}
                     </button>
                   ) : (
                     <button

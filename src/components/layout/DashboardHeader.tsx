@@ -1,6 +1,7 @@
 "use client";
 
 import { Search, Bell, ChevronDown } from "lucide-react";
+import { PomodoroTimer } from "./PomodoroTimer";
 import { UserAvatar } from "../ui/UserAvatar";
 
 interface DashboardHeaderProps {
@@ -43,6 +44,8 @@ export function DashboardHeader({
 
         {/* Divider */}
         <div className="w-px h-9 bg-[#e2e8f0]" />
+
+        <PomodoroTimer />
 
         {/* User Profile */}
         <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f1f5f9] rounded-xl px-3 py-2 transition-all duration-300">

@@ -2,6 +2,7 @@ import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest, AuthError } from "@/lib/auth";
+import { awardFixedXp } from "@/lib/xp";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
@@ -162,6 +163,7 @@ Your response must be valid JSON only. Do not include Markdown, explanations, or
         flashcards: true,
       },
     });
+    await awardFixedXp(userId, "AI_RESOURCE_GENERATED");
 
     return NextResponse.json({ success: true, deck }, { status: 200 });
   } catch (error: unknown) {

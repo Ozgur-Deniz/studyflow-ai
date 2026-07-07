@@ -2,6 +2,7 @@ import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest, AuthError } from "@/lib/auth";
+import { awardFixedXp } from "@/lib/xp";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
@@ -266,6 +267,7 @@ export async function POST(request: NextRequest) {
         conversationId: activeConversationId,
       },
     });
+    await awardFixedXp(userId, "AI_MESSAGE_SENT");
 
     const systemInstructionWithContext = `${SYSTEM_INSTRUCTION}
 

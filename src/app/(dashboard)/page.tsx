@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getHeatmapData } from "@/app/actions/heatmap.actions";
 import { AIRecommendationCard } from "@/components/dashboard/AIRecommendationCard";
 import { QuickActionsGrid } from "@/components/dashboard/QuickActionsGrid";
-import { StudyActivityHeatmap } from "@/components/dashboard/StudyActivityHeatmap";
+import {
+  StudyActivityHeatmap,
+  type HeatmapDataPoint,
+} from "@/components/dashboard/StudyActivityHeatmap";
 
 interface DashboardStats {
   activeStudyPlans: number;
@@ -39,6 +43,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
   const [revealState, setRevealState] = useState(DEFAULT_REVEAL_STATE);
+  const [heatmapData, setHeatmapData] = useState<HeatmapDataPoint[]>([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -56,6 +61,9 @@ export default function DashboardPage() {
           const statsData = await statsRes.json();
           setStats(statsData.stats);
         }
+
+        const { heatmapData } = await getHeatmapData();
+        setHeatmapData(heatmapData);
       } catch (error) {
         console.error("[Dashboard] Error during data fetch:", error);
       } finally {
@@ -158,6 +166,7 @@ export default function DashboardPage() {
         }`}
       >
         <StudyActivityHeatmap
+          data={heatmapData}
           animationReady={revealState.studyActivity || shouldReduceMotion}
         />
       </div>

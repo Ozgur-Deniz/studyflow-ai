@@ -8,13 +8,7 @@ type ContributionDay = {
   date: Date;
   dateKey: string;
   count: number;
-  minutes: number;
   isInRange: boolean;
-};
-
-type ContributionDataPoint = {
-  count: number;
-  minutes: number;
 };
 
 type ContributionGridData = {
@@ -22,9 +16,16 @@ type ContributionGridData = {
   gridStartDate: Date;
 };
 
+export type HeatmapDataPoint = {
+  date: string;
+  count: number;
+};
+
 type MonthLabel = {
   label: string;
   weekIndex: number;
+  weekSpan: number;
+  startsOnGridBoundary: boolean;
 };
 
 type StudyStat = {
@@ -86,6 +87,13 @@ const LEVEL_LABELS: Record<IntensityLevel, string> = {
   high: "High",
   "very-high": "Very High",
 };
+const LEVEL_POINT_RANGES: Record<IntensityLevel, string> = {
+  none: "0 XP",
+  low: "1-24 XP",
+  moderate: "25-49 XP",
+  high: "50-99 XP",
+  "very-high": "100+ XP",
+};
 const LEVEL_DONUT_COLORS: Record<IntensityLevel, string> = {
   none: "#e2e8f0",
   low: "#d1fae5",
@@ -133,9 +141,8 @@ export function getDateRange(referenceDate: Date): {
   startDate: Date;
   endDate: Date;
 } {
-  const year = referenceDate.getFullYear();
-  const startDate = new Date(year, 0, 1);
-  const endDate = new Date(year, 11, 31);
+  const endDate = startOfDay(referenceDate);
+  const startDate = addDays(endDate, -364);
 
   return {
     startDate,
@@ -143,45 +150,10 @@ export function getDateRange(referenceDate: Date): {
   };
 }
 
-export function generateMockContributionData(
-  startDate: Date,
-  endDate: Date,
-): Record<string, ContributionDataPoint> {
-  const data: Record<string, ContributionDataPoint> = {};
-  let cursor = startOfDay(startDate);
-  const normalizedEndDate = startOfDay(endDate);
-
-  while (cursor <= normalizedEndDate) {
-    const dateKey = getDateKey(cursor);
-    const seed =
-      cursor.getFullYear() * 372 +
-      (cursor.getMonth() + 1) * 31 +
-      cursor.getDate();
-    const weekday = getSundayFirstDayIndex(cursor);
-    const isRestDay = seed % 5 === 0 || seed % 17 === 0;
-    const weekdayBias = weekday < 5 ? 1 : -1;
-    const wave = Math.abs(Math.sin(seed * 0.19)) * 5;
-    const spike = seed % 29 === 0 ? 4 : seed % 13 === 0 ? 2 : 0;
-    const count = isRestDay
-      ? 0
-      : Math.max(0, Math.min(9, Math.round(wave + weekdayBias + spike)));
-    const minutes =
-      count === 0 ? 0 : Math.min(180, 15 + count * 14 + (seed % 47));
-
-    data[dateKey] = {
-      count,
-      minutes,
-    };
-    cursor = addDays(cursor, 1);
-  }
-
-  return data;
-}
-
 export function buildContributionGrid(
   startDate: Date,
   endDate: Date,
-  contributionData: Record<string, ContributionDataPoint>,
+  contributionData: Record<string, number>,
 ): ContributionGridData {
   const normalizedStartDate = startOfDay(startDate);
   const normalizedEndDate = startOfDay(endDate);
@@ -207,8 +179,7 @@ export function buildContributionGrid(
     week.push({
       date,
       dateKey,
-      count: isInRange ? contribution?.count ?? 0 : 0,
-      minutes: isInRange ? contribution?.minutes ?? 0 : 0,
+      count: isInRange ? contribution ?? 0 : 0,
       isInRange,
     });
     weeks[weekIndex] = week;
@@ -236,18 +207,32 @@ export function getMonthLabels(
 
   while (cursor <= normalizedEndDate) {
     const monthStartDate = startOfDay(cursor);
+    const monthEndDate = startOfDay(
+      new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0),
+    );
+    const visibleMonthStart =
+      monthStartDate < normalizedStartDate
+        ? normalizedStartDate
+        : monthStartDate;
+    const visibleMonthEnd =
+      monthEndDate > normalizedEndDate ? normalizedEndDate : monthEndDate;
 
-    if (monthStartDate < gridStartDate) {
-      cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
-      continue;
+    if (visibleMonthStart <= visibleMonthEnd) {
+      const weekIndex = Math.floor(
+        getDaysBetween(gridStartDate, visibleMonthStart) / 7,
+      );
+      const endWeekIndex = Math.floor(
+        getDaysBetween(gridStartDate, visibleMonthEnd) / 7,
+      );
+      const monthLabel = MONTH_LABELS[monthStartDate.getMonth()];
+
+      labels.push({
+        label: monthLabel,
+        weekIndex,
+        weekSpan: Math.max(1, endWeekIndex - weekIndex + 1),
+        startsOnGridBoundary: visibleMonthStart.getDay() === 0,
+      });
     }
-
-    const weekIndex = Math.floor(getDaysBetween(gridStartDate, monthStartDate) / 7);
-
-    labels.push({
-      label: MONTH_LABELS[monthStartDate.getMonth()],
-      weekIndex,
-    });
 
     cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
   }
@@ -260,15 +245,15 @@ export function getIntensityLevel(count: number): IntensityLevel {
     return "none";
   }
 
-  if (count <= 2) {
+  if (count <= 24) {
     return "low";
   }
 
-  if (count <= 4) {
+  if (count <= 49) {
     return "moderate";
   }
 
-  if (count <= 6) {
+  if (count <= 99) {
     return "high";
   }
 
@@ -324,24 +309,27 @@ function getMostActiveDay(days: ContributionDay[]): string {
 }
 
 function calculateStats(days: ContributionDay[]): StudyStat[] {
-  const totalMinutes = days.reduce((total, day) => total + day.minutes, 0);
-  const totalSessions = days.reduce((total, day) => total + day.count, 0);
+  const totalPoints = days.reduce((total, day) => total + day.count, 0);
   const activeDays = days.filter((day) => day.count > 0);
-  const averageDailyMinutes =
-    activeDays.length > 0 ? Math.round(totalMinutes / activeDays.length) : 0;
+  const averageDailyPoints =
+    activeDays.length > 0 ? Math.round(totalPoints / activeDays.length) : 0;
+  const peakDailyPoints = days.reduce(
+    (highestCount, day) => Math.max(highestCount, day.count),
+    0,
+  );
 
   return [
     {
-      label: "Total Study Hours",
-      value: `${(totalMinutes / 60).toFixed(1)}h`,
-    },
-    {
-      label: "Total Study Sessions",
-      value: totalSessions.toLocaleString("en-US"),
+      label: "Total XP",
+      value: totalPoints.toLocaleString("en-US"),
     },
     {
       label: "Active Days",
       value: activeDays.length.toLocaleString("en-US"),
+    },
+    {
+      label: "Average Daily XP",
+      value: averageDailyPoints.toLocaleString("en-US"),
     },
     {
       label: "Longest Streak",
@@ -352,8 +340,8 @@ function calculateStats(days: ContributionDay[]): StudyStat[] {
       value: getMostActiveDay(days),
     },
     {
-      label: "Average Daily Study",
-      value: `${averageDailyMinutes}m`,
+      label: "Peak Daily XP",
+      value: peakDailyPoints.toLocaleString("en-US"),
     },
   ];
 }
@@ -410,10 +398,10 @@ function StatCard({
           : `${STAT_CARD_REVEAL_DELAY + index * STAT_CARD_REVEAL_STEP}ms`,
       }}
     >
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
+      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 text-[19px] font-black leading-none tracking-tight text-slate-900">
+      <p className="mt-2 text-[20px] font-semibold leading-none tracking-tight text-slate-900">
         {value}
       </p>
     </div>
@@ -522,10 +510,10 @@ function ActivityDonutChart({
             : `${DONUT_REVEAL_DELAY + 420}ms`,
         }}
       >
-        <span className="text-[30px] font-black leading-none text-slate-950">
+        <span className="text-[31px] font-semibold leading-none text-slate-950">
           {activeDays}
         </span>
-        <span className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
+        <span className="mt-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400">
           Active Days
         </span>
       </div>
@@ -546,7 +534,18 @@ function LevelDistribution({
 
   return (
     <div className="min-w-0 flex-1 space-y-2.5">
-      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
+      <p
+        className={`text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          shouldShowLevels
+            ? "translate-y-0 opacity-100"
+            : "translate-y-2 opacity-0"
+        }`}
+        style={{
+          transitionDelay: shouldReduceMotion
+            ? "0ms"
+            : `${LEVEL_LIST_REVEAL_DELAY - LEVEL_LIST_REVEAL_STEP}ms`,
+        }}
+      >
         Activity Levels
       </p>
       {distribution.map((item, index) => (
@@ -569,11 +568,11 @@ function LevelDistribution({
               style={{ backgroundColor: item.color }}
               aria-hidden="true"
             />
-            <span className="truncate text-[12px] font-semibold text-slate-600">
+            <span className="truncate text-[12px] font-medium text-slate-600">
               {item.label}
             </span>
           </div>
-          <span className="text-[12px] font-bold text-slate-900">
+          <span className="text-[12px] font-medium text-slate-900">
             {item.percentage}%
           </span>
         </div>
@@ -584,22 +583,77 @@ function LevelDistribution({
 
 function ActivityLegend() {
   return (
-    <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-500">
-      <span>Less</span>
-      <div className="flex items-center gap-1">
-        {LEGEND_LEVELS.map((level) => (
-          <span
-            key={level}
-            className={`rounded-sm border ${getIntensityClass(level)}`}
-            style={{
-              width: CELL_SIZE,
-              height: CELL_SIZE,
-            }}
-            aria-hidden="true"
-          />
+    <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-slate-500">
+      <span className="shrink-0">Less</span>
+      <div className="flex flex-wrap items-center gap-2">
+        {LEGEND_LEVELS.map((level) => {
+          const label = `${LEVEL_LABELS[level]}: ${LEVEL_POINT_RANGES[level]}`;
+
+          return (
+            <span key={level} className="flex items-center gap-1.5" title={label}>
+              <span
+                className={`rounded-sm border ${getIntensityClass(level)}`}
+                style={{
+                  width: CELL_SIZE,
+                  height: CELL_SIZE,
+                }}
+                aria-hidden="true"
+              />
+              <span>{LEVEL_POINT_RANGES[level]}</span>
+            </span>
+          );
+        })}
+      </div>
+      <span className="shrink-0">More</span>
+    </div>
+  );
+}
+
+function ActivityScoringGuide() {
+  const scoringRules = [
+    {
+      action: "Pomodoro focus",
+      points: "25 XP",
+      detail: "Daily limit: 200 XP.",
+    },
+    {
+      action: "Quiz completed",
+      points: "10 + 4/correct",
+      detail: "Daily limit: 120 XP.",
+    },
+    {
+      action: "Flashcards",
+      points: "1/card + 10/deck",
+      detail: "Daily limits: 60 review XP, 30 deck XP.",
+    },
+    {
+      action: "Study plan",
+      points: "5 created, 40 done",
+      detail: "Daily limits: 15 created XP, 80 done XP.",
+    },
+    {
+      action: "AI assistant",
+      points: "1/message, 5/resource",
+      detail: "Daily limits: 10 message XP, 20 resource XP.",
+    },
+  ];
+
+  return (
+    <div className="mt-3 space-y-2 border-t border-slate-200 pt-3 text-[12px] leading-5 text-slate-500">
+      <p>
+        XP is calculated from database records: each heatmap day shows the sum
+        of <span className="font-medium text-slate-700">StudySession.points</span>{" "}
+        created on that date. Break timers do not add XP.
+      </p>
+      <div className="grid gap-x-5 gap-y-1 sm:grid-cols-[max-content_max-content_minmax(0,1fr)]">
+        {scoringRules.map((item) => (
+          <div key={item.action} className="contents">
+            <span className="font-medium text-slate-700">{item.action}</span>
+            <span className="font-medium text-emerald-700">{item.points}</span>
+            <span>{item.detail}</span>
+          </div>
         ))}
       </div>
-      <span>More</span>
     </div>
   );
 }
@@ -621,134 +675,148 @@ function ContributionGrid({
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60 p-4 shadow-sm shadow-slate-200/35 sm:p-5">
       <div className="flex min-h-[150px] flex-1 items-center overflow-x-auto overflow-y-hidden pb-1 lg:overflow-hidden">
         <div
-          className="grid min-w-max flex-1 gap-x-2 lg:min-w-0"
-          style={{
-            gridTemplateColumns: `${DAY_LABEL_WIDTH}px ${weekColumnTemplate}`,
-          }}
+          className="min-w-max flex-1 lg:min-w-0"
         >
-          <div className="h-4" />
           <div
-            className="grid h-4"
+            className="mb-1 grid"
             style={{
-              gridColumn: `2 / span ${grid.weeks.length}`,
-              gridTemplateColumns: weekColumnTemplate,
-              columnGap: CELL_GAP,
+              gridTemplateColumns: `${DAY_LABEL_WIDTH}px ${weekColumnTemplate}`,
             }}
           >
-            {monthLabels.map((month) => (
-              <span
-                key={`${month.label}-${month.weekIndex}`}
-                className="whitespace-nowrap pl-0.5 text-xs font-semibold leading-none text-slate-500"
-                style={{
-                  gridColumn: `${month.weekIndex + 1} / span 3`,
-                  justifySelf: "start",
-                }}
-              >
-                {month.label}
-              </span>
-            ))}
+            <div aria-hidden="true" />
+            <div
+              className="grid h-5 overflow-visible"
+              style={{
+                gridTemplateColumns: weekColumnTemplate,
+                columnGap: CELL_GAP,
+              }}
+            >
+              {monthLabels.map((month) => (
+                <span
+                  key={`${month.label}-${month.weekIndex}`}
+                  className="whitespace-nowrap pl-0.5 text-xs font-medium leading-none text-slate-500"
+                  style={{
+                    gridColumn: `${month.weekIndex + 1} / span ${month.weekSpan}`,
+                    gridRow: 1,
+                    justifySelf: "start",
+                    alignSelf: "end",
+                  }}
+                >
+                  {month.label}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div
-            className="grid pt-1"
+            className="grid"
             style={{
-              rowGap: CELL_GAP,
+              gridTemplateColumns: `${DAY_LABEL_WIDTH}px ${weekColumnTemplate}`,
             }}
           >
-            {DAY_LABELS.map((label, index) => (
-              <div
-                key={`${label}-${index}`}
-                className="flex items-center text-[10px] font-medium leading-none text-slate-400"
-                style={{
-                  height: CELL_SIZE,
-                }}
-              >
-                {label}
-              </div>
-            ))}
-          </div>
+            <div
+              className="grid"
+              style={{
+                rowGap: CELL_GAP,
+              }}
+            >
+              {DAY_LABELS.map((label, index) => (
+                <div
+                  key={`${label}-${index}`}
+                  className="flex items-center text-[10px] font-medium leading-none text-slate-400"
+                  style={{
+                    height: CELL_SIZE,
+                  }}
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
 
-          <div
-            className="grid pt-1"
-            style={{
-              gridTemplateColumns: weekColumnTemplate,
-              gridTemplateRows: `repeat(7, ${CELL_SIZE}px)`,
-              columnGap: CELL_GAP,
-              rowGap: CELL_GAP,
-            }}
-          >
-            {monthLabels.slice(1).map((month) => (
-              <div
-                key={`${month.label}-${month.weekIndex}-divider`}
-                className="pointer-events-none z-0 -ml-1 border-l border-slate-200/80"
-                style={{
-                  gridColumn: month.weekIndex + 1,
-                  gridRow: "1 / span 7",
-                }}
-                aria-hidden="true"
-              />
-            ))}
-            {grid.weeks.map((week, weekIndex) =>
-              week.map((day, dayIndex) => {
-                const level = getIntensityLevel(day.count);
-
-                return (
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: weekColumnTemplate,
+                gridTemplateRows: `repeat(7, ${CELL_SIZE}px)`,
+                columnGap: CELL_GAP,
+                rowGap: CELL_GAP,
+              }}
+            >
+              {monthLabels
+                .slice(1)
+                .filter((month) => month.startsOnGridBoundary)
+                .map((month) => (
                   <div
-                    key={day.dateKey}
-                    className="z-10 flex items-center justify-center"
+                    key={`${month.label}-${month.weekIndex}-divider`}
+                    className="pointer-events-none z-0 -ml-1 border-l border-slate-200/80"
                     style={{
-                      gridColumn: weekIndex + 1,
-                      gridRow: dayIndex + 1,
+                      gridColumn: month.weekIndex + 1,
+                      gridRow: "1 / span 7",
                     }}
-                  >
-                    {day.isInRange ? (
-                      <div
-                        className={`h-[11px] w-[11px] rounded-full border transition-[opacity,transform] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-125 hover:ring-2 hover:ring-emerald-200 ${getIntensityClass(
-                          level,
-                        )} ${
-                          isVisible || shouldReduceMotion
-                            ? "opacity-100 translate-y-0 scale-100"
-                            : "opacity-0 translate-y-1 scale-[0.85]"
-                        }`}
-                        style={{
-                          transitionDelay: shouldReduceMotion
-                            ? "0ms"
-                            : `${
-                                LEVEL_REVEAL_DELAYS[level] +
-                                Math.min((weekIndex + dayIndex) * 3, 60)
-                              }ms`,
-                        }}
-                        title={`${formatDateLabel(day.date)}: ${
-                          day.count
-                        } study activities, ${day.minutes} minutes`}
-                        aria-label={`${formatDateLabel(day.date)}: ${
-                          day.count
-                        } study activities, ${day.minutes} minutes`}
-                      />
-                    ) : (
-                      <div className="h-[11px] w-[11px]" aria-hidden="true" />
-                    )}
-                  </div>
-                );
-              }),
-            )}
+                    aria-hidden="true"
+                  />
+                ))}
+              {grid.weeks.map((week, weekIndex) =>
+                week.map((day, dayIndex) => {
+                  const level = getIntensityLevel(day.count);
+
+                  return (
+                    <div
+                      key={day.dateKey}
+                      className="z-10 flex items-center justify-center"
+                      style={{
+                        gridColumn: weekIndex + 1,
+                        gridRow: dayIndex + 1,
+                      }}
+                    >
+                      {day.isInRange ? (
+                        <div
+                          className={`h-[11px] w-[11px] rounded-full border transition-[opacity,transform] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-125 hover:ring-2 hover:ring-emerald-200 ${getIntensityClass(
+                            level,
+                          )} ${
+                            isVisible || shouldReduceMotion
+                              ? "opacity-100 translate-y-0 scale-100"
+                              : "opacity-0 translate-y-1 scale-[0.85]"
+                          }`}
+                          style={{
+                            transitionDelay: shouldReduceMotion
+                              ? "0ms"
+                              : `${
+                                  LEVEL_REVEAL_DELAYS[level] +
+                                  Math.min((weekIndex + dayIndex) * 3, 60)
+                                }ms`,
+                          }}
+                          title={`${formatDateLabel(day.date)}: ${day.count} XP`}
+                          aria-label={`${formatDateLabel(day.date)}: ${day.count} XP`}
+                        />
+                      ) : (
+                        <div className="h-[11px] w-[11px]" aria-hidden="true" />
+                      )}
+                    </div>
+                  );
+                }),
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="mt-3 flex flex-col gap-2 border-t border-slate-200 pt-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[11px] font-medium text-slate-500">
-          Learn how we count study activity
+        <p className="text-[12px] font-medium text-slate-500">
+          Learn how we count study activity and XP
         </p>
         <ActivityLegend />
       </div>
+      <ActivityScoringGuide />
     </div>
   );
 }
 
 export function StudyActivityHeatmap({
+  data,
   animationReady = true,
 }: {
+  data: HeatmapDataPoint[];
   animationReady?: boolean;
 }) {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -758,10 +826,13 @@ export function StudyActivityHeatmap({
   const isVisible =
     shouldReduceMotion || (animationReady && hasEnteredViewport);
   const dateRange = useMemo(() => getDateRange(today), [today]);
-  const contributionData = useMemo(
-    () => generateMockContributionData(dateRange.startDate, dateRange.endDate),
-    [dateRange],
-  );
+  const contributionData = useMemo(() => {
+    return data.reduce<Record<string, number>>((accumulator, item) => {
+      accumulator[item.date] = item.count;
+
+      return accumulator;
+    }, {});
+  }, [data]);
   const grid = useMemo(
     () =>
       buildContributionGrid(
@@ -853,7 +924,7 @@ export function StudyActivityHeatmap({
     >
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="text-[21px] font-black tracking-tight text-slate-950">
+          <h2 className="text-[22px] font-semibold tracking-tight text-slate-950">
             Study Activity
           </h2>
           <p className="mt-1 text-[13px] font-medium text-slate-500">

@@ -826,7 +826,15 @@ export default function AIAssistantPage() {
   return (
     <div className="mx-auto flex h-[calc(100vh-8rem)] max-w-7xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/76 shadow-soft-lg backdrop-blur-xl animate-fade-in-up">
       {resourceToast && (
-        <div className="fixed right-5 top-5 z-50 w-[calc(100vw-2.5rem)] max-w-sm rounded-3xl border border-border bg-white/90 p-4 shadow-soft-lg backdrop-blur-xl animate-slide-up">
+        <div className="fixed right-5 top-5 z-50 w-[calc(100vw-2.5rem)] max-w-md rounded-3xl border border-border bg-white/90 p-5 pr-12 shadow-soft-lg backdrop-blur-xl animate-slide-up">
+          <button
+            type="button"
+            onClick={() => setResourceToast(null)}
+            className="absolute right-3 top-3 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            aria-label="Close notification"
+          >
+            <X className="h-4 w-4" />
+          </button>
           <div className="flex items-start gap-3">
             <div
               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
@@ -857,14 +865,6 @@ export default function AIAssistantPage() {
                 </a>
               )}
             </div>
-            <button
-              type="button"
-              onClick={() => setResourceToast(null)}
-              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200"
-              aria-label="Close notification"
-            >
-              <X className="h-4 w-4" />
-            </button>
           </div>
         </div>
       )}

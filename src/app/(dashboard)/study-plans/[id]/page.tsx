@@ -4,6 +4,7 @@ import { useState, useEffect, use, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Calendar,
@@ -210,8 +211,20 @@ export default function PlanDetailPage({
   const handleTogglePlanStatus = async () => {
     if (!plan || isUpdating) return;
 
-    setIsUpdating(true);
     const nextIsCompleted = !plan.isCompleted;
+
+    if (
+      nextIsCompleted &&
+      guideItems.length > 0 &&
+      completedGuideCount < guideItems.length
+    ) {
+      toast.warning(
+        `Complete all plan guide steps first (${completedGuideCount}/${guideItems.length}).`,
+      );
+      return;
+    }
+
+    setIsUpdating(true);
 
     try {
       const res = await fetch(`/api/study-plans/${planId}`, {
