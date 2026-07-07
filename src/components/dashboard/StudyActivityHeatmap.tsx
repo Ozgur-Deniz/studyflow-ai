@@ -56,7 +56,6 @@ const MONTH_LABELS = [
   "Nov",
   "Dec",
 ];
-const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const LEGEND_LEVELS: IntensityLevel[] = [
   "none",
   "low",
@@ -294,18 +293,22 @@ function getLongestStreak(days: ContributionDay[]): number {
 }
 
 function getMostActiveDay(days: ContributionDay[]): string {
-  const totalsByWeekday = WEEKDAY_NAMES.map((label) => ({
-    label,
-    total: 0,
-  }));
+  const mostActiveDay = days.reduce<ContributionDay | null>((currentMost, day) => {
+    if (!currentMost || day.count > currentMost.count) {
+      return day;
+    }
 
-  days.forEach((day) => {
-    totalsByWeekday[day.date.getDay()].total += day.count;
-  });
+    return currentMost;
+  }, null);
 
-  return totalsByWeekday.reduce((mostActive, weekday) =>
-    weekday.total > mostActive.total ? weekday : mostActive,
-  ).label;
+  if (!mostActiveDay || mostActiveDay.count === 0) {
+    return "No activity";
+  }
+
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+  }).format(mostActiveDay.date);
 }
 
 function calculateStats(days: ContributionDay[]): StudyStat[] {

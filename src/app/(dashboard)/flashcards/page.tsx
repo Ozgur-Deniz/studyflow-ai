@@ -359,32 +359,37 @@ function FlashcardsContent() {
               <button
                 type="button"
                 onClick={() => setIsFlipped((current) => !current)}
-                className="group h-80 w-full max-w-xl cursor-pointer [perspective:1400px]"
+                className="group h-80 w-full max-w-xl cursor-pointer rounded-[2rem] text-left [perspective:1400px] focus:outline-none focus:ring-4 focus:ring-primary/10"
                 aria-label="Flip flashcard"
               >
                 <div
                   key={currentCard?.id}
-                  className={`relative h-full w-full animate-scale-in transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] [transform-style:preserve-3d] ${
-                    isFlipped
-                      ? "[transform:rotateY(180deg)] group-hover:[transform:translateY(-0.5rem)_rotateY(180deg)]"
-                      : "group-hover:[transform:translateY(-0.5rem)]"
-                  }`}
+                  className="h-full w-full animate-scale-in transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-2"
                 >
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-soft-lg backdrop-blur [backface-visibility:hidden]">
-                    <div className="absolute left-6 top-6 rounded-full border border-border bg-surface-muted px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-muted">
-                      Front
+                  <div
+                    className="relative h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] [transform-style:preserve-3d]"
+                    style={{
+                      transform: isFlipped
+                        ? "rotateY(180deg)"
+                        : "rotateY(0deg)",
+                    }}
+                  >
+                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-soft-lg backdrop-blur [backface-visibility:hidden]">
+                      <div className="absolute left-6 top-6 rounded-full border border-border bg-surface-muted px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-muted">
+                        Front
+                      </div>
+                      <p className="max-w-md text-2xl font-black leading-9 tracking-tight text-foreground">
+                        {currentCard?.frontText}
+                      </p>
                     </div>
-                    <p className="max-w-md text-2xl font-black leading-9 tracking-tight text-foreground">
-                      {currentCard?.frontText}
-                    </p>
-                  </div>
-                  <div className="absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-primary/20 bg-primary-soft p-10 text-center text-primary shadow-soft-lg [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                    <div className="absolute left-6 top-6 rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-primary">
-                      Back
+                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-primary/20 bg-primary-soft p-10 text-center text-primary shadow-soft-lg [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                      <div className="absolute left-6 top-6 rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-primary">
+                        Back
+                      </div>
+                      <p className="max-w-md text-xl font-extrabold leading-8">
+                        {currentCard?.backText}
+                      </p>
                     </div>
-                    <p className="max-w-md text-xl font-extrabold leading-8">
-                      {currentCard?.backText}
-                    </p>
                   </div>
                 </div>
               </button>
@@ -394,7 +399,7 @@ function FlashcardsContent() {
                   type="button"
                   onClick={goToPreviousCard}
                   disabled={isFirstCard}
-                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-black text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-black text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous Card
@@ -409,7 +414,7 @@ function FlashcardsContent() {
 
                     void goToNextCard();
                   }}
-                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isLastCard ? "Complete Deck" : "Next Card"}
                   <ChevronRight className="h-4 w-4" />

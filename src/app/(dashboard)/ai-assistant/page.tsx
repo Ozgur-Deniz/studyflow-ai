@@ -859,7 +859,7 @@ export default function AIAssistantPage() {
               {resourceToast.href && resourceToast.actionLabel && (
                 <a
                   href={resourceToast.href}
-                  className="mt-3 inline-flex h-9 items-center justify-center rounded-full bg-foreground px-4 text-xs font-black text-white shadow-soft-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
+                  className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-primary/20 bg-white px-4 text-xs font-black text-primary shadow-soft-sm transition-all duration-200 hover:scale-[1.02] hover:bg-primary-soft hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
                 >
                   {resourceToast.actionLabel}
                 </a>
