@@ -400,6 +400,139 @@ input.ai-chat-input:focus {
   box-shadow: 0 0 20px rgba(91, 92, 246, 0.35);
 }
 
+.Toastify__toast-container {
+  width: min(420px, calc(100vw - 2rem)) !important;
+  padding: 0;
+}
+
+.studyflow-toast.Toastify__toast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 64px;
+  margin-bottom: 0.75rem;
+  padding: 0.875rem 2.75rem 0.875rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 20px 60px -20px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  color: var(--foreground);
+  font-family: var(--font-studyflow);
+}
+
+/* Success variant — left accent border */
+.studyflow-toast.Toastify__toast--success {
+  border-left: 3px solid var(--success);
+}
+
+/* Error variant */
+.studyflow-toast.Toastify__toast--error {
+  border-left: 3px solid var(--danger);
+}
+
+/* Warning variant */
+.studyflow-toast.Toastify__toast--warning {
+  border-left: 3px solid var(--warning);
+}
+
+/* Info variant */
+.studyflow-toast.Toastify__toast--info {
+  border-left: 3px solid var(--primary);
+}
+
+
+.studyflow-toast .Toastify__toast-body {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0.625rem;
+  align-items: center;
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.studyflow-toast .Toastify__toast-body > div:last-child {
+  min-width: 0;
+  color: #1e293b;
+  font-weight: 700;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.studyflow-toast .Toastify__toast-icon {
+  width: 1.25rem;
+  min-width: 1.25rem;
+  margin-inline-end: 0;
+}
+
+.studyflow-toast .Toastify__toast-icon svg {
+  fill: currentColor;
+}
+
+.studyflow-toast.Toastify__toast--success .Toastify__toast-icon {
+  color: var(--success);
+}
+
+.studyflow-toast.Toastify__toast--error .Toastify__toast-icon {
+  color: var(--danger);
+}
+
+.studyflow-toast.Toastify__toast--warning .Toastify__toast-icon {
+  color: var(--warning);
+}
+
+.studyflow-toast.Toastify__toast--info .Toastify__toast-icon {
+  color: var(--primary);
+}
+
+.studyflow-toast .Toastify__close-button {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  display: flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--subtle);
+  cursor: pointer;
+  opacity: 1;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.studyflow-toast .Toastify__close-button:hover {
+  background: var(--surface-muted);
+  color: var(--muted);
+  transform: scale(1.05);
+}
+
+.studyflow-toast .Toastify__close-button > svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.studyflow-toast-progress.Toastify__progress-bar,
+.Toastify__progress-bar {
+  display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

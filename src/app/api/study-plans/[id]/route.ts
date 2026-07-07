@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest, AuthError } from "@/lib/auth";
+import { awardFixedXp } from "@/lib/xp";
 
 export async function GET(
   request: NextRequest,
@@ -58,6 +59,20 @@ export async function PUT(
       nextIsCompleted = true;
     }
 
+    const currentPlan = await prisma.studyPlan.findFirst({
+      where: {
+        id: planId,
+        userId,
+      },
+      select: {
+        isCompleted: true,
+      },
+    });
+
+    if (!currentPlan) {
+      return NextResponse.json({ message: "Plan not found." }, { status: 404 });
+    }
+
     const updatedPlan = await prisma.studyPlan.update({
       where: {
         id: planId,
@@ -67,6 +82,10 @@ export async function PUT(
         isCompleted: nextIsCompleted,
       },
     });
+
+    if (!currentPlan.isCompleted && updatedPlan.isCompleted) {
+      await awardFixedXp(userId, "STUDY_PLAN_COMPLETED");
+    }
 
     console.log(
       `[Plan Detail API] Plan "${updatedPlan.title}" status updated to ${

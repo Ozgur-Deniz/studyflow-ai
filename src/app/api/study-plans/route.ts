@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest, AuthError } from "@/lib/auth";
+import { awardFixedXp } from "@/lib/xp";
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
         isCompleted: false,
       },
     });
+    await awardFixedXp(userId, "STUDY_PLAN_CREATED");
 
     console.log(
       `[Study Plans API] Study plan "${newPlan.title}" successfully created in database for user: ${userId}`,

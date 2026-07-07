@@ -52,6 +52,12 @@ function FlashcardsContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generateTopic, setGenerateTopic] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [reviewedCardIds, setReviewedCardIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [completedDeckIds, setCompletedDeckIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
 
   const currentCards = useMemo(() => getDeckCards(selectedDeck), [selectedDeck]);
@@ -158,6 +164,44 @@ function FlashcardsContent() {
     }
   };
 
+  const recordFlashcardActivity = async (
+    actionType: "FLASHCARD_REVIEWED" | "FLASHCARD_DECK_COMPLETED",
+    deckId: string,
+  ) => {
+    try {
+      await fetch("/api/flashcards/activity", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          actionType,
+          deckId,
+        }),
+      });
+    } catch (activityError) {
+      console.error("Failed to record flashcard activity:", activityError);
+    }
+  };
+
+  const recordCurrentCardReview = async () => {
+    if (!selectedDeck || !currentCard || reviewedCardIds.has(currentCard.id)) {
+      return;
+    }
+
+    setReviewedCardIds((currentIds) => new Set(currentIds).add(currentCard.id));
+    await recordFlashcardActivity("FLASHCARD_REVIEWED", selectedDeck.id);
+  };
+
+  const recordDeckCompletion = async () => {
+    if (!selectedDeck || completedDeckIds.has(selectedDeck.id)) {
+      return;
+    }
+
+    setCompletedDeckIds((currentIds) => new Set(currentIds).add(selectedDeck.id));
+    await recordFlashcardActivity("FLASHCARD_DECK_COMPLETED", selectedDeck.id);
+  };
+
   const goToPreviousCard = () => {
     if (currentCards.length === 0 || currentCardIndex === 0) {
       return;
@@ -167,7 +211,7 @@ function FlashcardsContent() {
     setIsFlipped(false);
   };
 
-  const goToNextCard = () => {
+  const goToNextCard = async () => {
     if (
       currentCards.length === 0 ||
       currentCardIndex >= currentCards.length - 1
@@ -175,10 +219,20 @@ function FlashcardsContent() {
       return;
     }
 
+    await recordCurrentCardReview();
     setCurrentCardIndex((currentIndex) =>
       Math.min(currentCards.length - 1, currentIndex + 1),
     );
     setIsFlipped(false);
+  };
+
+  const completeDeck = async () => {
+    if (!selectedDeck || currentCards.length === 0) {
+      return;
+    }
+
+    await recordCurrentCardReview();
+    await recordDeckCompletion();
   };
 
   return (
@@ -347,11 +401,17 @@ function FlashcardsContent() {
                 </button>
                 <button
                   type="button"
-                  onClick={goToNextCard}
-                  disabled={isLastCard}
+                  onClick={() => {
+                    if (isLastCard) {
+                      void completeDeck();
+                      return;
+                    }
+
+                    void goToNextCard();
+                  }}
                   className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Next Card
+                  {isLastCard ? "Complete Deck" : "Next Card"}
                   <ChevronRight className="h-4 w-4" />
                 </button>
               </div>

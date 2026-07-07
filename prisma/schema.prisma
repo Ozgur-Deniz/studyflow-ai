@@ -16,7 +16,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations 
   studyPlans     StudyPlan[]
   sessions       StudySession[]
   conversations  Conversation[]
@@ -30,7 +29,6 @@ model StudyPlan {
   description String?
   isCompleted Boolean @default(false)
 
-  // User Relation
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -39,25 +37,24 @@ model StudyPlan {
 }
 
 model StudySession {
-  id       String   @id @default(cuid())
-  duration Float // Toplam çalışma saati (örn: 1.5 saat)
-  date     DateTime @default(now())
+  id              String   @id @default(uuid())
+  userId          String
+  actionType      String
+  points          Int
+  durationMinutes Int      @default(0)
+  createdAt       DateTime @default(now())
 
-  // User Relation
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Conversation {
   id    String  @id @default(cuid())
-  title String? // AI'ın sohbete otomatik vereceği başlık
+  title String?
 
-  // User Relation
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Message Relation
-  messages Message[]
+  messages       Message[]
   flashcardDecks FlashcardDeck[]
   quizzes        Quiz[]
 
@@ -68,9 +65,8 @@ model Conversation {
 model Message {
   id      String @id @default(cuid())
   content String @db.Text
-  role    String // Sadece "USER" veya "AI" değerlerini alacak
+  role    String
 
-  // Conversation Relation
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 

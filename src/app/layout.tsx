@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,6 +36,14 @@ export default function RootLayout({
     <html lang="en" className="h-full bg-background antialiased">
       <body className="min-h-full bg-background font-sans text-foreground selection:bg-primary/15">
         {children}
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          theme="light"
+          closeOnClick={false}
+          hideProgressBar
+          toastClassName="studyflow-toast"
+        />
       </body>
     </html>
   );

@@ -7,8 +7,13 @@ export async function GET(request: NextRequest) {
     const userId = await getUserIdFromRequest(request);
 
     // Fetch all stats in parallel for performance
-    const [activePlansCount, conversationsCount, sessionsAggr, flashcardDecksCount, quizzesCount] =
-      await Promise.all([
+    const [
+      activePlansCount,
+      conversationsCount,
+      sessionsAggr,
+      flashcardDecksCount,
+      quizzesCount,
+    ] = await Promise.all([
         prisma.studyPlan.count({
           where: { userId, isCompleted: false },
         }),
@@ -16,7 +21,7 @@ export async function GET(request: NextRequest) {
           where: { userId },
         }),
         prisma.studySession.aggregate({
-          _sum: { duration: true },
+          _sum: { durationMinutes: true },
           where: { userId },
         }),
         prisma.flashcardDeck.count({
@@ -27,7 +32,8 @@ export async function GET(request: NextRequest) {
         }),
       ]);
 
-    const totalStudyHours = sessionsAggr._sum.duration || 0;
+    const totalStudyMinutes = sessionsAggr._sum.durationMinutes || 0;
+    const totalStudyHours = Math.round((totalStudyMinutes / 60) * 10) / 10;
 
     const statsData = {
       activeStudyPlans: activePlansCount,
