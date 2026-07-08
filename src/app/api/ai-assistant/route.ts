@@ -10,7 +10,7 @@ const DEFAULT_CHAT_MODEL = "gemini-3.5-flash";
 const FALLBACK_CHAT_MODEL = "gemini-3.1-flash-lite";
 
 const SYSTEM_INSTRUCTION =
-  "You are StudyFlow AI, a helpful, focused, and supportive study assistant. Provide clear, practical, and accurate guidance for learning, planning, and studying.";
+  "Sen StudyFlow-AI platformunun üst düzey, analitik ve akademik çalışma asistanısın. Görevin, kullanıcının verdiği konuyu veya PDF metnini en ince ayrıntısına kadar incelemek ve yüzeysel, genel geçer cevaplardan kaçınmaktır. Eğer sana bir metin/PDF verildiyse, cevaplarını SADECE bu metne dayandır, halüsinasyon yapma. Açıklamalarını yapılandırılmış şekilde sun (başlıklar, maddeler, adım adım mantık yürütme). Gerçek hayattan ufuk açıcı örnekler ver ve cevabının en sonunda daima kullanıcının konuyu daha derinlemesine düşünmesini sağlayacak tek bir Sokratik/yönlendirici soru sor.";
 
 const formatActiveStudyPlans = (
   plans: Array<{ title: string; description: string | null }>,
@@ -108,6 +108,11 @@ const startGeminiChatStream = async ({
   const model = genAI.getGenerativeModel({
     model: modelName,
     systemInstruction,
+    generationConfig: {
+      temperature: 0.5,
+      topP: 0.8,
+      topK: 40,
+    },
   });
   const chat = model.startChat();
 
@@ -269,9 +274,9 @@ export async function POST(request: NextRequest) {
     });
     await awardFixedXp(userId, "AI_MESSAGE_SENT");
 
-    const systemInstructionWithContext = `${SYSTEM_INSTRUCTION}
+    const messageWithContext = `Here are the user's current active study plans from the database: ${activePlansContext}. Use this context to provide personalized advice when the user asks about what to study, their progress, or their schedule. Do not list the plans automatically unless specifically asked, just be aware of them.
 
-Here are the user's current active study plans from the database: ${activePlansContext}. Use this context to provide personalized advice when the user asks about what to study, their progress, or their schedule. Do not list the plans automatically unless specifically asked, just be aware of them.`;
+User message: ${message}`;
 
     const geminiRequestParts: Array<string | Part> = uploadedFile
       ? [
@@ -283,12 +288,12 @@ Here are the user's current active study plans from the database: ${activePlansC
             },
           },
         ]
-      : [message];
+      : [messageWithContext];
 
     try {
       const result = await startGeminiChatStream({
         modelName: requestedModel,
-        systemInstruction: systemInstructionWithContext,
+        systemInstruction: SYSTEM_INSTRUCTION,
         parts: geminiRequestParts,
       });
 
@@ -312,7 +317,7 @@ Here are the user's current active study plans from the database: ${activePlansC
       try {
         const fallbackResult = await startGeminiChatStream({
           modelName: FALLBACK_CHAT_MODEL,
-          systemInstruction: systemInstructionWithContext,
+          systemInstruction: SYSTEM_INSTRUCTION,
           parts: geminiRequestParts,
         });
 

@@ -1,6 +1,17 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  USER_AVATAR_CHANGE_EVENT,
+  USER_AVATAR_STORAGE_KEY,
+  createAvatarSvg,
+  getAvatarOption,
+} from "@/lib/avatar";
+
 interface UserAvatarProps {
   initial: string;
   name?: string;
+  avatarId?: string | null;
   size?: "sm" | "md";
   showName?: boolean;
   showOnlineDot?: boolean;
@@ -9,21 +20,71 @@ interface UserAvatarProps {
 export function UserAvatar({
   initial,
   name,
+  avatarId,
   size = "sm",
   showName = true,
   showOnlineDot = true,
 }: UserAvatarProps) {
   const isMd = size === "md";
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!avatarId) {
+      return;
+    }
+
+    const nextAvatarId = getAvatarOption(avatarId).id;
+    const animationFrameId = window.requestAnimationFrame(() => {
+      setSelectedAvatar(nextAvatarId);
+      window.localStorage.setItem(USER_AVATAR_STORAGE_KEY, nextAvatarId);
+    });
+
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [avatarId]);
+
+  useEffect(() => {
+    const syncAvatar = () => {
+      const savedAvatar = window.localStorage.getItem(USER_AVATAR_STORAGE_KEY);
+      setSelectedAvatar(savedAvatar ? getAvatarOption(savedAvatar).id : null);
+    };
+
+    const handleAvatarChange = (event: Event) => {
+      const avatarEvent = event as CustomEvent<{ avatarId?: string }>;
+      setSelectedAvatar(
+        avatarEvent.detail?.avatarId
+          ? getAvatarOption(avatarEvent.detail.avatarId).id
+          : null,
+      );
+    };
+
+    syncAvatar();
+    window.addEventListener("storage", syncAvatar);
+    window.addEventListener(USER_AVATAR_CHANGE_EVENT, handleAvatarChange);
+
+    return () => {
+      window.removeEventListener("storage", syncAvatar);
+      window.removeEventListener(USER_AVATAR_CHANGE_EVENT, handleAvatarChange);
+    };
+  }, []);
 
   return (
     <div className="flex items-center gap-3">
       <div className="relative">
         <div
-          className={`${
+          className={`overflow-hidden ${
             isMd ? "w-10 h-10 text-[14px]" : "w-9 h-9 text-xs"
           } rounded-full bg-gradient-to-br from-[#6366f1] via-[#8b5cf6] to-[#a855f7] flex items-center justify-center text-white font-bold shadow-md shadow-indigo-200 animate-gradient`}
         >
-          {initial}
+          {selectedAvatar ? (
+            <div
+              className="h-full w-full [&>svg]:h-full [&>svg]:w-full"
+              dangerouslySetInnerHTML={{
+                __html: createAvatarSvg(selectedAvatar),
+              }}
+            />
+          ) : (
+            initial
+          )}
         </div>
         {showOnlineDot && (
           <span

@@ -38,7 +38,11 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         message: "User successfully created!",
-        user: { id: newUser.id, email: newUser.email },
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          avatarId: newUser.avatarId,
+        },
       },
       { status: 201 },
     );

@@ -55,10 +55,10 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
           <Sparkles className="text-[#6366f1]" size={22} />
         </div>
         <div>
-          <h2 className="text-[18px] font-extrabold text-[#0f172a] tracking-tight mb-0.5">
+          <h2 className="text-xl font-semibold text-[#0f172a] tracking-tight mb-0.5">
             Generate New Plan
           </h2>
-          <p className="text-[13px] font-medium text-[#64748b]">
+          <p className="text-sm font-medium text-[#64748b]">
             Tell AI what you want to achieve, and get a structured roadmap.
           </p>
         </div>
@@ -66,7 +66,7 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
 
       <form onSubmit={handleGeneratePlan} className="space-y-6">
         <div className="space-y-2.5">
-          <label className="text-[13px] font-bold text-[#0f172a] flex items-center gap-2">
+          <label className="text-sm font-medium text-[#0f172a] flex items-center gap-2">
             <Target size={16} className="text-[#6366f1]" /> What do you want to
             learn?
           </label>
@@ -81,7 +81,7 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
         </div>
 
         <div className="space-y-2.5">
-          <label className="text-[13px] font-bold text-[#0f172a] flex items-center gap-2">
+          <label className="text-sm font-medium text-[#0f172a] flex items-center gap-2">
             <Clock size={16} className="text-[#6366f1]" /> How much time do you
             have?
           </label>
@@ -99,7 +99,7 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
           <button
             type="submit"
             disabled={isGenerating}
-            className="group w-full py-4 px-4 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#7c3aed] hover:shadow-xl hover:shadow-indigo-200 text-white rounded-xl text-[14px] font-bold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
+            className="group w-full py-4 px-4 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#7c3aed] hover:shadow-xl hover:shadow-indigo-200 text-white rounded-xl text-[15px] font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
           >
             {isGenerating ? (
               <>

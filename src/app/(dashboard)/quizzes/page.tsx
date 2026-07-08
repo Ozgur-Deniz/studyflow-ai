@@ -70,7 +70,7 @@ const getOptionStyle = ({
   }
 
   if (isCorrectAnswer) {
-    return "border-emerald-300 bg-emerald-50 text-emerald-700 font-black";
+    return "border-emerald-300 bg-emerald-50 text-emerald-700 font-semibold";
   }
 
   return "border-border bg-white/80 text-slate-700";
@@ -342,11 +342,11 @@ function QuizzesContent() {
       <div className="mx-auto max-w-7xl animate-fade-in-up space-y-8">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-muted shadow-soft-sm">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1.5 text-sm font-medium uppercase tracking-[0.12em] text-muted shadow-soft-sm">
               <ClipboardList className="h-3.5 w-3.5 text-primary" />
               Recall Lab
             </div>
-            <h1 className="mb-2 text-4xl font-black tracking-tight text-foreground">
+            <h1 className="mb-2 text-4xl font-semibold tracking-tight text-foreground">
               Quizzes
             </h1>
             <p className="max-w-2xl text-sm font-medium leading-6 text-muted">
@@ -356,18 +356,18 @@ function QuizzesContent() {
           </div>
         </div>
 
-        <div className="grid min-h-[calc(100vh-14rem)] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white/75 shadow-soft-lg backdrop-blur-xl lg:grid-cols-[21rem_1fr]">
-          <aside className="border-b border-white/70 bg-surface/72 backdrop-blur lg:border-b-0 lg:border-r">
+        <div className="grid min-h-[34rem] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white/75 shadow-soft-lg backdrop-blur-xl lg:h-[calc(100vh-14rem)] lg:grid-cols-[21rem_1fr]">
+          <aside className="flex min-h-0 flex-col border-b border-white/70 bg-surface/72 backdrop-blur lg:border-b-0 lg:border-r">
             <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
               <div className="flex items-center gap-2">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                   <ClipboardList className="h-4 w-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-foreground">
+                  <h2 className="text-base font-semibold text-foreground">
                     Quiz Sets
                   </h2>
-                  <p className="text-xs font-bold text-muted">
+                  <p className="text-sm font-medium text-muted">
                     {quizzes.length} saved
                   </p>
                 </div>
@@ -378,21 +378,21 @@ function QuizzesContent() {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.015] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
+                className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.015] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
               >
                 <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-6" />
                 Generate Quiz
               </button>
             </div>
 
-            <div className="max-h-[22rem] space-y-2 overflow-y-auto p-4 lg:max-h-none">
+            <div className="max-h-[22rem] min-h-0 space-y-2 overflow-y-auto p-4 pr-3 [scrollbar-gutter:stable] lg:max-h-none lg:flex-1">
               {isLoading ? (
-                <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-muted px-4 py-3 text-sm font-bold text-muted">
+                <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-muted px-4 py-3 text-sm font-medium text-muted">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Loading quizzes...
                 </div>
               ) : error ? (
-                <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600">
+                <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
                   {error}
                 </div>
               ) : quizzes.length === 0 ? (
@@ -418,12 +418,12 @@ function QuizzesContent() {
                         className="w-full cursor-pointer px-4 py-3 pr-12 text-left"
                       >
                         <div className="flex min-w-0 items-start gap-2">
-                          <p className="min-w-0 flex-1 truncate text-sm font-black">
+                          <p className="min-w-0 flex-1 truncate text-base font-medium">
                             {quiz.title}
                           </p>
                           {quiz.isCompleted && (
                             <span
-                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.12em] ${
+                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium uppercase tracking-[0.1em] ${
                                 isSelected
                                   ? "bg-white/70 text-primary"
                                   : "bg-emerald-50 text-emerald-600"
@@ -435,7 +435,7 @@ function QuizzesContent() {
                           )}
                         </div>
                         <p
-                          className={`mt-1 text-xs font-bold ${
+                          className={`mt-1 text-sm font-medium ${
                             isSelected ? "text-primary" : "text-subtle"
                           }`}
                         >
@@ -466,13 +466,13 @@ function QuizzesContent() {
             </div>
           </aside>
 
-          <section className="flex min-h-[34rem] flex-col bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-5 py-8">
+          <section className="flex min-h-0 flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-5 py-8">
             {!selectedQuiz ? (
               <div className="m-auto max-w-md text-center">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-foreground text-white shadow-soft">
                   <ClipboardList className="h-6 w-6" />
                 </div>
-                <h2 className="text-2xl font-black tracking-tight text-foreground">
+                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                   Select a quiz
                 </h2>
                 <p className="mt-2 text-sm font-medium leading-6 text-muted">
@@ -481,7 +481,7 @@ function QuizzesContent() {
               </div>
             ) : selectedQuiz.questions.length === 0 ? (
               <div className="m-auto max-w-md text-center">
-                <h2 className="text-2xl font-black tracking-tight text-foreground">
+                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                   This quiz is empty
                 </h2>
                 <p className="mt-2 text-sm font-medium leading-6 text-muted">
@@ -493,10 +493,10 @@ function QuizzesContent() {
                 <div className="mb-6 rounded-[2rem] border border-white/80 bg-white/90 p-6 shadow-soft-lg backdrop-blur">
                   <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                     <div>
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-muted">
+                      <p className="text-sm font-medium uppercase tracking-[0.12em] text-muted">
                         Session Summary
                       </p>
-                      <h2 className="mt-2 text-3xl font-black tracking-tight text-foreground">
+                      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
                         {selectedQuiz.title}
                       </h2>
                     </div>
@@ -504,26 +504,26 @@ function QuizzesContent() {
 
                   <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <div className="rounded-3xl border border-emerald-100 bg-emerald-50/80 p-5 text-center shadow-soft-sm">
-                      <p className="text-3xl font-black text-emerald-700">
+                      <p className="text-3xl font-semibold text-emerald-700">
                         {results.correct}
                       </p>
-                      <p className="mt-1 text-xs font-black uppercase tracking-[0.14em] text-emerald-600">
+                      <p className="mt-1 text-sm font-medium uppercase tracking-[0.12em] text-emerald-600">
                         Correct
                       </p>
                     </div>
                     <div className="rounded-3xl border border-rose-100 bg-rose-50/80 p-5 text-center shadow-soft-sm">
-                      <p className="text-3xl font-black text-rose-700">
+                      <p className="text-3xl font-semibold text-rose-700">
                         {results.wrong}
                       </p>
-                      <p className="mt-1 text-xs font-black uppercase tracking-[0.14em] text-rose-600">
+                      <p className="mt-1 text-sm font-medium uppercase tracking-[0.12em] text-rose-600">
                         Wrong
                       </p>
                     </div>
                     <div className="rounded-3xl border border-border bg-surface-muted/80 p-5 text-center shadow-soft-sm">
-                      <p className="text-3xl font-black text-foreground">
+                      <p className="text-3xl font-semibold text-foreground">
                         {results.empty}
                       </p>
-                      <p className="mt-1 text-xs font-black uppercase tracking-[0.14em] text-muted">
+                      <p className="mt-1 text-sm font-medium uppercase tracking-[0.12em] text-muted">
                         Empty
                       </p>
                     </div>
@@ -540,11 +540,11 @@ function QuizzesContent() {
                         className="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-soft-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft"
                       >
                         <div className="flex gap-4">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-sm font-black text-primary">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-sm font-semibold text-primary">
                             {questionIndex + 1}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-base font-black leading-7 text-foreground">
+                            <h3 className="text-lg font-semibold leading-7 text-foreground">
                               {question.questionText}
                             </h3>
                             <div className="mt-4 space-y-2">
@@ -557,7 +557,7 @@ function QuizzesContent() {
                                 return (
                                   <div
                                     key={option}
-                                    className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm font-bold transition-colors duration-300 ${getOptionStyle(
+                                    className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-base font-medium transition-colors duration-300 ${getOptionStyle(
                                       {
                                         option,
                                         selectedAnswer,
@@ -589,7 +589,7 @@ function QuizzesContent() {
                     setIsFinished(false);
                     setCurrentQuestionIndex(0);
                   }}
-                  className="mt-6 h-12 rounded-full bg-foreground px-6 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10"
+                  className="mt-6 h-12 rounded-full bg-foreground px-6 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10"
                 >
                   Back to Quiz
                 </button>
@@ -597,7 +597,7 @@ function QuizzesContent() {
             ) : (
               <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center">
                 <div className="mb-6">
-                  <h2 className="text-3xl font-black tracking-tight text-foreground">
+                  <h2 className="text-3xl font-semibold tracking-tight text-foreground">
                     {selectedQuiz.title}
                   </h2>
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-muted">
@@ -608,7 +608,7 @@ function QuizzesContent() {
                       }}
                     />
                   </div>
-                  <p className="mt-3 text-sm font-bold text-muted">
+                  <p className="mt-3 text-base font-medium text-muted">
                     Question {currentQuestionIndex + 1} of {questions.length}
                   </p>
                 </div>
@@ -617,7 +617,7 @@ function QuizzesContent() {
                   key={currentQuestion?.id}
                   className="animate-slide-up rounded-[2rem] border border-white/80 bg-white/90 p-6 shadow-soft-lg backdrop-blur"
                 >
-                  <h3 className="text-xl font-black leading-8 tracking-tight text-foreground">
+                  <h3 className="text-xl font-semibold leading-8 tracking-tight text-foreground">
                     {currentQuestion?.questionText}
                   </h3>
                   <div className="mt-6 space-y-3">
@@ -632,7 +632,7 @@ function QuizzesContent() {
                           onClick={() =>
                             selectAnswer(currentQuestion.id, option)
                           }
-                          className={`w-full rounded-2xl border px-4 py-3 text-left text-sm font-bold transition-all duration-300 ${
+                          className={`w-full rounded-2xl border px-4 py-3 text-left text-base font-medium transition-all duration-300 ${
                             isSelected
                               ? "border-primary/25 bg-primary-soft text-primary shadow-soft-sm"
                               : "border-border bg-white/90 text-slate-700 hover:-translate-y-0.5 hover:border-primary/15 hover:bg-white hover:shadow-soft-sm"
@@ -650,7 +650,7 @@ function QuizzesContent() {
                     type="button"
                     onClick={goToPreviousQuestion}
                     disabled={isFirstQuestion}
-                    className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-black text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous Question
@@ -661,7 +661,7 @@ function QuizzesContent() {
                       type="button"
                       onClick={() => void handleFinishQuiz()}
                       disabled={completingQuizId === selectedQuiz.id}
-                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {completingQuizId === selectedQuiz.id ? (
                         <>
@@ -679,7 +679,7 @@ function QuizzesContent() {
                     <button
                       type="button"
                       onClick={goToNextQuestion}
-                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10"
                     >
                       Next Question
                       <ChevronRight className="h-4 w-4" />
@@ -700,7 +700,7 @@ function QuizzesContent() {
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-lg font-black tracking-tight text-foreground">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground">
                   Generate Quiz with AI
                 </h2>
                 <p className="mt-1 text-sm font-medium leading-6 text-muted">
@@ -714,7 +714,7 @@ function QuizzesContent() {
               <div>
                 <label
                   htmlFor="quiz-topic"
-                  className="mb-2 block text-sm font-black text-foreground"
+                  className="mb-2 block text-base font-medium text-foreground"
                 >
                   Topic
                 </label>
@@ -732,14 +732,14 @@ function QuizzesContent() {
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isGenerating}
-                  className="h-10 rounded-full border border-border bg-white px-4 text-sm font-black text-muted transition hover:bg-surface-muted focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-10 rounded-full border border-border bg-white px-4 text-sm font-medium text-muted transition hover:bg-surface-muted focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!generateTopic.trim() || isGenerating}
-                  className="flex h-10 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-black text-white shadow-soft-sm transition hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-10 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-semibold text-white shadow-soft-sm transition hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isGenerating ? "Generating Quiz..." : "Generate Quiz"}

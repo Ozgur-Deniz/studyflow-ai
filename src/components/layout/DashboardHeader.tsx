@@ -1,18 +1,9 @@
 "use client";
 
-import { Search, Bell, ChevronDown } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { PomodoroTimer } from "./PomodoroTimer";
-import { UserAvatar } from "../ui/UserAvatar";
 
-interface DashboardHeaderProps {
-  userName: string;
-  userInitial: string;
-}
-
-export function DashboardHeader({
-  userName,
-  userInitial,
-}: DashboardHeaderProps) {
+export function DashboardHeader() {
   return (
     <header className="h-[72px] bg-white/80 backdrop-blur-xl border-b border-[#e2e8f0] flex items-center justify-between px-8 shrink-0 animate-fade-in">
       {/* Search Bar */}
@@ -46,18 +37,6 @@ export function DashboardHeader({
         <div className="w-px h-9 bg-[#e2e8f0]" />
 
         <PomodoroTimer />
-
-        {/* User Profile */}
-        <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f1f5f9] rounded-xl px-3 py-2 transition-all duration-300">
-          <UserAvatar
-            initial={userInitial}
-            name={userName}
-            size="md"
-            showName={true}
-            showOnlineDot={true}
-          />
-          <ChevronDown size={14} className="text-[#94a3b8] hidden lg:block" />
-        </div>
       </div>
     </header>
   );
