@@ -1,4 +1,9 @@
-import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  SchemaType,
+  type Part,
+  type Schema,
+} from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest, AuthError } from "@/lib/auth";
@@ -6,14 +11,52 @@ import { awardFixedXp } from "@/lib/xp";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
+const SYSTEM_INSTRUCTION =
+  "Sen zorlu ve ölçücü sınavlar hazırlayan uzman bir eğitim tasarımcısısın. Amacın ezbere dayalı değil, analitik düşünmeyi gerektiren çalışma materyalleri üretmektir. Sadece 'Kavram - Tanım' eşleştirmesi yapma, konuları senaryolaştırarak sor. Çeldirici şıklar (yanlış cevaplar) çok güçlü ve mantıklı olmalıdır. Her doğru cevabın yanına mutlaka 'Neden bu doğru?' açıklamasını (explanation) ekle. İçeriği SADECE verilen PDF'e veya spesifik konuya sınırla.";
+
 interface QuizPayload {
   title: string;
   questions: Array<{
     questionText: string;
     options: string[];
     correctAnswer: string;
+    explanation: string;
   }>;
 }
+
+const quizResponseSchema: Schema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    title: {
+      type: SchemaType.STRING,
+    },
+    questions: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          questionText: {
+            type: SchemaType.STRING,
+          },
+          options: {
+            type: SchemaType.ARRAY,
+            items: {
+              type: SchemaType.STRING,
+            },
+          },
+          correctAnswer: {
+            type: SchemaType.STRING,
+          },
+          explanation: {
+            type: SchemaType.STRING,
+          },
+        },
+        required: ["questionText", "options", "correctAnswer", "explanation"],
+      },
+    },
+  },
+  required: ["title", "questions"],
+};
 
 const extractInlineFileData = (file: string) => {
   return {
@@ -68,6 +111,10 @@ const parseQuizPayload = (value: unknown): QuizPayload | null => {
           typeof question.correctAnswer === "string"
             ? question.correctAnswer.trim()
             : "",
+        explanation:
+          typeof question.explanation === "string"
+            ? question.explanation.trim()
+            : "",
       };
     })
     .filter(
@@ -75,6 +122,7 @@ const parseQuizPayload = (value: unknown): QuizPayload | null => {
         question.questionText.length > 0 &&
         question.options.length === 4 &&
         question.correctAnswer.length > 0 &&
+        question.explanation.length > 0 &&
         question.options.includes(question.correctAnswer),
     );
 
@@ -120,7 +168,7 @@ export async function POST(request: NextRequest) {
     const topic = body.topic.trim();
     const sourceName = getOptionalString(body.sourceName);
     const conversationId = getOptionalString(body.conversationId);
-    const prompt = `You are an expert educator. Based on the given topic or attached document, create a 5-question multiple-choice quiz for the student. Each question must have 4 options. Return JSON exactly in this structure: { "title": "Quiz Title", "questions": [ { "questionText": "Question text...", "options": ["Option A", "Option B", "Option C", "Option D"], "correctAnswer": "The full text of the correct option" } ] }
+    const prompt = `Create a 5-question multiple-choice quiz for the student. Each question must be scenario-based and require analytical thinking. Each question must have 4 strong, plausible options. Return JSON exactly in this structure: { "title": "Quiz Title", "questions": [ { "questionText": "Scenario-based question text...", "options": ["Option A", "Option B", "Option C", "Option D"], "correctAnswer": "The full text of the correct option", "explanation": "Neden bu doğru? ..." } ] }
 
 Topic: ${topic}
 
@@ -138,8 +186,12 @@ Your response must be valid JSON only. Do not include Markdown, explanations, or
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
+      systemInstruction: SYSTEM_INSTRUCTION,
       generationConfig: {
+        temperature: 0.2,
+        topP: 0.8,
         responseMimeType: "application/json",
+        responseSchema: quizResponseSchema,
       },
     });
 

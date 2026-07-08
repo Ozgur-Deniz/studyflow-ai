@@ -14,6 +14,7 @@ export default function DashboardLayout({
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [userName, setUserName] = useState("");
   const [userInitial, setUserInitial] = useState("U");
+  const [userAvatarId, setUserAvatarId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -23,6 +24,9 @@ export default function DashboardLayout({
           const data = await response.json();
           setUserName(data.user.name);
           setUserInitial(data.user.name?.charAt(0)?.toUpperCase() || "U");
+          setUserAvatarId(
+            typeof data.user.avatarId === "string" ? data.user.avatarId : null,
+          );
         }
       } catch (error) {
         console.error("[Layout] Session fetch error:", error);
@@ -52,12 +56,13 @@ export default function DashboardLayout({
       <Sidebar
         userName={userName}
         userInitial={userInitial}
+        userAvatarId={userAvatarId}
         onLogout={handleLogout}
         isLoggingOut={isLoggingOut}
       />
 
       <main className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader userName={userName} userInitial={userInitial} />
+        <DashboardHeader />
         <div className="flex-1 overflow-auto p-8">{children}</div>
       </main>
     </div>

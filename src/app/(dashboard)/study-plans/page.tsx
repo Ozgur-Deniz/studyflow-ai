@@ -14,7 +14,7 @@ export default function StudyPlansPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-fade-in-up">
       <div>
-        <h1 className="text-3xl font-bold text-[#0f172a] mb-2 tracking-tight">
+        <h1 className="text-3xl font-semibold text-[#0f172a] mb-2 tracking-tight">
           Study Plans
         </h1>
         <p className="text-[#64748b]">

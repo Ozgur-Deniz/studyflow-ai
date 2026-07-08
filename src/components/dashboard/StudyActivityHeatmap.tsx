@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 
 type IntensityLevel = "none" | "low" | "moderate" | "high" | "very-high";
 
@@ -314,6 +321,9 @@ function getMostActiveDay(days: ContributionDay[]): string {
 function calculateStats(days: ContributionDay[]): StudyStat[] {
   const totalPoints = days.reduce((total, day) => total + day.count, 0);
   const activeDays = days.filter((day) => day.count > 0);
+  const todayKey = getDateKey(new Date());
+  const todayPoints =
+    days.find((day) => day.dateKey === todayKey)?.count ?? 0;
   const averageDailyPoints =
     activeDays.length > 0 ? Math.round(totalPoints / activeDays.length) : 0;
   const peakDailyPoints = days.reduce(
@@ -325,6 +335,10 @@ function calculateStats(days: ContributionDay[]): StudyStat[] {
     {
       label: "Total XP",
       value: totalPoints.toLocaleString("en-US"),
+    },
+    {
+      label: "Today XP",
+      value: todayPoints.toLocaleString("en-US"),
     },
     {
       label: "Active Days",
@@ -392,7 +406,7 @@ function StatCard({
 
   return (
     <div
-      className={`rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm shadow-slate-200/45 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`min-w-0 rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm shadow-slate-200/45 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
         shouldShowCard ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
       }`}
       style={{
@@ -401,10 +415,10 @@ function StatCard({
           : `${STAT_CARD_REVEAL_DELAY + index * STAT_CARD_REVEAL_STEP}ms`,
       }}
     >
-      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400">
+      <p className="truncate text-[10px] font-medium uppercase tracking-[0.06em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 text-[20px] font-semibold leading-none tracking-tight text-slate-900">
+      <p className="mt-1.5 text-[19px] font-semibold leading-tight tracking-tight text-slate-900">
         {value}
       </p>
     </div>
@@ -422,89 +436,45 @@ function ActivityDonutChart({
   isVisible: boolean;
   shouldReduceMotion: boolean;
 }) {
-  const radius = 56;
-  const circumference = 2 * Math.PI * radius;
   const shouldShowDonut = isVisible || shouldReduceMotion;
-  const totalDays =
-    distribution.reduce((total, item) => total + item.count, 0) || 1;
-  const donutSegments = distribution.reduce<
-    Array<LevelDistributionItem & { dashLength: number; dashOffset: number }>
-  >((segments, item) => {
-    const previousCount = segments.reduce(
-      (total, segment) => total + segment.count,
-      0,
-    );
-    const segmentRatio = item.count / totalDays;
-    const dashLength = segmentRatio * circumference;
-    const dashOffset =
-      circumference - (previousCount / totalDays) * circumference;
-
-    return [
-      ...segments,
-      {
-        ...item,
-        dashLength,
-        dashOffset,
-      },
-    ];
-  }, []);
 
   return (
-    <div className="relative mx-auto h-[160px] w-[160px] shrink-0">
-      <svg
-        viewBox="0 0 160 160"
-        className="h-full w-full -rotate-90"
-        role="img"
-        aria-label="Activity level distribution"
-      >
-        <circle
-          cx="80"
-          cy="80"
-          r={radius}
-          fill="none"
-          stroke="#f1f5f9"
-          strokeWidth="18"
-          className="transition-opacity duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-          style={{
-            opacity: shouldShowDonut ? 1 : 0,
-            transitionDelay: shouldReduceMotion
-              ? "0ms"
-              : `${DONUT_REVEAL_DELAY}ms`,
-          }}
-        />
-        {donutSegments.map((item, index) => {
-          return (
-            <circle
-              key={item.level}
-              cx="80"
-              cy="80"
-              r={radius}
-              fill="none"
-              stroke={item.color}
-              strokeWidth="18"
-              strokeDasharray={
-                shouldShowDonut
-                  ? `${item.dashLength} ${circumference - item.dashLength}`
-                  : `0 ${circumference}`
-              }
-              strokeDashoffset={item.dashOffset}
-              strokeLinecap="butt"
-              className="transition-[stroke-dasharray,opacity] duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-              style={{
-                opacity: shouldShowDonut ? 1 : 0,
-                transitionDelay: shouldReduceMotion
-                  ? "0ms"
-                  : `${
-                      DONUT_REVEAL_DELAY + index * DONUT_SEGMENT_REVEAL_STEP
-                    }ms`,
-              }}
-            />
-          );
-        })}
-      </svg>
-
+    <div
+      className={`relative mx-auto h-[250px] w-full shrink-0 transition-[opacity,transform] duration-[720ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        shouldShowDonut ? "scale-100 opacity-100" : "scale-95 opacity-0"
+      }`}
+      style={{
+        transitionDelay: shouldReduceMotion ? "0ms" : `${DONUT_REVEAL_DELAY}ms`,
+      }}
+      role="img"
+      aria-label="Activity level distribution"
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={distribution}
+            dataKey="count"
+            nameKey="label"
+            innerRadius={64}
+            outerRadius={94}
+            paddingAngle={4}
+            stroke="none"
+            isAnimationActive={shouldShowDonut}
+            animationBegin={shouldReduceMotion ? 0 : DONUT_SEGMENT_REVEAL_STEP}
+            animationDuration={900}
+          >
+            {distribution.map((entry) => (
+              <Cell key={entry.level} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip
+            contentStyle={{ borderRadius: 12, borderColor: "#e2e8f0" }}
+            wrapperStyle={{ zIndex: 50 }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
       <div
-        className={`absolute inset-0 flex flex-col items-center justify-center transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-center transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           shouldShowDonut ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
         style={{
@@ -961,7 +931,7 @@ export function StudyActivityHeatmap({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
           {stats.map((stat, index) => (
             <StatCard
               key={stat.label}

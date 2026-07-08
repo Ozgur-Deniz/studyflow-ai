@@ -60,18 +60,18 @@ const extractGuideItems = (description: string | null | undefined) => {
 
 const markdownComponents: Components = {
   h1: ({ children }) => (
-    <h1 className="mb-4 mt-8 border-b border-[#e2e8f0] pb-3 text-2xl font-black tracking-tight text-[#0f172a] first:mt-0">
+    <h1 className="mb-4 mt-8 border-b border-[#e2e8f0] pb-3 text-2xl font-semibold tracking-tight text-[#0f172a] first:mt-0">
       {children}
     </h1>
   ),
   h2: ({ children }) => (
-    <h2 className="mb-3 mt-8 flex items-center gap-2 text-xl font-black tracking-tight text-[#0f172a] first:mt-0">
+    <h2 className="mb-3 mt-8 flex items-center gap-2 text-xl font-semibold tracking-tight text-[#0f172a] first:mt-0">
       <span className="h-2 w-2 rounded-full bg-[#6366f1]" />
       {children}
     </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="mb-2 mt-6 text-base font-extrabold text-[#1e293b] first:mt-0">
+    <h3 className="mb-2 mt-6 text-lg font-semibold text-[#1e293b] first:mt-0">
       {children}
     </h3>
   ),
@@ -96,7 +96,7 @@ const markdownComponents: Components = {
     </li>
   ),
   strong: ({ children }) => (
-    <strong className="font-extrabold text-[#0f172a]">{children}</strong>
+    <strong className="font-semibold text-[#0f172a]">{children}</strong>
   ),
   table: ({ children }) => (
     <div className="my-5 overflow-x-auto rounded-xl border border-[#e2e8f0]">
@@ -106,7 +106,7 @@ const markdownComponents: Components = {
     </div>
   ),
   th: ({ children }) => (
-    <th className="border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 font-extrabold text-[#0f172a]">
+    <th className="border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 font-semibold text-[#0f172a]">
       {children}
     </th>
   ),
@@ -266,7 +266,7 @@ export default function PlanDetailPage({
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up">
       <Link
         href="/study-plans"
-        className="inline-flex items-center gap-2 text-sm font-bold text-[#64748b] hover:text-[#6366f1] transition-colors group"
+        className="inline-flex items-center gap-2 text-sm font-medium text-[#64748b] hover:text-[#6366f1] transition-colors group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
         Back to Study Plans
@@ -275,19 +275,19 @@ export default function PlanDetailPage({
       <div className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#eef2ff] px-3 py-1 text-[12px] font-bold text-[#6366f1]">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#eef2ff] px-3 py-1 text-sm font-medium text-[#6366f1]">
             <BookOpen className="w-3.5 h-3.5" /> AI Generated Roadmap
           </div>
-          <h1 className="max-w-3xl text-3xl font-black tracking-tight text-[#0f172a]">
+          <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-[#0f172a]">
             {plan.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-3 pt-1 text-[13px] font-bold text-[#64748b]">
+          <div className="flex flex-wrap items-center gap-3 pt-1 text-sm font-medium text-[#64748b]">
             <span className="flex items-center gap-1.5">
               <Calendar className="w-4 h-4 text-[#94a3b8]" /> Created on{" "}
               {new Date(plan.createdAt).toLocaleDateString()}
             </span>
             <span
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide ${
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium uppercase tracking-wide ${
                 plan.isCompleted
                   ? "bg-[#f0fdf4] text-[#16a34a]"
                   : "bg-[#f8fafc] text-[#64748b]"
@@ -310,7 +310,7 @@ export default function PlanDetailPage({
           <button
             onClick={handleTogglePlanStatus}
             disabled={isUpdating}
-            className={`flex cursor-pointer items-center gap-2 rounded-xl px-5 py-3 text-[14px] font-bold transition-all duration-300 ${
+            className={`flex cursor-pointer items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-300 ${
               plan.isCompleted
                 ? "border border-[#bbf7d0] bg-[#f0fdf4] text-[#16a34a] hover:border-[#86efac] hover:bg-white"
                 : "border border-[#e2e8f0] bg-[#f8fafc] text-[#64748b] hover:border-[#6366f1] hover:bg-[#eef2ff] hover:text-[#6366f1] active:scale-[0.98]"
@@ -339,10 +339,10 @@ export default function PlanDetailPage({
           </div>
           <div className="flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-sm font-black uppercase tracking-[0.14em] text-[#0f172a]">
+              <h2 className="text-base font-semibold tracking-tight text-[#0f172a]">
                 Plan Guide
               </h2>
-              <p className="mt-1 text-xs font-bold text-[#64748b]">
+              <p className="mt-1 text-sm font-medium text-[#64748b]">
                 {completedGuideCount} / {guideItems.length} completed
               </p>
             </div>
@@ -378,11 +378,11 @@ export default function PlanDetailPage({
                       <Check className="h-3.5 w-3.5" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[11px] font-black uppercase tracking-wide text-[#94a3b8]">
+                      <span className="block text-xs font-medium uppercase tracking-wide text-[#94a3b8]">
                         Step {index + 1}
                       </span>
                       <span
-                        className={`mt-0.5 block text-sm font-extrabold leading-5 ${
+                        className={`mt-0.5 block text-base font-medium leading-5 ${
                           isItemCompleted ? "line-through" : ""
                         }`}
                       >

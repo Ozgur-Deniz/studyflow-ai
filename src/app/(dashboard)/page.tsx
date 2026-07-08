@@ -44,6 +44,7 @@ export default function DashboardPage() {
   const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
   const [revealState, setRevealState] = useState(DEFAULT_REVEAL_STATE);
   const [heatmapData, setHeatmapData] = useState<HeatmapDataPoint[]>([]);
+  const [typedUserName, setTypedUserName] = useState("");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -131,19 +132,80 @@ export default function DashboardPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!userName || shouldReduceMotion) {
+      return;
+    }
+
+    const typingIntervalMs = 140;
+    const holdCompleteMs = 2200;
+    const holdEmptyMs = 700;
+    let timeoutId: number | undefined;
+    let currentIndex = 0;
+    let direction: "typing" | "deleting" = "typing";
+
+    const tick = () => {
+      if (direction === "typing") {
+        currentIndex += 1;
+        setTypedUserName(userName.slice(0, currentIndex));
+
+        if (currentIndex >= userName.length) {
+          direction = "deleting";
+          timeoutId = window.setTimeout(tick, holdCompleteMs);
+          return;
+        }
+      } else {
+        currentIndex -= 1;
+        setTypedUserName(userName.slice(0, Math.max(0, currentIndex)));
+
+        if (currentIndex <= 0) {
+          direction = "typing";
+          timeoutId = window.setTimeout(tick, holdEmptyMs);
+          return;
+        }
+      }
+
+      timeoutId = window.setTimeout(tick, typingIntervalMs);
+    };
+
+    timeoutId = window.setTimeout(() => {
+      setTypedUserName("");
+      tick();
+    }, holdEmptyMs);
+
+    return () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [shouldReduceMotion, userName]);
+
+  const displayUserName = shouldReduceMotion ? userName : typedUserName;
+
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       {/* Welcome Area */}
       <div>
-        <h1 className="text-3xl font-bold text-[#0f172a] mb-2 tracking-tight">
+        <h1 className="text-3xl font-medium text-[#0f172a] mb-2 tracking-tight">
           {isLoading ? (
             "Loading..."
           ) : (
             <>
-              Welcome back, <span className="gradient-text">{userName}!</span>
+              Welcome back,{" "}
+              <span
+                className="inline-flex min-w-[7ch] items-center text-[1.08em] font-semibold tracking-[0.04em] text-[#0f172a]"
+              >
+                <span>{displayUserName || "\u00a0"}</span>
+                <span
+                  className={`ml-0.5 h-6 w-[2px] rounded-full bg-[#0f172a] ${
+                    shouldReduceMotion ? "opacity-0" : "animate-pulse"
+                  }`}
+                  aria-hidden="true"
+                />
+                <span>!</span>
+              </span>
             </>
           )}{" "}
-          👋
         </h1>
         <p className="text-[#64748b]">
           Here is your study overview. Keep up the great work!
@@ -178,7 +240,7 @@ export default function DashboardPage() {
             : "translate-y-5 opacity-0"
         }`}
       >
-        <AIRecommendationCard />
+        <AIRecommendationCard stats={stats} isLoading={isLoading} />
       </div>
     </div>
   );

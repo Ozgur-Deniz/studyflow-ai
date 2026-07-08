@@ -266,6 +266,16 @@ input.ai-chat-input:focus {
   }
 }
 
+@keyframes shine {
+  0%,
+  45% {
+    transform: translateX(-140%) rotate(12deg);
+  }
+  100% {
+    transform: translateX(620%) rotate(12deg);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -301,6 +311,10 @@ input.ai-chat-input:focus {
 
 .animate-float {
   animation: float 5s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
 }
 
 .stagger > * {

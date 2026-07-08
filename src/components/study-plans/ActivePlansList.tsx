@@ -89,7 +89,7 @@ export function ActivePlansList({ refreshTrigger }: ActivePlansListProps) {
 
   return (
     <div className="bg-white p-7 rounded-2xl border border-[#e2e8f0] h-full shadow-sm animate-scale-in">
-      <h3 className="text-[18px] font-extrabold text-[#0f172a] mb-6 flex items-center gap-2 tracking-tight">
+      <h3 className="text-xl font-semibold text-[#0f172a] mb-6 flex items-center gap-2 tracking-tight">
         <BookOpen className="w-5 h-5 text-[#6366f1]" /> Active Plans
       </h3>
 
@@ -126,17 +126,17 @@ export function ActivePlansList({ refreshTrigger }: ActivePlansListProps) {
                 className="flex cursor-pointer flex-col gap-3 p-4 pr-12"
               >
                 <div className="flex items-start gap-2">
-                  <h4 className="min-w-0 flex-1 font-bold text-[#0f172a] text-[14px] line-clamp-2 leading-snug">
+                  <h4 className="min-w-0 flex-1 font-medium text-[#0f172a] text-base line-clamp-2 leading-snug">
                     {plan.title}
                   </h4>
                   {plan.isCompleted && (
-                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-emerald-600">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-emerald-600">
                       <CheckCircle2 className="h-3 w-3" />
                       Completed
                     </span>
                   )}
                 </div>
-                <div className="flex items-center justify-between text-[12px] font-bold text-[#64748b]">
+                <div className="flex items-center justify-between text-sm font-medium text-[#64748b]">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-[#94a3b8]" />
                     {new Date(plan.createdAt).toLocaleDateString()}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,6 +11,7 @@ import {
   ChevronDown,
   Layers,
   ClipboardList,
+  User,
 } from "lucide-react";
 import { Logo } from "../ui/Logo";
 import { UserAvatar } from "../ui/UserAvatar";
@@ -17,6 +19,7 @@ import { UserAvatar } from "../ui/UserAvatar";
 interface SidebarProps {
   userName: string;
   userInitial: string;
+  userAvatarId?: string | null;
   onLogout: () => void;
   isLoggingOut: boolean;
 }
@@ -24,10 +27,34 @@ interface SidebarProps {
 export function Sidebar({
   userName,
   userInitial,
+  userAvatarId,
   onLogout,
   isLoggingOut,
 }: SidebarProps) {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   const menuItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -82,27 +109,59 @@ export function Sidebar({
         })}
       </nav>
 
-      {/* User Profile & Logout */}
-      <div className="p-3 border-t border-[#e2e8f0]">
-        <div className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#f1f5f9] transition-all duration-200 cursor-pointer mb-2 group">
-          <UserAvatar
-            initial={userInitial}
-            name={userName}
-            size="md"
-            showName={true}
-            showOnlineDot={true}
-          />
-          <ChevronDown size={14} className="text-[#94a3b8] group-hover:text-[#0f172a]" />
-        </div>
+      {/* User Profile */}
+      <div className="border-t border-[#e2e8f0] p-3">
+        <div ref={menuRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setIsOpen((current) => !current)}
+            className="group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#f1f5f9] focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10"
+            aria-expanded={isOpen}
+            aria-haspopup="menu"
+          >
+            <UserAvatar
+              initial={userInitial}
+              name={userName}
+              avatarId={userAvatarId}
+              size="md"
+              showName={true}
+              showOnlineDot={true}
+            />
+            <ChevronDown
+              size={14}
+              className={`text-[#94a3b8] transition-transform duration-200 group-hover:text-[#0f172a] ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
 
-        <button
-          onClick={onLogout}
-          disabled={isLoggingOut}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-[#f43f5e] bg-[#fff1f2] rounded-xl hover:bg-[#ffe4e6] hover:shadow-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]"
-        >
-          <LogOut size={16} />
-          {isLoggingOut ? "Logging out..." : "Logout"}
-        </button>
+          {isOpen && (
+            <div
+              className="absolute bottom-[calc(100%+0.65rem)] left-0 z-50 w-full overflow-hidden rounded-lg border border-[#e2e8f0] bg-white shadow-lg"
+              role="menu"
+            >
+              <Link
+                href="/settings"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-[#334155] transition hover:bg-[#f8fafc] hover:text-[#6366f1]"
+                role="menuitem"
+              >
+                <User className="h-4 w-4" />
+                Profile
+              </Link>
+              <button
+                type="button"
+                onClick={onLogout}
+                disabled={isLoggingOut}
+                className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-medium text-[#f43f5e] transition hover:bg-[#fff1f2] disabled:cursor-not-allowed disabled:opacity-60"
+                role="menuitem"
+              >
+                <LogOut className="h-4 w-4" />
+                {isLoggingOut ? "Signing out..." : "Sign out"}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   );

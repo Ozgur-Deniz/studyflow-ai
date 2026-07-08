@@ -1,4 +1,9 @@
-import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  SchemaType,
+  type Part,
+  type Schema,
+} from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest, AuthError } from "@/lib/auth";
@@ -6,13 +11,45 @@ import { awardFixedXp } from "@/lib/xp";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
+const SYSTEM_INSTRUCTION =
+  "Sen zorlu ve ölçücü sınavlar hazırlayan uzman bir eğitim tasarımcısısın. Amacın ezbere dayalı değil, analitik düşünmeyi gerektiren çalışma materyalleri üretmektir. Sadece 'Kavram - Tanım' eşleştirmesi yapma, konuları senaryolaştırarak sor. Çeldirici şıklar (yanlış cevaplar) çok güçlü ve mantıklı olmalıdır. Her doğru cevabın yanına mutlaka 'Neden bu doğru?' açıklamasını (explanation) ekle. İçeriği SADECE verilen PDF'e veya spesifik konuya sınırla.";
+
 interface FlashcardPayload {
   title: string;
   cards: Array<{
     frontText: string;
     backText: string;
+    explanation: string;
   }>;
 }
+
+const flashcardResponseSchema: Schema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    title: {
+      type: SchemaType.STRING,
+    },
+    cards: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          frontText: {
+            type: SchemaType.STRING,
+          },
+          backText: {
+            type: SchemaType.STRING,
+          },
+          explanation: {
+            type: SchemaType.STRING,
+          },
+        },
+        required: ["frontText", "backText", "explanation"],
+      },
+    },
+  },
+  required: ["title", "cards"],
+};
 
 const extractInlineFileData = (file: string) => {
   return {
@@ -49,8 +86,15 @@ const parseFlashcardPayload = (value: unknown): FlashcardPayload | null => {
       frontText:
         typeof card.frontText === "string" ? card.frontText.trim() : "",
       backText: typeof card.backText === "string" ? card.backText.trim() : "",
+      explanation:
+        typeof card.explanation === "string" ? card.explanation.trim() : "",
     }))
-    .filter((card) => card.frontText.length > 0 && card.backText.length > 0);
+    .filter(
+      (card) =>
+        card.frontText.length > 0 &&
+        card.backText.length > 0 &&
+        card.explanation.length > 0,
+    );
 
   if (payload.title.trim().length === 0 || cards.length === 0) {
     return null;
@@ -94,7 +138,7 @@ export async function POST(request: NextRequest) {
     const topic = body.topic.trim();
     const sourceName = getOptionalString(body.sourceName);
     const conversationId = getOptionalString(body.conversationId);
-    const prompt = `You are an education assistant. Based on the given topic or attached PDF/file, create 10 flashcards that test the most important information. Return JSON exactly in this structure: { "title": "Deck Title", "cards": [ { "frontText": "Question or Concept", "backText": "Answer or Explanation" } ] }
+    const prompt = `Create 10 analytical flashcards that test the most important information from the given topic or attached PDF/file. Do not create simple "concept-definition" cards. Make the front side scenario-based or reasoning-based when possible. Return JSON exactly in this structure: { "title": "Deck Title", "cards": [ { "frontText": "Scenario-based question or analytical prompt", "backText": "Answer", "explanation": "Neden bu doğru? ..." } ] }
 
 Topic: ${topic}
 
@@ -112,8 +156,12 @@ Your response must be valid JSON only. Do not include Markdown, explanations, or
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
+      systemInstruction: SYSTEM_INSTRUCTION,
       generationConfig: {
+        temperature: 0.2,
+        topP: 0.8,
         responseMimeType: "application/json",
+        responseSchema: flashcardResponseSchema,
       },
     });
 
@@ -155,7 +203,7 @@ Your response must be valid JSON only. Do not include Markdown, explanations, or
         flashcards: {
           create: flashcardPayload.cards.map((card) => ({
             frontText: card.frontText,
-            backText: card.backText,
+            backText: `${card.backText}\n\nNeden bu doğru? ${card.explanation}`,
           })),
         },
       },

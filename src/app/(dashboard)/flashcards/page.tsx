@@ -240,11 +240,11 @@ function FlashcardsContent() {
     <div className="mx-auto max-w-7xl animate-fade-in-up space-y-8">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-muted shadow-soft-sm">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1.5 text-sm font-medium uppercase tracking-[0.12em] text-muted shadow-soft-sm">
           <Layers className="h-3.5 w-3.5 text-primary" />
           Memory Studio
         </div>
-        <h1 className="mb-2 text-4xl font-black tracking-tight text-foreground">
+        <h1 className="mb-2 text-4xl font-semibold tracking-tight text-foreground">
           Flashcards
         </h1>
         <p className="max-w-2xl text-sm font-medium leading-6 text-muted">
@@ -253,16 +253,16 @@ function FlashcardsContent() {
         </div>
       </div>
 
-      <div className="grid min-h-[calc(100vh-14rem)] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white/75 shadow-soft-lg backdrop-blur-xl lg:grid-cols-[21rem_1fr]">
-        <aside className="border-b border-white/70 bg-surface/72 backdrop-blur lg:border-b-0 lg:border-r">
+      <div className="grid min-h-[34rem] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white/75 shadow-soft-lg backdrop-blur-xl lg:h-[calc(100vh-14rem)] lg:grid-cols-[21rem_1fr]">
+        <aside className="flex min-h-0 flex-col border-b border-white/70 bg-surface/72 backdrop-blur lg:border-b-0 lg:border-r">
           <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
             <div className="flex items-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                 <Layers className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-sm font-black text-foreground">Decks</h2>
-                <p className="text-xs font-bold text-muted">{decks.length} saved</p>
+                <h2 className="text-base font-semibold text-foreground">Decks</h2>
+                <p className="text-sm font-medium text-muted">{decks.length} saved</p>
               </div>
             </div>
           </div>
@@ -271,21 +271,21 @@ function FlashcardsContent() {
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.015] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
+              className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.015] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/15"
             >
               <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-6" />
               Generate with AI
             </button>
           </div>
 
-          <div className="max-h-[22rem] space-y-2 overflow-y-auto p-4 lg:max-h-none">
+          <div className="max-h-[22rem] min-h-0 space-y-2 overflow-y-auto p-4 pr-3 [scrollbar-gutter:stable] lg:max-h-none lg:flex-1">
             {isLoading ? (
-              <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-muted px-4 py-3 text-sm font-bold text-muted">
+              <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-muted px-4 py-3 text-sm font-medium text-muted">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading decks...
               </div>
             ) : error ? (
-              <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600">
+              <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
                 {error}
               </div>
             ) : decks.length === 0 ? (
@@ -308,9 +308,9 @@ function FlashcardsContent() {
                         : "border-border bg-white/80 text-slate-700 hover:border-primary/15 hover:bg-white hover:shadow-soft-sm"
                     }`}
                   >
-                    <p className="truncate text-sm font-black">{deck.title}</p>
+                    <p className="truncate text-base font-medium">{deck.title}</p>
                     <p
-                      className={`mt-1 text-xs font-bold ${
+                      className={`mt-1 text-sm font-medium ${
                         isSelected ? "text-primary" : "text-subtle"
                       }`}
                     >
@@ -323,13 +323,13 @@ function FlashcardsContent() {
           </div>
         </aside>
 
-        <section className="flex min-h-[34rem] flex-col items-center justify-center bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-5 py-8">
+        <section className="flex min-h-0 flex-col items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-5 py-8">
           {!selectedDeck ? (
             <div className="max-w-md text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-foreground text-white shadow-soft">
                 <Layers className="h-6 w-6" />
               </div>
-              <h2 className="text-2xl font-black tracking-tight text-foreground">
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                 Select a deck
               </h2>
               <p className="mt-2 text-sm font-medium leading-6 text-muted">
@@ -338,7 +338,7 @@ function FlashcardsContent() {
             </div>
           ) : currentCards.length === 0 ? (
             <div className="max-w-md text-center">
-              <h2 className="text-2xl font-black tracking-tight text-foreground">
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                 This deck is empty
               </h2>
               <p className="mt-2 text-sm font-medium leading-6 text-muted">
@@ -348,10 +348,10 @@ function FlashcardsContent() {
           ) : (
             <div className="flex w-full flex-col items-center">
               <div className="mb-6 text-center">
-                <h2 className="text-3xl font-black tracking-tight text-foreground">
+                <h2 className="text-3xl font-semibold tracking-tight text-foreground">
                   {selectedDeck.title}
                 </h2>
-                <p className="mt-2 text-sm font-bold text-muted">
+                <p className="mt-2 text-base font-medium text-muted">
                   Card {currentCardIndex + 1} of {currentCards.length}
                 </p>
               </div>
@@ -364,7 +364,7 @@ function FlashcardsContent() {
               >
                 <div
                   key={currentCard?.id}
-                  className="h-full w-full animate-scale-in transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-2"
+                  className="h-full w-full animate-scale-in transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:shadow-soft-lg"
                 >
                   <div
                     className="relative h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] [transform-style:preserve-3d]"
@@ -374,19 +374,19 @@ function FlashcardsContent() {
                         : "rotateY(0deg)",
                     }}
                   >
-                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-soft-lg backdrop-blur [backface-visibility:hidden]">
-                      <div className="absolute left-6 top-6 rounded-full border border-border bg-surface-muted px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-muted">
+                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-soft-lg backdrop-blur transition-colors duration-300 group-hover:border-primary/20 group-hover:bg-white [backface-visibility:hidden]">
+                      <div className="absolute left-6 top-6 rounded-full border border-border bg-surface-muted px-3 py-1 text-xs font-medium uppercase tracking-[0.14em] text-muted">
                         Front
                       </div>
-                      <p className="max-w-md text-2xl font-black leading-9 tracking-tight text-foreground">
+                      <p className="max-w-md text-2xl font-semibold leading-9 tracking-tight text-foreground">
                         {currentCard?.frontText}
                       </p>
                     </div>
-                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-primary/20 bg-primary-soft p-10 text-center text-primary shadow-soft-lg [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                      <div className="absolute left-6 top-6 rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-primary">
+                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-primary/20 bg-primary-soft p-10 text-center text-primary shadow-soft-lg transition-colors duration-300 group-hover:border-primary/30 group-hover:bg-[#e5e8ff] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                      <div className="absolute left-6 top-6 rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-[0.14em] text-primary">
                         Back
                       </div>
-                      <p className="max-w-md text-xl font-extrabold leading-8">
+                      <p className="max-w-md text-xl font-semibold leading-8">
                         {currentCard?.backText}
                       </p>
                     </div>
@@ -399,7 +399,7 @@ function FlashcardsContent() {
                   type="button"
                   onClick={goToPreviousCard}
                   disabled={isFirstCard}
-                  className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-black text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous Card
@@ -414,7 +414,7 @@ function FlashcardsContent() {
 
                     void goToNextCard();
                   }}
-                  className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-black text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isLastCard ? "Complete Deck" : "Next Card"}
                   <ChevronRight className="h-4 w-4" />
@@ -433,7 +433,7 @@ function FlashcardsContent() {
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-lg font-black tracking-tight text-foreground">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground">
                   Generate Flashcards with AI
                 </h2>
                 <p className="mt-1 text-sm font-medium leading-6 text-muted">
@@ -447,7 +447,7 @@ function FlashcardsContent() {
               <div>
                 <label
                   htmlFor="flashcard-topic"
-                  className="mb-2 block text-sm font-black text-foreground"
+                  className="mb-2 block text-base font-medium text-foreground"
                 >
                   Topic
                 </label>
@@ -465,14 +465,14 @@ function FlashcardsContent() {
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isGenerating}
-                  className="h-10 rounded-full border border-border bg-white px-4 text-sm font-black text-muted transition hover:bg-surface-muted focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-10 rounded-full border border-border bg-white px-4 text-sm font-medium text-muted transition hover:bg-surface-muted focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!generateTopic.trim() || isGenerating}
-                  className="flex h-10 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-black text-white shadow-soft-sm transition hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-10 items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-semibold text-white shadow-soft-sm transition hover:scale-[1.02] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isGenerating ? "Generating Cards..." : "Generate Cards"}
