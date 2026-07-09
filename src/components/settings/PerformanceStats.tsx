@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -14,15 +14,22 @@ import {
   YAxis,
 } from "recharts";
 import {
+  AlertCircle,
   ArrowUpRight,
+  BookOpen,
+  Brain,
+  CheckCircle2,
   Clock,
   Flame,
   Layers,
+  Loader2,
+  MessageCircle,
   Sparkles,
 } from "lucide-react";
 
 interface XpDataPoint {
   label: string;
+  dateKey: string;
   xp: number;
   focusMinutes: number;
 }
@@ -31,6 +38,45 @@ interface ActivityDataPoint {
   name: string;
   value: number;
   color: string;
+}
+
+interface PerformanceData {
+  summary: {
+    totalXp: number;
+    todayXp: number;
+    weeklyXp: number;
+    weeklyTrend: number;
+    currentStreak: number;
+    longestStreak: number;
+    totalFocusMinutes: number;
+    averageSessionLength: number;
+    bestFocusHour: string | null;
+    totalMaterials: number;
+  };
+  charts: {
+    weekly: XpDataPoint[];
+    monthly: XpDataPoint[];
+    activityDistribution: ActivityDataPoint[];
+  };
+  resources: {
+    studyPlans: {
+      total: number;
+      active: number;
+      completed: number;
+      completionRate: number | null;
+    };
+    flashcards: {
+      decks: number;
+      cards: number;
+    };
+    quizzes: {
+      total: number;
+      completed: number;
+      averageScore: number | null;
+    };
+    aiConversations: number;
+  };
+  hasActivity: boolean;
 }
 
 interface CustomTooltipProps {
@@ -42,75 +88,32 @@ interface CustomTooltipProps {
   }>;
 }
 
-const xpData: XpDataPoint[] = [
-  { label: "Mon", xp: 120, focusMinutes: 45 },
-  { label: "Tue", xp: 300, focusMinutes: 95 },
-  { label: "Wed", xp: 180, focusMinutes: 60 },
-  { label: "Thu", xp: 420, focusMinutes: 130 },
-  { label: "Fri", xp: 360, focusMinutes: 105 },
-  { label: "Sat", xp: 510, focusMinutes: 155 },
-  { label: "Sun", xp: 440, focusMinutes: 125 },
-];
+type ChartRange = "weekly" | "monthly";
 
-const monthlyXpData: XpDataPoint[] = [
-  { label: "Week 1", xp: 860, focusMinutes: 280 },
-  { label: "Week 2", xp: 1240, focusMinutes: 390 },
-  { label: "Week 3", xp: 1580, focusMinutes: 475 },
-  { label: "Week 4", xp: 1860, focusMinutes: 540 },
-];
+const numberFormatter = new Intl.NumberFormat("en-US");
 
-const chartRanges = {
-  weekly: {
-    label: "Weekly",
-    description: "Last 7 days of study activity.",
-    data: xpData,
-  },
-  monthly: {
-    label: "Monthly",
-    description: "Last 4 weeks of study activity.",
-    data: monthlyXpData,
-  },
-} as const;
+const formatNumber = (value: number) => numberFormatter.format(value);
 
-type ChartRange = keyof typeof chartRanges;
+const formatFocusTime = (focusMinutes: number) => {
+  const focusHours = Math.floor(focusMinutes / 60);
+  const remainingMinutes = focusMinutes % 60;
 
-const activityData: ActivityDataPoint[] = [
-  { name: "Study Plans", value: 34, color: "#6366f1" },
-  { name: "Flashcards", value: 28, color: "#14b8a6" },
-  { name: "Quizzes", value: 24, color: "#f43f5e" },
-  { name: "AI Assistant", value: 14, color: "#f59e0b" },
-];
+  if (focusHours <= 0) {
+    return `${remainingMinutes}m`;
+  }
 
-const statCards = [
-  {
-    label: "Total XP",
-    value: "2,330",
-    trend: "+12%",
-    icon: Sparkles,
-    iconClassName: "bg-indigo-50 text-indigo-600",
-  },
-  {
-    label: "Current Streak",
-    value: "9 days",
-    trend: "+3 days",
-    icon: Flame,
-    iconClassName: "bg-orange-50 text-orange-600",
-  },
-  {
-    label: "Materials Created",
-    value: "42",
-    trend: "+18%",
-    icon: Layers,
-    iconClassName: "bg-emerald-50 text-emerald-600",
-  },
-  {
-    label: "Focus Hours",
-    value: "18.4h",
-    trend: "+8%",
-    icon: Clock,
-    iconClassName: "bg-sky-50 text-sky-600",
-  },
-];
+  return remainingMinutes > 0
+    ? `${focusHours}h ${remainingMinutes}m`
+    : `${focusHours}h`;
+};
+
+const formatTrend = (trend: number) => {
+  if (trend > 0) {
+    return `+${trend}%`;
+  }
+
+  return `${trend}%`;
+};
 
 const CustomTooltip = ({ active, label, payload }: CustomTooltipProps) => {
   if (!active || !payload?.length) {
@@ -119,24 +122,201 @@ const CustomTooltip = ({ active, label, payload }: CustomTooltipProps) => {
 
   const point = payload[0].payload;
   const focusMinutes = point?.focusMinutes ?? 0;
-  const focusHours = Math.floor(focusMinutes / 60);
-  const remainingMinutes = focusMinutes % 60;
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-white shadow-2xl shadow-slate-900/20 backdrop-blur-xl">
-      <p className="text-xs font-medium text-slate-400">{label}</p>
-      <p className="mt-1 text-base font-semibold">{payload[0].value ?? 0} XP</p>
+      <p className="text-xs font-medium text-slate-400">
+        {label}
+        {point?.dateKey ? ` · ${point.dateKey}` : ""}
+      </p>
+      <p className="mt-1 text-base font-semibold">
+        {formatNumber(payload[0].value ?? 0)} XP
+      </p>
       <p className="mt-1 text-xs text-slate-300">
-        Focus time:{" "}
-        {focusHours > 0 ? `${focusHours}h ${remainingMinutes}m` : `${remainingMinutes}m`}
+        Focus time: {formatFocusTime(focusMinutes)}
       </p>
     </div>
   );
 };
 
+function LoadingState() {
+  return (
+    <div className="flex min-h-[420px] items-center justify-center rounded-2xl border border-[#e2e8f0] bg-white p-8 shadow-sm">
+      <div className="flex items-center gap-3 text-sm font-semibold text-[#64748b]">
+        <Loader2 className="h-5 w-5 animate-spin text-[#6366f1]" />
+        Loading performance data...
+      </div>
+    </div>
+  );
+}
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <div className="rounded-2xl border border-rose-100 bg-rose-50 p-5 text-sm text-rose-700">
+      <div className="flex items-center gap-2 font-semibold">
+        <AlertCircle className="h-4 w-4" />
+        Performance data could not be loaded
+      </div>
+      <p className="mt-2 text-rose-600">{message}</p>
+    </div>
+  );
+}
+
+function EmptyChartState() {
+  return (
+    <div className="flex h-full items-center justify-center rounded-xl bg-[#f8fafc] text-center">
+      <div>
+        <p className="text-sm font-semibold text-[#0f172a]">No study activity yet</p>
+        <p className="mt-1 text-sm text-[#64748b]">
+          XP and focus charts will appear after your first tracked activity.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function PerformanceStats() {
   const [chartRange, setChartRange] = useState<ChartRange>("weekly");
+  const [data, setData] = useState<PerformanceData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadPerformanceData() {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await fetch("/api/settings/performance", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          const body = (await response.json().catch(() => null)) as {
+            error?: string;
+            message?: string;
+          } | null;
+
+          throw new Error(
+            body?.error ?? body?.message ?? "Unexpected performance API error.",
+          );
+        }
+
+        const performanceData = (await response.json()) as PerformanceData;
+
+        if (isMounted) {
+          setData(performanceData);
+        }
+      } catch (loadError) {
+        if (isMounted) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Unexpected performance API error.",
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadPerformanceData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const chartRanges = useMemo(
+    () => ({
+      weekly: {
+        label: "Weekly",
+        description: "Last 7 days of XP and focus time.",
+        data: data?.charts.weekly ?? [],
+      },
+      monthly: {
+        label: "Monthly",
+        description: "Last 28 days of XP and focus time.",
+        data: data?.charts.monthly ?? [],
+      },
+    }),
+    [data],
+  );
   const activeChartRange = chartRanges[chartRange];
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error) {
+    return <ErrorState message={error} />;
+  }
+
+  if (!data) {
+    return <ErrorState message="Performance response was empty." />;
+  }
+
+  const statCards = [
+    {
+      label: "Total XP",
+      value: formatNumber(data.summary.totalXp),
+      trend: formatTrend(data.summary.weeklyTrend),
+      icon: Sparkles,
+      iconClassName: "bg-indigo-50 text-indigo-600",
+    },
+    {
+      label: "Current Streak",
+      value: `${data.summary.currentStreak} days`,
+      trend: `Best ${data.summary.longestStreak}`,
+      icon: Flame,
+      iconClassName: "bg-orange-50 text-orange-600",
+    },
+    {
+      label: "Materials Created",
+      value: formatNumber(data.summary.totalMaterials),
+      trend: "From DB",
+      icon: Layers,
+      iconClassName: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Focus Hours",
+      value: formatFocusTime(data.summary.totalFocusMinutes),
+      trend: `${data.summary.averageSessionLength}m avg`,
+      icon: Clock,
+      iconClassName: "bg-sky-50 text-sky-600",
+    },
+  ];
+  const focusCards = [
+    {
+      label: "Today XP",
+      value: formatNumber(data.summary.todayXp),
+      helper: "StudySession points created today",
+      icon: Sparkles,
+      iconClassName: "bg-indigo-50 text-indigo-600",
+    },
+    {
+      label: "Best Focus Hour",
+      value: data.summary.bestFocusHour ?? "No data",
+      helper: "Based on tracked focus minutes",
+      icon: Brain,
+      iconClassName: "bg-violet-50 text-violet-600",
+    },
+    {
+      label: "Avg. Focus Session",
+      value:
+        data.summary.averageSessionLength > 0
+          ? `${data.summary.averageSessionLength} min`
+          : "No data",
+      helper: "Only sessions with duration are counted",
+      icon: Clock,
+      iconClassName: "bg-sky-50 text-sky-600",
+    },
+  ];
+  const planCompletionRate = data.resources.studyPlans.completionRate ?? 0;
 
   return (
     <div className="space-y-6">
@@ -145,7 +325,8 @@ export function PerformanceStats() {
           Performance Overview
         </h2>
         <p className="mt-1 text-sm leading-6 text-[#64748b]">
-          Track your XP growth, focus consistency, and study activity mix.
+          Real metrics from your XP sessions, plans, flashcards, quizzes, and AI
+          conversations.
         </p>
       </div>
 
@@ -221,106 +402,251 @@ export function PerformanceStats() {
           </div>
 
           <div className="h-[360px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={activeChartRange.data}
-                margin={{ top: 12, right: 18, left: 0, bottom: 0 }}
-              >
-                <defs>
-                  <linearGradient id="xpAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8} />
-                    <stop offset="55%" stopColor="#8b5cf6" stopOpacity={0.18} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  stroke="#e2e8f0"
-                  strokeDasharray="4 4"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="label"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  dy={10}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  width={42}
-                />
-                <Tooltip
-                  content={<CustomTooltip />}
-                  cursor={{ stroke: "#6366f1", strokeWidth: 1 }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="xp"
-                  stroke="#6366f1"
-                  strokeWidth={3}
-                  fill="url(#xpAreaGradient)"
-                  activeDot={{
-                    r: 7,
-                    stroke: "#ffffff",
-                    strokeWidth: 3,
-                    fill: "#6366f1",
-                  }}
-                  animationDuration={900}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {data.hasActivity ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={activeChartRange.data}
+                  margin={{ top: 12, right: 18, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient
+                      id="xpAreaGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8} />
+                      <stop offset="55%" stopColor="#8b5cf6" stopOpacity={0.18} />
+                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    stroke="#e2e8f0"
+                    strokeDasharray="4 4"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="label"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                    dy={10}
+                    interval={chartRange === "monthly" ? 3 : 0}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                    width={42}
+                  />
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ stroke: "#6366f1", strokeWidth: 1 }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="xp"
+                    stroke="#6366f1"
+                    strokeWidth={3}
+                    fill="url(#xpAreaGradient)"
+                    activeDot={{
+                      r: 7,
+                      stroke: "#ffffff",
+                      strokeWidth: 3,
+                      fill: "#6366f1",
+                    }}
+                    animationDuration={900}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyChartState />
+            )}
           </div>
         </section>
 
         <section className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
           <div className="mb-6">
             <h3 className="text-lg font-semibold tracking-tight text-[#0f172a]">
-              Activity Distribution
+              XP Distribution
             </h3>
             <p className="mt-1 text-sm text-[#64748b]">
-              Where your study effort goes.
+              XP grouped by actual StudySession action type.
             </p>
           </div>
 
-          <div className="h-[250px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={activityData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={64}
-                  outerRadius={94}
-                  paddingAngle={4}
-                  stroke="none"
-                >
-                  {activityData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ borderRadius: 12, borderColor: "#e2e8f0" }} />
-              </PieChart>
-            </ResponsiveContainer>
+          {data.charts.activityDistribution.length > 0 ? (
+            <>
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data.charts.activityDistribution}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={64}
+                      outerRadius={94}
+                      paddingAngle={4}
+                      stroke="none"
+                    >
+                      {data.charts.activityDistribution.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value) => [`${formatNumber(Number(value))} XP`, "XP"]}
+                      contentStyle={{
+                        borderRadius: 12,
+                        borderColor: "#e2e8f0",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {data.charts.activityDistribution.map((item) => (
+                  <div
+                    key={item.name}
+                    className="flex items-center justify-between gap-3 text-sm"
+                  >
+                    <div className="flex items-center gap-2 text-[#64748b]">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      {item.name}
+                    </div>
+                    <span className="font-medium text-[#0f172a]">
+                      {formatNumber(item.value)} XP
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="flex h-[250px] items-center justify-center rounded-xl bg-[#f8fafc] text-center text-sm text-[#64748b]">
+              No XP sessions yet.
+            </div>
+          )}
+        </section>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        {focusCards.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <section
+              key={item.label}
+              className="rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-sm"
+            >
+              <div
+                className={`flex h-11 w-11 items-center justify-center rounded-xl ${item.iconClassName}`}
+              >
+                <Icon className="h-5 w-5" />
+              </div>
+              <p className="mt-5 text-sm font-medium text-[#64748b]">
+                {item.label}
+              </p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-[#0f172a]">
+                {item.value}
+              </p>
+              <p className="mt-2 text-sm text-[#94a3b8]">{item.helper}</p>
+            </section>
+          );
+        })}
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1fr_22rem]">
+        <section className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold tracking-tight text-[#0f172a]">
+              Learning Resources
+            </h3>
+            <p className="mt-1 text-sm text-[#64748b]">
+              Counts from StudyPlan, FlashcardDeck, Flashcard, Quiz, and
+              Conversation records.
+            </p>
           </div>
 
-          <div className="mt-4 space-y-3">
-            {activityData.map((item) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between gap-3 text-sm"
-              >
-                <div className="flex items-center gap-2 text-[#64748b]">
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  {item.name}
-                </div>
-                <span className="font-medium text-[#0f172a]">{item.value}%</span>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#0f172a]">
+                <BookOpen className="h-4 w-4 text-[#6366f1]" />
+                Study Plans
               </div>
-            ))}
+              <p className="mt-4 text-3xl font-semibold tracking-tight text-[#0f172a]">
+                {formatNumber(data.resources.studyPlans.total)}
+              </p>
+              <p className="mt-1 text-sm text-[#64748b]">
+                {data.resources.studyPlans.completed} completed,{" "}
+                {data.resources.studyPlans.active} active
+              </p>
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white">
+                <div
+                  className="h-full rounded-full bg-[#6366f1]"
+                  style={{ width: `${planCompletionRate}%` }}
+                />
+              </div>
+              <p className="mt-2 text-xs font-semibold text-[#6366f1]">
+                {data.resources.studyPlans.completionRate === null
+                  ? "No plans yet"
+                  : `${planCompletionRate}% completed`}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#0f172a]">
+                <Layers className="h-4 w-4 text-[#14b8a6]" />
+                Flashcards
+              </div>
+              <p className="mt-4 text-3xl font-semibold tracking-tight text-[#0f172a]">
+                {formatNumber(data.resources.flashcards.cards)}
+              </p>
+              <p className="mt-1 text-sm text-[#64748b]">
+                Cards across {formatNumber(data.resources.flashcards.decks)} decks
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#0f172a]">
+                <CheckCircle2 className="h-4 w-4 text-[#f43f5e]" />
+                Quizzes
+              </div>
+              <p className="mt-4 text-3xl font-semibold tracking-tight text-[#0f172a]">
+                {formatNumber(data.resources.quizzes.completed)}
+              </p>
+              <p className="mt-1 text-sm text-[#64748b]">
+                Completed out of {formatNumber(data.resources.quizzes.total)}
+              </p>
+              <p className="mt-4 text-sm font-semibold text-[#0f172a]">
+                Avg. score:{" "}
+                {data.resources.quizzes.averageScore === null
+                  ? "No score data"
+                  : `${data.resources.quizzes.averageScore}%`}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#eef2ff] text-[#6366f1]">
+            <MessageCircle className="h-5 w-5" />
+          </div>
+          <h3 className="mt-4 text-lg font-semibold tracking-tight text-[#0f172a]">
+            AI Assistant Usage
+          </h3>
+          <p className="mt-1 text-sm text-[#64748b]">
+            Conversation count is available in the database; message-level
+            performance scoring is already reflected in XP sessions.
+          </p>
+          <div className="mt-6 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-5">
+            <p className="text-sm font-medium text-[#64748b]">Conversations</p>
+            <p className="mt-1 text-3xl font-semibold tracking-tight text-[#0f172a]">
+              {formatNumber(data.resources.aiConversations)}
+            </p>
           </div>
         </section>
       </div>
