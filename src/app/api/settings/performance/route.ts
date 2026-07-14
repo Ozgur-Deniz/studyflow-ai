@@ -3,6 +3,9 @@ import { AuthError, getUserIdFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { calculateHeatmapStats } from "@/lib/utils/statistics";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type RangePoint = {
   label: string;
   dateKey: string;
@@ -80,7 +83,10 @@ function getActivityCategory(actionType: string): ActivityCategory {
     return "Study Plans";
   }
 
-  if (actionType === "AI_MESSAGE_SENT" || actionType === "AI_RESOURCE_GENERATED") {
+  if (
+    actionType === "AI_MESSAGE_SENT" ||
+    actionType === "AI_RESOURCE_GENERATED"
+  ) {
     return "AI Assistant";
   }
 
@@ -177,12 +183,18 @@ export async function GET(request: NextRequest) {
       const dateKey = formatDateKey(session.createdAt);
       const category = getActivityCategory(session.actionType);
 
-      pointsByDate.set(dateKey, (pointsByDate.get(dateKey) ?? 0) + session.points);
+      pointsByDate.set(
+        dateKey,
+        (pointsByDate.get(dateKey) ?? 0) + session.points,
+      );
       focusMinutesByDate.set(
         dateKey,
         (focusMinutesByDate.get(dateKey) ?? 0) + session.durationMinutes,
       );
-      categoryPoints.set(category, (categoryPoints.get(category) ?? 0) + session.points);
+      categoryPoints.set(
+        category,
+        (categoryPoints.get(category) ?? 0) + session.points,
+      );
     });
 
     const weeklyData = buildRangeData({
@@ -199,20 +211,25 @@ export async function GET(request: NextRequest) {
       focusMinutesByDate,
       labelFormatter: formatShortDate,
     });
+    const todayKey = formatDateKey(today);
     const heatmapStats = calculateHeatmapStats(
       Array.from(pointsByDate.entries()).map(([date, count]) => ({
         date,
         count,
       })),
+      todayKey,
     );
-    const todayKey = formatDateKey(today);
     const todayXp = pointsByDate.get(todayKey) ?? 0;
     const totalFocusMinutes = allSessions.reduce(
       (total, session) => total + session.durationMinutes,
       0,
     );
-    const totalXp = allSessions.reduce((total, session) => total + session.points, 0);
-    const activePlans = studyPlanCounts.find((item) => !item.isCompleted)?._count._all ?? 0;
+    const totalXp = allSessions.reduce(
+      (total, session) => total + session.points,
+      0,
+    );
+    const activePlans =
+      studyPlanCounts.find((item) => !item.isCompleted)?._count._all ?? 0;
     const completedPlans =
       studyPlanCounts.find((item) => item.isCompleted)?._count._all ?? 0;
     const totalPlans = activePlans + completedPlans;
@@ -242,7 +259,9 @@ export async function GET(request: NextRequest) {
 
     const bestFocusHour =
       focusMinutesByHour.size > 0
-        ? Array.from(focusMinutesByHour.entries()).sort((a, b) => b[1] - a[1])[0]
+        ? Array.from(focusMinutesByHour.entries()).sort(
+            (a, b) => b[1] - a[1],
+          )[0]
         : null;
     const averageSessionLength =
       focusSessions.length > 0
@@ -281,7 +300,9 @@ export async function GET(request: NextRequest) {
           longestStreak: heatmapStats.longestStreak,
           totalFocusMinutes,
           averageSessionLength,
-          bestFocusHour: bestFocusHour ? formatHourLabel(bestFocusHour[0]) : null,
+          bestFocusHour: bestFocusHour
+            ? formatHourLabel(bestFocusHour[0])
+            : null,
           totalMaterials: totalPlans + flashcardDeckCount + quizzes.length,
         },
         charts: {
@@ -309,7 +330,12 @@ export async function GET(request: NextRequest) {
         },
         hasActivity: allSessions.length > 0,
       },
-      { status: 200 },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      },
     );
   } catch (error) {
     if (error instanceof AuthError) {

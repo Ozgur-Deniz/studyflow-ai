@@ -54,8 +54,10 @@ const MODE_DURATIONS: Record<PomodoroMode, number> = {
   longBreak: 15 * 60,
 };
 
-const COMPLETION_MESSAGES: Record<PomodoroMode, string> = {
-  focus: "Focus is finished. Great job, you earned 25 XP!",
+const BREAK_COMPLETION_MESSAGES: Record<
+  Exclude<PomodoroMode, "focus">,
+  string
+> = {
   shortBreak: "Break is finished. Ready for the next focus session?",
   longBreak: "Long break is finished. Ready to focus again?",
 };
@@ -175,7 +177,13 @@ export function PomodoroTimer() {
         audio.play().catch(() => undefined);
       }
 
-      toast.success(COMPLETION_MESSAGES[mode]);
+      toast.success(
+        mode === "focus"
+          ? `Focus is finished. Great job, you earned ${Math.round(
+              MODE_DURATIONS.focus / 60,
+            )} XP!`
+          : BREAK_COMPLETION_MESSAGES[mode],
+      );
 
       try {
         if (mode === "focus") {
@@ -186,6 +194,7 @@ export function PomodoroTimer() {
             },
             body: JSON.stringify({
               actionType: "POMODORO_FOCUS",
+              durationSeconds: MODE_DURATIONS.focus,
             }),
           });
         }

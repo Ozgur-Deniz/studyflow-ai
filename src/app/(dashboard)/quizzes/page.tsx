@@ -356,7 +356,7 @@ function QuizzesContent() {
           </div>
         </div>
 
-        <div className="grid min-h-[34rem] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white/75 shadow-soft-lg backdrop-blur-xl lg:h-[calc(100vh-14rem)] lg:grid-cols-[21rem_1fr]">
+        <div className="grid min-h-[34rem] min-w-0 grid-cols-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white/75 shadow-soft-lg backdrop-blur-xl lg:h-[calc(100vh-14rem)] lg:grid-cols-[21rem_minmax(0,1fr)]">
           <aside className="flex min-h-0 flex-col border-b border-white/70 bg-surface/72 backdrop-blur lg:border-b-0 lg:border-r">
             <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
               <div className="flex items-center gap-2">
@@ -466,7 +466,7 @@ function QuizzesContent() {
             </div>
           </aside>
 
-          <section className="flex min-h-0 flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-5 py-8">
+          <section className="flex min-h-0 min-w-0 flex-col overflow-y-auto bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-4 py-6 sm:px-5 lg:px-6 lg:py-8">
             {!selectedQuiz ? (
               <div className="m-auto max-w-md text-center">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-foreground text-white shadow-soft">
@@ -489,7 +489,7 @@ function QuizzesContent() {
                 </p>
               </div>
             ) : isFinished ? (
-              <div className="mx-auto w-full max-w-4xl animate-fade-in-up">
+              <div className="mx-auto w-full max-w-4xl animate-fade-in-up pb-1">
                 <div className="mb-6 rounded-[2rem] border border-white/80 bg-white/90 p-6 shadow-soft-lg backdrop-blur">
                   <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                     <div>
@@ -565,7 +565,9 @@ function QuizzesContent() {
                                       },
                                     )}`}
                                   >
-                                    <span>{option}</span>
+                                    <span className="min-w-0 [overflow-wrap:anywhere]">
+                                      {option}
+                                    </span>
                                     {isCorrectAnswer && (
                                       <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
                                     )}
@@ -595,8 +597,8 @@ function QuizzesContent() {
                 </button>
               </div>
             ) : (
-              <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center">
-                <div className="mb-6">
+              <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col">
+                <div className="mb-5 shrink-0">
                   <h2 className="text-3xl font-semibold tracking-tight text-foreground">
                     {selectedQuiz.title}
                   </h2>
@@ -615,9 +617,9 @@ function QuizzesContent() {
 
                 <div
                   key={currentQuestion?.id}
-                  className="animate-slide-up rounded-[2rem] border border-white/80 bg-white/90 p-6 shadow-soft-lg backdrop-blur"
+                  className="animate-slide-up min-w-0 rounded-[2rem] border border-white/80 bg-white/90 p-5 shadow-soft-lg backdrop-blur sm:p-6"
                 >
-                  <h3 className="text-xl font-semibold leading-8 tracking-tight text-foreground">
+                  <h3 className="break-words text-lg font-semibold leading-7 tracking-tight text-foreground sm:text-xl sm:leading-8">
                     {currentQuestion?.questionText}
                   </h3>
                   <div className="mt-6 space-y-3">
@@ -632,7 +634,7 @@ function QuizzesContent() {
                           onClick={() =>
                             selectAnswer(currentQuestion.id, option)
                           }
-                          className={`w-full rounded-2xl border px-4 py-3 text-left text-base font-medium transition-all duration-300 ${
+                          className={`w-full rounded-2xl border px-4 py-3 text-left text-base font-medium [overflow-wrap:anywhere] transition-all duration-300 ${
                             isSelected
                               ? "border-primary/25 bg-primary-soft text-primary shadow-soft-sm"
                               : "border-border bg-white/90 text-slate-700 hover:-translate-y-0.5 hover:border-primary/15 hover:bg-white hover:shadow-soft-sm"
@@ -645,12 +647,12 @@ function QuizzesContent() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between gap-3">
+                <div className="mt-5 flex shrink-0 flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
                   <button
                     type="button"
                     onClick={goToPreviousQuestion}
                     disabled={isFirstQuestion}
-                    className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-slate-700 shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:text-primary hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous Question
@@ -661,7 +663,7 @@ function QuizzesContent() {
                       type="button"
                       onClick={() => void handleFinishQuiz()}
                       disabled={completingQuizId === selectedQuiz.id}
-                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {completingQuizId === selectedQuiz.id ? (
                         <>
@@ -679,7 +681,7 @@ function QuizzesContent() {
                     <button
                       type="button"
                       onClick={goToNextQuestion}
-                      className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      className="flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-white shadow-soft-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-primary/10"
                     >
                       Next Question
                       <ChevronRight className="h-4 w-4" />
