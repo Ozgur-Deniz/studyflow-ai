@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getHeatmapData } from "@/app/actions/heatmap.actions";
 import { AIRecommendationCard } from "@/components/dashboard/AIRecommendationCard";
 import { QuickActionsGrid } from "@/components/dashboard/QuickActionsGrid";
 import {
@@ -16,6 +15,13 @@ interface DashboardStats {
   currentStreak: number;
   flashcardDecks: number;
   quizzesSolved: number;
+}
+
+interface HeatmapApiResponse {
+  heatmapData: HeatmapDataPoint[];
+  stats: {
+    currentStreak: number;
+  };
 }
 
 const DASHBOARD_REVEAL_TIMING = {
@@ -47,32 +53,73 @@ export default function DashboardPage() {
   const [typedUserName, setTypedUserName] = useState("");
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchDashboardData = async () => {
       try {
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
         // 1. Fetch Session
-        const sessionRes = await fetch("/api/auth/session");
-        if (sessionRes.ok) {
+        const sessionRes = await fetch("/api/auth/session", {
+          cache: "no-store",
+        });
+        if (sessionRes.ok && isMounted) {
           const sessionData = await sessionRes.json();
           setUserName(sessionData.user.name);
         }
 
         // 2. Fetch Stats
-        const statsRes = await fetch("/api/dashboard/stats");
-        if (statsRes.ok) {
+        const statsRes = await fetch("/api/dashboard/stats", {
+          cache: "no-store",
+        });
+        if (statsRes.ok && isMounted) {
           const statsData = await statsRes.json();
           setStats(statsData.stats);
         }
 
-        const { heatmapData } = await getHeatmapData();
-        setHeatmapData(heatmapData);
+        const heatmapRes = await fetch(
+          `/api/dashboard/heatmap?timeZone=${encodeURIComponent(timeZone)}`,
+          {
+            cache: "no-store",
+          },
+        );
+
+        if (heatmapRes.ok && isMounted) {
+          const heatmapBody = (await heatmapRes.json()) as HeatmapApiResponse;
+
+          setHeatmapData(heatmapBody.heatmapData);
+          setStats((currentStats) => ({
+            ...currentStats,
+            currentStreak: heatmapBody.stats.currentStreak,
+          }));
+        }
       } catch (error) {
         console.error("[Dashboard] Error during data fetch:", error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    fetchDashboardData();
+    void fetchDashboardData();
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") {
+        void fetchDashboardData();
+      }
+    };
+
+    window.addEventListener("focus", fetchDashboardData);
+    window.addEventListener("pageshow", fetchDashboardData);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener("focus", fetchDashboardData);
+      window.removeEventListener("pageshow", fetchDashboardData);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
   }, []);
 
   useEffect(() => {

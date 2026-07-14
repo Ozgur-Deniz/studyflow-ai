@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 export const XP_RULES = {
   POMODORO_FOCUS: {
-    points: 25,
+    pointsPerMinute: 1,
     dailyLimit: 200,
     durationMinutes: 25,
   },
@@ -44,6 +44,13 @@ export const XP_RULES = {
 } as const;
 
 export type XpActionType = keyof typeof XP_RULES | "QUIZ_COMPLETED";
+
+export function calculatePomodoroXp(durationMinutes: number): number {
+  return Math.max(
+    1,
+    Math.floor(durationMinutes * XP_RULES.POMODORO_FOCUS.pointsPerMinute),
+  );
+}
 
 type AwardXpInput = {
   userId: string;
@@ -127,6 +134,18 @@ export async function awardFixedXp(
   userId: string,
   actionType: Exclude<XpActionType, "QUIZ_COMPLETED">,
 ) {
+  if (actionType === "POMODORO_FOCUS") {
+    const rule = XP_RULES.POMODORO_FOCUS;
+
+    return awardXp({
+      userId,
+      actionType,
+      points: calculatePomodoroXp(rule.durationMinutes),
+      dailyLimit: rule.dailyLimit,
+      durationMinutes: rule.durationMinutes,
+    });
+  }
+
   const rule = XP_RULES[actionType];
 
   return awardXp({

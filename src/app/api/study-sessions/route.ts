@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AuthError, getUserIdFromRequest } from "@/lib/auth";
-import { awardFixedXp } from "@/lib/xp";
+import { awardXp, calculatePomodoroXp, XP_RULES } from "@/lib/xp";
 
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromRequest(request);
     const body = (await request.json()) as {
       actionType?: unknown;
+      durationSeconds?: unknown;
     };
 
     if (body.actionType !== "POMODORO_FOCUS") {
@@ -16,7 +17,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const xp = await awardFixedXp(userId, "POMODORO_FOCUS");
+    const durationSeconds =
+      typeof body.durationSeconds === "number" &&
+      Number.isFinite(body.durationSeconds) &&
+      body.durationSeconds > 0
+        ? body.durationSeconds
+        : XP_RULES.POMODORO_FOCUS.durationMinutes * 60;
+    const durationMinutes = Math.max(1, Math.round(durationSeconds / 60));
+    const xp = await awardXp({
+      userId,
+      actionType: "POMODORO_FOCUS",
+      points: calculatePomodoroXp(durationMinutes),
+      dailyLimit: XP_RULES.POMODORO_FOCUS.dailyLimit,
+      durationMinutes,
+    });
 
     return NextResponse.json({ success: true, xp }, { status: 201 });
   } catch (error) {

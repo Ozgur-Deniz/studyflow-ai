@@ -12,6 +12,7 @@ import {
   Layers,
   ClipboardList,
   User,
+  Timer,
 } from "lucide-react";
 import { Logo } from "../ui/Logo";
 import { UserAvatar } from "../ui/UserAvatar";
@@ -59,6 +60,7 @@ export function Sidebar({
   const menuItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Study Plans", path: "/study-plans", icon: BookOpen },
+    { name: "Focus Zone", path: "/focus-zone", icon: Timer },
     { name: "Flashcards", path: "/flashcards", icon: Layers },
     { name: "Quizzes", path: "/quizzes", icon: ClipboardList },
     { name: "AI Assistant", path: "/ai-assistant", icon: Sparkles },

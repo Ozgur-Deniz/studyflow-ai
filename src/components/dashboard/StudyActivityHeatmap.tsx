@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 type IntensityLevel = "none" | "low" | "moderate" | "high" | "very-high";
 
@@ -71,8 +65,9 @@ const LEGEND_LEVELS: IntensityLevel[] = [
   "very-high",
 ];
 const CELL_SIZE = 11;
-const CELL_GAP = 3;
-const DAY_LABEL_WIDTH = 28;
+const GRID_CELL_SIZE = "clamp(7px,0.6vw,10px)";
+const GRID_ROW_GAP = "clamp(2px,0.18vw,3px)";
+const WEEK_COLUMN_GAP = "clamp(1px,0.18vw,3px)";
 const LEVEL_REVEAL_DELAYS: Record<IntensityLevel, number> = {
   none: 0,
   low: 300,
@@ -185,7 +180,7 @@ export function buildContributionGrid(
     week.push({
       date,
       dateKey,
-      count: isInRange ? contribution ?? 0 : 0,
+      count: isInRange ? (contribution ?? 0) : 0,
       isInRange,
     });
     weeks[weekIndex] = week;
@@ -278,7 +273,9 @@ export function getIntensityClass(level: IntensityLevel): string {
   return classes[level];
 }
 
-function getRealContributionDays(grid: ContributionGridData): ContributionDay[] {
+function getRealContributionDays(
+  grid: ContributionGridData,
+): ContributionDay[] {
   return grid.weeks.flat().filter((day) => day.isInRange);
 }
 
@@ -300,13 +297,16 @@ function getLongestStreak(days: ContributionDay[]): number {
 }
 
 function getMostActiveDay(days: ContributionDay[]): string {
-  const mostActiveDay = days.reduce<ContributionDay | null>((currentMost, day) => {
-    if (!currentMost || day.count > currentMost.count) {
-      return day;
-    }
+  const mostActiveDay = days.reduce<ContributionDay | null>(
+    (currentMost, day) => {
+      if (!currentMost || day.count > currentMost.count) {
+        return day;
+      }
 
-    return currentMost;
-  }, null);
+      return currentMost;
+    },
+    null,
+  );
 
   if (!mostActiveDay || mostActiveDay.count === 0) {
     return "No activity";
@@ -322,8 +322,7 @@ function calculateStats(days: ContributionDay[]): StudyStat[] {
   const totalPoints = days.reduce((total, day) => total + day.count, 0);
   const activeDays = days.filter((day) => day.count > 0);
   const todayKey = getDateKey(new Date());
-  const todayPoints =
-    days.find((day) => day.dateKey === todayKey)?.count ?? 0;
+  const todayPoints = days.find((day) => day.dateKey === todayKey)?.count ?? 0;
   const averageDailyPoints =
     activeDays.length > 0 ? Math.round(totalPoints / activeDays.length) : 0;
   const peakDailyPoints = days.reduce(
@@ -363,7 +362,9 @@ function calculateStats(days: ContributionDay[]): StudyStat[] {
   ];
 }
 
-function calculateLevelDistribution(days: ContributionDay[]): LevelDistributionItem[] {
+function calculateLevelDistribution(
+  days: ContributionDay[],
+): LevelDistributionItem[] {
   const totalDays = days.length || 1;
   const countsByLevel = LEGEND_LEVELS.reduce(
     (totals, level) => ({
@@ -440,7 +441,7 @@ function ActivityDonutChart({
 
   return (
     <div
-      className={`relative mx-auto h-[250px] w-full shrink-0 transition-[opacity,transform] duration-[720ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`relative mx-auto h-[220px] w-full shrink-0 transition-[opacity,transform] duration-[720ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
         shouldShowDonut ? "scale-100 opacity-100" : "scale-95 opacity-0"
       }`}
       style={{
@@ -455,8 +456,8 @@ function ActivityDonutChart({
             data={distribution}
             dataKey="count"
             nameKey="label"
-            innerRadius={64}
-            outerRadius={94}
+            innerRadius={56}
+            outerRadius={82}
             paddingAngle={4}
             stroke="none"
             isAnimationActive={shouldShowDonut}
@@ -483,10 +484,10 @@ function ActivityDonutChart({
             : `${DONUT_REVEAL_DELAY + 420}ms`,
         }}
       >
-        <span className="text-[31px] font-semibold leading-none text-slate-950">
+        <span className="text-[27px] font-semibold leading-none text-slate-950">
           {activeDays}
         </span>
-        <span className="mt-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400">
+        <span className="mt-1 text-[9px] font-medium uppercase tracking-[0.1em] text-slate-400">
           Active Days
         </span>
       </div>
@@ -563,7 +564,11 @@ function ActivityLegend() {
           const label = `${LEVEL_LABELS[level]}: ${LEVEL_POINT_RANGES[level]}`;
 
           return (
-            <span key={level} className="flex items-center gap-1.5" title={label}>
+            <span
+              key={level}
+              className="flex items-center gap-1.5"
+              title={label}
+            >
               <span
                 className={`rounded-sm border ${getIntensityClass(level)}`}
                 style={{
@@ -586,8 +591,8 @@ function ActivityScoringGuide() {
   const scoringRules = [
     {
       action: "Pomodoro focus",
-      points: "25 XP",
-      detail: "Daily limit: 200 XP.",
+      points: "1 XP/min",
+      detail: "Daily limit: 200 XP. Break timers do not add XP.",
     },
     {
       action: "Quiz completed",
@@ -615,7 +620,8 @@ function ActivityScoringGuide() {
     <div className="mt-3 space-y-2 border-t border-slate-200 pt-3 text-[12px] leading-5 text-slate-500">
       <p>
         XP is calculated from database records: each heatmap day shows the sum
-        of <span className="font-medium text-slate-700">StudySession.points</span>{" "}
+        of{" "}
+        <span className="font-medium text-slate-700">StudySession.points</span>{" "}
         created on that date. Break timers do not add XP.
       </p>
       <div className="grid gap-x-5 gap-y-1 sm:grid-cols-[max-content_max-content_minmax(0,1fr)]">
@@ -634,72 +640,69 @@ function ActivityScoringGuide() {
 function ContributionGrid({
   grid,
   monthLabels,
-  weekColumnTemplate,
+  todayKey,
   isVisible,
   shouldReduceMotion,
 }: {
   grid: ContributionGridData;
   monthLabels: MonthLabel[];
-  weekColumnTemplate: string;
+  todayKey: string;
   isVisible: boolean;
   shouldReduceMotion: boolean;
 }) {
+  const weekColumnTemplate = `repeat(${grid.weeks.length}, minmax(0, 1fr))`;
+
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60 p-4 shadow-sm shadow-slate-200/35 sm:p-5">
-      <div className="flex min-h-[150px] flex-1 items-center overflow-x-auto overflow-y-hidden pb-1 lg:overflow-hidden">
-        <div
-          className="min-w-max flex-1 lg:min-w-0"
-        >
+    <div className="flex h-full w-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-slate-50/60 p-4 shadow-sm shadow-slate-200/35 sm:p-5">
+      <div className="w-full min-w-0 pb-4">
+        <div className="w-full min-w-0">
           <div
-            className="mb-1 grid"
-            style={{
-              gridTemplateColumns: `${DAY_LABEL_WIDTH}px ${weekColumnTemplate}`,
-            }}
+            className="mb-1 grid w-full min-w-0 grid-cols-[32px_minmax(0,1fr)] gap-x-1.5"
           >
             <div aria-hidden="true" />
             <div
-              className="grid h-5 overflow-visible"
+              className="grid h-5 w-full min-w-0 overflow-visible"
               style={{
                 gridTemplateColumns: weekColumnTemplate,
-                columnGap: CELL_GAP,
+                columnGap: WEEK_COLUMN_GAP,
               }}
             >
-              {monthLabels.map((month) => (
-                <span
-                  key={`${month.label}-${month.weekIndex}`}
-                  className="whitespace-nowrap pl-0.5 text-xs font-medium leading-none text-slate-500"
-                  style={{
-                    gridColumn: `${month.weekIndex + 1} / span ${month.weekSpan}`,
-                    gridRow: 1,
-                    justifySelf: "start",
-                    alignSelf: "end",
-                  }}
-                >
-                  {month.label}
-                </span>
-              ))}
+              {monthLabels.map((month) => {
+                const isLastVisibleMonth =
+                  month.weekIndex + month.weekSpan >= grid.weeks.length;
+
+                return (
+                  <span
+                    key={`${month.label}-${month.weekIndex}`}
+                    className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pl-0.5 text-xs font-medium leading-none text-slate-500"
+                    style={{
+                      gridColumn: `${month.weekIndex + 1} / span ${month.weekSpan}`,
+                      gridRow: 1,
+                      justifySelf: isLastVisibleMonth ? "end" : "start",
+                      alignSelf: "end",
+                    }}
+                  >
+                    {month.label}
+                  </span>
+                );
+              })}
             </div>
           </div>
 
           <div
-            className="grid"
-            style={{
-              gridTemplateColumns: `${DAY_LABEL_WIDTH}px ${weekColumnTemplate}`,
-            }}
+            className="grid w-full min-w-0 grid-cols-[32px_minmax(0,1fr)] gap-x-1.5"
           >
             <div
               className="grid"
               style={{
-                rowGap: CELL_GAP,
+                gridTemplateRows: `repeat(7, ${GRID_CELL_SIZE})`,
+                rowGap: GRID_ROW_GAP,
               }}
             >
               {DAY_LABELS.map((label, index) => (
                 <div
                   key={`${label}-${index}`}
                   className="flex items-center text-[10px] font-medium leading-none text-slate-400"
-                  style={{
-                    height: CELL_SIZE,
-                  }}
                 >
                   {label}
                 </div>
@@ -707,12 +710,12 @@ function ContributionGrid({
             </div>
 
             <div
-              className="grid"
+              className="grid w-full min-w-0 justify-items-center"
               style={{
                 gridTemplateColumns: weekColumnTemplate,
-                gridTemplateRows: `repeat(7, ${CELL_SIZE}px)`,
-                columnGap: CELL_GAP,
-                rowGap: CELL_GAP,
+                gridTemplateRows: `repeat(7, ${GRID_CELL_SIZE})`,
+                columnGap: WEEK_COLUMN_GAP,
+                rowGap: GRID_ROW_GAP,
               }}
             >
               {monthLabels
@@ -732,11 +735,12 @@ function ContributionGrid({
               {grid.weeks.map((week, weekIndex) =>
                 week.map((day, dayIndex) => {
                   const level = getIntensityLevel(day.count);
+                  const isToday = day.dateKey === todayKey;
 
                   return (
                     <div
                       key={day.dateKey}
-                      className="z-10 flex items-center justify-center"
+                      className="z-10 flex min-w-0 items-center justify-center"
                       style={{
                         gridColumn: weekIndex + 1,
                         gridRow: dayIndex + 1,
@@ -744,9 +748,13 @@ function ContributionGrid({
                     >
                       {day.isInRange ? (
                         <div
-                          className={`h-[11px] w-[11px] rounded-full border transition-[opacity,transform] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-125 hover:ring-2 hover:ring-emerald-200 ${getIntensityClass(
+                          className={`size-[clamp(7px,0.6vw,10px)] shrink-0 rounded-full border transition-[opacity,transform] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-125 hover:ring-2 hover:ring-emerald-200 ${getIntensityClass(
                             level,
                           )} ${
+                            isToday
+                              ? "ring-2 ring-emerald-400 ring-offset-1"
+                              : ""
+                          } ${
                             isVisible || shouldReduceMotion
                               ? "opacity-100 translate-y-0 scale-100"
                               : "opacity-0 translate-y-1 scale-[0.85]"
@@ -759,11 +767,14 @@ function ContributionGrid({
                                   Math.min((weekIndex + dayIndex) * 3, 60)
                                 }ms`,
                           }}
-                          title={`${formatDateLabel(day.date)}: ${day.count} XP`}
-                          aria-label={`${formatDateLabel(day.date)}: ${day.count} XP`}
+                          title={`${isToday ? "Today, " : ""}${formatDateLabel(day.date)}: ${day.count} XP`}
+                          aria-label={`${isToday ? "Today, " : ""}${formatDateLabel(day.date)}: ${day.count} XP`}
                         />
                       ) : (
-                        <div className="h-[11px] w-[11px]" aria-hidden="true" />
+                        <div
+                          className="size-[clamp(7px,0.6vw,10px)] shrink-0"
+                          aria-hidden="true"
+                        />
                       )}
                     </div>
                   );
@@ -824,7 +835,10 @@ export function StudyActivityHeatmap({
       ),
     [dateRange, grid.gridStartDate],
   );
-  const realContributionDays = useMemo(() => getRealContributionDays(grid), [grid]);
+  const realContributionDays = useMemo(
+    () => getRealContributionDays(grid),
+    [grid],
+  );
   const stats = useMemo(
     () => calculateStats(realContributionDays),
     [realContributionDays],
@@ -837,7 +851,7 @@ export function StudyActivityHeatmap({
     () => realContributionDays.filter((day) => day.count > 0).length,
     [realContributionDays],
   );
-  const weekColumnTemplate = `repeat(${grid.weeks.length}, minmax(${CELL_SIZE}px, 1fr))`;
+  const todayKey = getDateKey(today);
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -893,9 +907,9 @@ export function StudyActivityHeatmap({
   return (
     <section
       ref={sectionRef}
-      className="w-full rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
+      className="w-full min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex w-full min-w-0 flex-col gap-4">
         <div>
           <h2 className="text-[22px] font-semibold tracking-tight text-slate-950">
             Study Activity
@@ -905,17 +919,17 @@ export function StudyActivityHeatmap({
           </p>
         </div>
 
-        <div className="grid items-stretch gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid w-full min-w-0 items-stretch gap-5 xl:grid-cols-[minmax(0,4fr)_minmax(220px,1fr)]">
           <ContributionGrid
             grid={grid}
             monthLabels={monthLabels}
-            weekColumnTemplate={weekColumnTemplate}
+            todayKey={todayKey}
             isVisible={isVisible}
             shouldReduceMotion={shouldReduceMotion}
           />
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/45">
-            <div className="flex h-full flex-col justify-center gap-5 sm:flex-row sm:items-center xl:flex-col xl:items-stretch">
+          <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/45">
+            <div className="flex h-full w-full min-w-0 flex-col justify-center gap-5 sm:flex-row sm:items-center xl:flex-col xl:items-stretch">
               <ActivityDonutChart
                 distribution={levelDistribution}
                 activeDays={activeDays}

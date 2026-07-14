@@ -16,25 +16,28 @@ export type HeatmapStats = {
 function parseDateKey(dateKey: string): Date {
   const [year, month, day] = dateKey.split("-").map(Number);
 
-  return new Date(year, month - 1, day);
+  return new Date(Date.UTC(year, month - 1, day));
 }
 
 function formatDateKey(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
 
 function addDays(date: Date, days: number): Date {
   const nextDate = new Date(date);
-  nextDate.setDate(nextDate.getDate() + days);
+  nextDate.setUTCDate(nextDate.getUTCDate() + days);
 
   return nextDate;
 }
 
-export function calculateHeatmapStats(data: HeatmapDataPoint[]): HeatmapStats {
+export function calculateHeatmapStats(
+  data: HeatmapDataPoint[],
+  referenceDateKey = formatDateKey(new Date()),
+): HeatmapStats {
   const pointsByDate = new Map<string, number>();
 
   data.forEach((item) => {
@@ -87,13 +90,13 @@ export function calculateHeatmapStats(data: HeatmapDataPoint[]): HeatmapStats {
     cursor = addDays(cursor, 1);
   }
 
-  const todayKey = formatDateKey(new Date());
+  const yesterdayKey = formatDateKey(addDays(parseDateKey(referenceDateKey), -1));
   const currentStreakEnd =
-    (pointsByDate.get(todayKey) ?? 0) > 0
-      ? parseDateKey(todayKey)
-      : [...sortedDays]
-          .reverse()
-          .find((day) => day.count > 0)?.dateObject ?? null;
+    (pointsByDate.get(referenceDateKey) ?? 0) > 0
+      ? parseDateKey(referenceDateKey)
+      : (pointsByDate.get(yesterdayKey) ?? 0) > 0
+        ? parseDateKey(yesterdayKey)
+        : null;
 
   let currentStreak = 0;
 

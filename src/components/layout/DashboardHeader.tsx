@@ -1,7 +1,6 @@
 "use client";
 
 import { Search, Bell } from "lucide-react";
-import { PomodoroTimer } from "./PomodoroTimer";
 
 export function DashboardHeader() {
   return (
@@ -35,8 +34,6 @@ export function DashboardHeader() {
 
         {/* Divider */}
         <div className="w-px h-9 bg-[#e2e8f0]" />
-
-        <PomodoroTimer />
       </div>
     </header>
   );
