@@ -3,16 +3,16 @@
 :root {
   color-scheme: light;
 
-  --background: #f6f7fb;
+  --background: #f4fbf6;
   --foreground: #101828;
   --surface: #ffffff;
-  --surface-raised: #fbfcff;
-  --surface-muted: #f0f3f8;
+  --surface-raised: #fbfffc;
+  --surface-muted: #edf7f0;
 
-  --primary: #5b5cf6;
-  --primary-hover: #4748d9;
-  --primary-soft: #eceeff;
-  --secondary: #14b8a6;
+  --primary: #0a9f43;
+  --primary-hover: #087b36;
+  --primary-soft: #e9fbee;
+  --secondary: #4ade80;
 
   --muted: #667085;
   --subtle: #98a2b3;
@@ -35,8 +35,8 @@
   --shadow-soft: 0 18px 55px -28px rgba(15, 23, 42, 0.24);
   --shadow-soft-lg: 0 26px 80px -34px rgba(15, 23, 42, 0.3);
   --shadow-glow:
-    0 0 0 1px rgba(91, 92, 246, 0.08),
-    0 20px 60px -30px rgba(91, 92, 246, 0.45);
+    0 0 0 1px rgba(10, 159, 67, 0.1),
+    0 20px 60px -30px rgba(16, 185, 75, 0.42);
 
   --font-studyflow:
     "Inter", "Geist", ui-sans-serif, system-ui, -apple-system,
@@ -94,9 +94,9 @@ body {
   min-height: 100%;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(91, 92, 246, 0.12), transparent 34rem),
-    radial-gradient(circle at 85% 12%, rgba(20, 184, 166, 0.1), transparent 30rem),
-    linear-gradient(180deg, #fbfcff 0%, var(--background) 42%, #f2f5fa 100%);
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 34rem),
+    radial-gradient(circle at 85% 12%, rgba(74, 222, 128, 0.1), transparent 30rem),
+    linear-gradient(180deg, #fbfffc 0%, var(--background) 42%, #eef8f1 100%);
   color: var(--foreground);
   font-family: var(--font-studyflow);
   font-feature-settings:
@@ -124,8 +124,16 @@ a {
   text-decoration: none;
 }
 
+.auth-footer-link {
+  color: var(--primary);
+}
+
+.auth-footer-link:hover {
+  color: var(--primary-hover);
+}
+
 ::selection {
-  background: rgba(91, 92, 246, 0.18);
+  background: rgba(34, 197, 94, 0.2);
   color: var(--foreground);
 }
 
@@ -154,7 +162,7 @@ input:focus,
 textarea:focus,
 select:focus {
   border-color: var(--primary) !important;
-  box-shadow: 0 0 0 4px rgba(91, 92, 246, 0.12) !important;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14) !important;
 }
 
 input.ai-chat-input:focus {
@@ -230,10 +238,12 @@ input.ai-chat-input:focus {
 @keyframes pulseGlow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.3);
+    opacity: 0.36;
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+    opacity: 0;
+    transform: scale(2.65);
   }
 }
 
@@ -249,10 +259,15 @@ input.ai-chat-input:focus {
 
 @keyframes softShimmer {
   0% {
-    background-position: -220% 0;
+    opacity: 0;
+    transform: translate3d(-140%, 0, 0) skewX(-12deg);
+  }
+  18% {
+    opacity: 0.55;
   }
   100% {
-    background-position: 220% 0;
+    opacity: 0;
+    transform: translate3d(140%, 0, 0) skewX(-12deg);
   }
 }
 
@@ -301,12 +316,43 @@ input.ai-chat-input:focus {
 }
 
 .animate-pulse-glow {
+  position: relative;
+  isolation: isolate;
+}
+
+.animate-pulse-glow::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgba(22, 163, 74, 0.34);
+  transform: scale(1);
+  opacity: 0.36;
   animation: pulseGlow 2.4s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .animate-shimmer {
-  background-size: 220% 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 46%;
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.78) 48%,
+    transparent 100%
+  );
+  transform: translate3d(-140%, 0, 0) skewX(-12deg);
   animation: softShimmer 2.4s linear infinite;
+  will-change: transform, opacity;
 }
 
 .animate-float {
@@ -355,7 +401,7 @@ input.ai-chat-input:focus {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #101828 0%, #5b5cf6 45%, #14b8a6 100%);
+  background: linear-gradient(135deg, #071a33 0%, #0a9f43 52%, #4ade80 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -392,7 +438,7 @@ input.ai-chat-input:focus {
   inset: -1px;
   z-index: -1;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(91, 92, 246, 0.38), rgba(20, 184, 166, 0.28), rgba(228, 232, 240, 0.8));
+  background: linear-gradient(135deg, rgba(10, 159, 67, 0.38), rgba(74, 222, 128, 0.3), rgba(228, 232, 240, 0.8));
   background-size: 200% 200%;
   animation: borderFlow 8s ease infinite;
 }
@@ -411,7 +457,7 @@ input.ai-chat-input:focus {
   border-radius: 0 999px 999px 0;
   background: linear-gradient(180deg, var(--primary), var(--secondary));
   transform: translateY(-50%);
-  box-shadow: 0 0 20px rgba(91, 92, 246, 0.35);
+  box-shadow: 0 0 20px rgba(10, 159, 67, 0.35);
 }
 
 .Toastify__toast-container {

@@ -27,9 +27,9 @@ type FocusBrief = {
 };
 
 const stepAccentClasses = [
-  "bg-violet-200",
-  "bg-violet-400",
-  "bg-violet-700",
+  "bg-green-200",
+  "bg-green-400",
+  "bg-green-800",
 ];
 
 function buildFocusBrief(stats: RecommendationStats): FocusBrief {
@@ -105,7 +105,7 @@ function buildFocusBrief(stats: RecommendationStats): FocusBrief {
       ],
       status: [
         { label: "Materials", value: "Ready", tone: "text-emerald-700 bg-emerald-50" },
-        { label: "AI", value: "Unused", tone: "text-violet-700 bg-violet-50" },
+        { label: "AI", value: "Unused", tone: "text-green-800 bg-green-50" },
       ],
     };
   }
@@ -121,7 +121,7 @@ function buildFocusBrief(stats: RecommendationStats): FocusBrief {
     ],
     status: [
       { label: "System", value: "Ready", tone: "text-emerald-700 bg-emerald-50" },
-      { label: "Next", value: "Review", tone: "text-indigo-700 bg-indigo-50" },
+      { label: "Next", value: "Review", tone: "text-emerald-800 bg-emerald-50" },
     ],
   };
 }
@@ -136,27 +136,27 @@ export function AIRecommendationCard({
   const brief = buildFocusBrief(stats);
 
   return (
-    <section className="relative w-full overflow-hidden rounded-3xl border border-slate-200 bg-[radial-gradient(circle_at_12%_20%,rgba(99,102,241,0.14),transparent_28%),radial-gradient(circle_at_86%_18%,rgba(20,184,166,0.12),transparent_26%),linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#eef2ff_100%)] p-5 shadow-soft sm:p-6">
+    <section className="relative w-full overflow-hidden rounded-3xl border border-slate-200 bg-[radial-gradient(circle_at_12%_20%,rgba(10,159,67,0.14),transparent_28%),radial-gradient(circle_at_86%_18%,rgba(20,184,166,0.12),transparent_26%),linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#ecfdf3_100%)] p-5 shadow-soft sm:p-6">
       <div
         className="pointer-events-none absolute inset-0 opacity-35"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px)",
+            "linear-gradient(rgba(10,159,67,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(10,159,67,0.07) 1px, transparent 1px)",
           backgroundSize: "30px 30px",
         }}
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(255,255,255,0.78)_42%,transparent_58%)] bg-[length:220%_100%] opacity-50 animate-shimmer" />
-      <div className="pointer-events-none absolute inset-x-6 top-5 h-px bg-gradient-to-r from-transparent via-indigo-300/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-6 top-5 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent" />
       <div className="pointer-events-none absolute inset-x-10 bottom-5 h-px bg-gradient-to-r from-transparent via-emerald-300/60 to-transparent" />
-      <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 animate-float rounded-full bg-indigo-200/45 blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 animate-float rounded-full bg-emerald-200/45 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 left-20 h-56 w-56 animate-float-slow rounded-full bg-emerald-200/35 blur-3xl" />
-      <div className="pointer-events-none absolute right-1/3 top-1/2 h-20 w-20 animate-pulse rounded-full bg-violet-200/30 blur-2xl" />
+      <div className="pointer-events-none absolute right-1/3 top-1/2 h-20 w-20 animate-pulse rounded-full bg-green-200/30 blur-2xl" />
 
       <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="min-w-0 rounded-2xl border border-white/80 bg-white/74 p-5 shadow-soft-sm backdrop-blur-xl">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-indigo-600">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-emerald-700">
                 <Sparkles className="h-3.5 w-3.5" />
                 Focus Brief
               </div>
@@ -170,7 +170,7 @@ export function AIRecommendationCard({
 
             <Link
               href="/ai-assistant"
-              className="inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-indigo-100 bg-white px-4 text-[13px] font-medium text-indigo-600 shadow-soft-sm transition hover:-translate-y-0.5 hover:bg-indigo-50 hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-indigo-100"
+              className="inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-emerald-100 bg-white px-4 text-[13px] font-medium text-emerald-700 shadow-soft-sm transition hover:-translate-y-0.5 hover:bg-emerald-50 hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-emerald-100"
             >
               Ask AI
               <ArrowRight className="h-4 w-4" />
@@ -181,19 +181,19 @@ export function AIRecommendationCard({
             {brief.sequence.map((item, index) => (
               <div
                 key={item}
-                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/82 px-3.5 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-100 hover:bg-white hover:shadow-soft-sm"
+                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/82 px-3.5 py-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-100 hover:bg-white hover:shadow-soft-sm"
               >
                 <div
                   className={`pointer-events-none absolute inset-x-0 top-0 h-1 ${
-                    stepAccentClasses[index] ?? "bg-violet-400"
+                    stepAccentClasses[index] ?? "bg-green-400"
                   }`}
                 />
                 <div className="flex items-start gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-950 text-[12px] font-semibold text-white shadow-soft-sm transition group-hover:scale-105 group-hover:bg-indigo-600">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-950 text-[12px] font-semibold text-white shadow-soft-sm transition group-hover:scale-105 group-hover:bg-emerald-700">
                     {index + 1}
                   </span>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                    <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-600">
                       Step {index + 1}
                     </p>
                     <p className="mt-1 text-[13px] font-medium leading-5 text-slate-700">
@@ -209,7 +209,7 @@ export function AIRecommendationCard({
         <div className="rounded-2xl border border-white/80 bg-white/74 p-5 shadow-soft-sm backdrop-blur-xl">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
+              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-600">
                 Workspace State
               </p>
               <p className="mt-1 text-[18px] font-semibold text-slate-950">
@@ -237,7 +237,7 @@ export function AIRecommendationCard({
 
           <div className="mt-4 space-y-2 border-t border-slate-200 pt-4">
             <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500">
-              <Clock3 className="h-4 w-4 text-indigo-500" />
+              <Clock3 className="h-4 w-4 text-emerald-500" />
               Suggested session: 30 minutes
             </div>
             <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500">
@@ -245,7 +245,7 @@ export function AIRecommendationCard({
               One clear task beats another menu choice
             </div>
             <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500">
-              <MessageSquareText className="h-4 w-4 text-violet-500" />
+              <MessageSquareText className="h-4 w-4 text-green-500" />
               Ask AI only when the next step is unclear
             </div>
           </div>

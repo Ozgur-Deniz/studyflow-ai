@@ -21,12 +21,12 @@ const MODE_CONFIG: Record<
 > = {
   focus: {
     label: "Focus",
-    accent: "#5b5cf6",
-    accentMuted: "rgba(91, 92, 246, 0.15)",
-    iconBg: "rgba(91, 92, 246, 0.12)",
-    iconColor: "#5b5cf6",
-    ringColor: "#5b5cf6",
-    glowColor: "rgba(91, 92, 246, 0.25)",
+    accent: "#0a9f43",
+    accentMuted: "rgba(10, 159, 67, 0.15)",
+    iconBg: "rgba(10, 159, 67, 0.12)",
+    iconColor: "#0a9f43",
+    ringColor: "#0a9f43",
+    glowColor: "rgba(10, 159, 67, 0.25)",
   },
   shortBreak: {
     label: "Break",

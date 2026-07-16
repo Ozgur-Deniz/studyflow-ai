@@ -449,7 +449,7 @@ function QuizzesContent() {
                           type="button"
                           onClick={() => void handleDeleteQuiz(quiz)}
                           disabled={deletingQuizId === quiz.id}
-                          className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-600 transition hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
                           aria-label="Delete completed quiz"
                         >
                           {deletingQuizId === quiz.id ? (

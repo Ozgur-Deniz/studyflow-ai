@@ -179,7 +179,7 @@ export default function FocusZonePage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-sm font-medium uppercase tracking-[0.12em] text-slate-500 shadow-sm">
-            <Timer className="h-3.5 w-3.5 text-indigo-600" />
+            <Timer className="h-3.5 w-3.5 text-emerald-700" />
             Focus Studio
           </div>
           <h1 className="mb-2 text-4xl font-semibold tracking-tight text-slate-950">
@@ -338,9 +338,9 @@ export default function FocusZonePage() {
                       value={customMinutes}
                       onChange={(event) => setCustomMinutes(event.target.value)}
                       placeholder={String(customPlaceholder)}
-                      className="h-11 w-full cursor-text rounded-xl border border-slate-200 bg-slate-50 px-3 pr-12 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-200 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                      className="h-11 w-full cursor-text rounded-xl border border-slate-200 bg-slate-50 px-3 pr-12 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-600 focus:border-emerald-200 focus:bg-white focus:ring-4 focus:ring-emerald-100"
                     />
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-600">
                       min
                     </span>
                   </div>
@@ -475,7 +475,7 @@ export default function FocusZonePage() {
                     setIsRunning((currentState) => !currentState);
                   }
                 }}
-                className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-indigo-600 text-white shadow-sm transition-all hover:bg-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-emerald-700 text-white shadow-sm transition-all hover:bg-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-100"
               >
                 {isRunning ? (
                   <Pause className="h-6 w-6 fill-current" />
@@ -535,7 +535,7 @@ export default function FocusZonePage() {
                             }
                             className={`h-7 w-full cursor-pointer rounded-lg text-center text-sm font-medium transition-colors ${
                               isSelected
-                                ? "text-indigo-600"
+                                ? "text-emerald-700"
                                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                             }`}
                           >
@@ -547,7 +547,7 @@ export default function FocusZonePage() {
                   </div>
                 </div>
 
-                <div className="px-0 pt-14 text-lg font-medium text-slate-300">
+                <div className="px-0 pt-14 text-lg font-medium text-slate-600">
                   :
                 </div>
 
@@ -569,7 +569,7 @@ export default function FocusZonePage() {
                             }
                             className={`h-7 w-full cursor-pointer rounded-lg text-center text-sm font-medium transition-colors ${
                               isSelected
-                                ? "text-indigo-600"
+                                ? "text-emerald-700"
                                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                             }`}
                           >

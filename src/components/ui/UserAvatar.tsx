@@ -73,7 +73,7 @@ export function UserAvatar({
         <div
           className={`overflow-hidden ${
             isMd ? "w-10 h-10 text-[14px]" : "w-9 h-9 text-xs"
-          } rounded-full bg-gradient-to-br from-[#6366f1] via-[#8b5cf6] to-[#a855f7] flex items-center justify-center text-white font-bold shadow-md shadow-indigo-200 animate-gradient`}
+          } rounded-full bg-gradient-to-br from-[#0a9f43] via-[#4ade80] to-[#86efac] flex items-center justify-center text-white font-bold shadow-md shadow-emerald-200 animate-gradient`}
         >
           {selectedAvatar ? (
             <div
@@ -90,7 +90,7 @@ export function UserAvatar({
           <span
             className={`absolute ${
               isMd ? "-bottom-0.5 -right-0.5 w-3.5 h-3.5 border-[2.5px]" : "-bottom-0.5 -right-0.5 w-2.5 h-2.5 border-2"
-            } bg-[#22c55e] border-white rounded-full ${isMd ? "animate-pulse-glow" : ""}`}
+            } bg-[#22c55e] border-white rounded-full`}
           />
         )}
       </div>

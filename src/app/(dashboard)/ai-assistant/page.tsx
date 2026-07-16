@@ -831,7 +831,7 @@ export default function AIAssistantPage() {
           <button
             type="button"
             onClick={() => setResourceToast(null)}
-            className="absolute right-3 top-3 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="absolute right-3 top-3 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-600 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200"
             aria-label="Close notification"
           >
             <X className="h-4 w-4" />
@@ -926,7 +926,7 @@ export default function AIAssistantPage() {
                       </p>
                       <p
                         className={`mt-1 text-xs ${
-                          isActive ? "text-primary" : "text-slate-400"
+                          isActive ? "text-primary" : "text-slate-600"
                         }`}
                       >
                         {formatConversationDate(conversation.updatedAt)}
@@ -938,7 +938,7 @@ export default function AIAssistantPage() {
                     onClick={(event) =>
                       handleDeleteConversation(conversation.id, event)
                     }
-                    className="mt-0.5 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all duration-200 hover:scale-105 hover:bg-rose-50 hover:text-rose-500 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-rose-100"
+                    className="mt-0.5 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-600 opacity-0 transition-all duration-200 hover:scale-105 hover:bg-rose-50 hover:text-rose-500 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-rose-100"
                     aria-label="Delete chat"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -1269,7 +1269,7 @@ export default function AIAssistantPage() {
               className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition focus:outline-none disabled:cursor-not-allowed ${
                 input.trim() || selectedFile
                   ? "bg-primary-soft text-primary hover:bg-primary hover:text-white"
-                  : "text-slate-300"
+                  : "text-slate-600"
               }`}
               aria-label="Send message"
             >

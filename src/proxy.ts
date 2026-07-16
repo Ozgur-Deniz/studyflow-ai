@@ -8,9 +8,11 @@ export async function proxy(request: NextRequest) {
 
   const isAuthPage =
     pathname.startsWith("/login") || pathname.startsWith("/register");
+  const isPublicPage =
+    isAuthPage || pathname.startsWith("/auth/new-verification");
 
   if (!token) {
-    if (!isAuthPage) {
+    if (!isPublicPage) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
     return NextResponse.next();
@@ -25,7 +27,7 @@ export async function proxy(request: NextRequest) {
     }
     return NextResponse.next();
   } catch {
-    if (isAuthPage) {
+    if (isPublicPage) {
       const response = NextResponse.next();
       response.cookies.delete("token");
       return response;
@@ -38,5 +40,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\..*).*)"],
 };

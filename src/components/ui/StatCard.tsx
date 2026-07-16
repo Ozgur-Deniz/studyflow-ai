@@ -31,18 +31,18 @@ export function StatCard({
           <div
             className={`w-8 h-8 bg-gradient-to-br ${gradient} rounded-lg flex items-center justify-center shadow-sm`}
           >
-            <Icon size={16} className="text-white" />
+            <Icon size={16} className="text-white" aria-hidden="true" />
           </div>
         </div>
         <span className="flex items-center gap-1 text-[11px] font-bold text-[#10b981] bg-[#ecfdf5] px-2.5 py-1 rounded-full">
-          <TrendingUp size={12} />
+          <TrendingUp size={12} aria-hidden="true" />
           {change}
         </span>
       </div>
       <p className="text-[28px] font-extrabold text-[#0f172a] leading-none mb-1 tracking-tight">
         {value}
       </p>
-      <p className="text-[12px] text-[#94a3b8] font-semibold uppercase tracking-wider">
+      <p className="text-[12px] text-[#475569] font-semibold uppercase tracking-wider">
         {title}
       </p>
     </>

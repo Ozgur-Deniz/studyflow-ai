@@ -47,7 +47,7 @@ const config: Config = {
         soft: "0 18px 55px -28px rgba(15, 23, 42, 0.24)",
         "soft-sm": "0 10px 30px -22px rgba(15, 23, 42, 0.22)",
         "soft-lg": "0 26px 80px -34px rgba(15, 23, 42, 0.30)",
-        glow: "0 0 0 1px rgba(99, 102, 241, 0.08), 0 20px 60px -30px rgba(99, 102, 241, 0.45)",
+        glow: "0 0 0 1px rgba(10, 159, 67, 0.10), 0 20px 60px -30px rgba(16, 185, 75, 0.42)",
       },
       keyframes: {
         "fade-in": {
@@ -79,8 +79,15 @@ const config: Config = {
           "50%": { opacity: "0.72", transform: "scale(1.025)" },
         },
         "soft-shimmer": {
-          "0%": { backgroundPosition: "-220% 0" },
-          "100%": { backgroundPosition: "220% 0" },
+          "0%": {
+            opacity: "0",
+            transform: "translate3d(-140%, 0, 0) skewX(-12deg)",
+          },
+          "18%": { opacity: "0.55" },
+          "100%": {
+            opacity: "0",
+            transform: "translate3d(140%, 0, 0) skewX(-12deg)",
+          },
         },
         "border-flow": {
           "0%, 100%": { backgroundPosition: "0% 50%" },

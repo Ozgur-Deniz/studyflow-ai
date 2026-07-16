@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { sendVerificationEmail } from "@/lib/mail";
+import { generateVerificationToken } from "@/lib/tokens";
 
 export async function POST(req: Request) {
   try {
@@ -27,7 +29,7 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name,
         email,
@@ -35,21 +37,25 @@ export async function POST(req: Request) {
       },
     });
 
+    const verificationToken = await generateVerificationToken(email);
+    await sendVerificationEmail(email, verificationToken.token);
+
     return NextResponse.json(
       {
-        message: "User successfully created!",
-        user: {
-          id: newUser.id,
-          email: newUser.email,
-          avatarId: newUser.avatarId,
-        },
+        success: "Verification code sent! Please check your inbox.",
+        verificationExpiresAt: verificationToken.expires.toISOString(),
       },
       { status: 201 },
     );
   } catch (error) {
     console.error("Registration error: ", error);
     return NextResponse.json(
-      { message: "A server-side error occurred." },
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "A server-side error occurred.",
+      },
       { status: 500 },
     );
   }

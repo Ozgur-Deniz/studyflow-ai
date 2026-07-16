@@ -1,0 +1,8 @@
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          18456
+- Dir:          C:\Users\jokdeniz07\Desktop\Next Project\studyflow-ai
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 18456 /F to stop it.

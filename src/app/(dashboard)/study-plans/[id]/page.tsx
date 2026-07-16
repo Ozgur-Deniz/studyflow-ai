@@ -66,7 +66,7 @@ const markdownComponents: Components = {
   ),
   h2: ({ children }) => (
     <h2 className="mb-3 mt-8 flex items-center gap-2 text-xl font-semibold tracking-tight text-[#0f172a] first:mt-0">
-      <span className="h-2 w-2 rounded-full bg-[#6366f1]" />
+      <span className="h-2 w-2 rounded-full bg-[#0a9f43]" />
       {children}
     </h2>
   ),
@@ -255,7 +255,7 @@ export default function PlanDetailPage({
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <div className="w-10 h-10 border-4 border-[#6366f1]/20 border-t-[#6366f1] rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-[#0a9f43]/20 border-t-[#0a9f43] rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -266,7 +266,7 @@ export default function PlanDetailPage({
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up">
       <Link
         href="/study-plans"
-        className="inline-flex items-center gap-2 text-sm font-medium text-[#64748b] hover:text-[#6366f1] transition-colors group"
+        className="inline-flex items-center gap-2 text-sm font-medium text-[#64748b] hover:text-[#0a9f43] transition-colors group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
         Back to Study Plans
@@ -275,7 +275,7 @@ export default function PlanDetailPage({
       <div className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#eef2ff] px-3 py-1 text-sm font-medium text-[#6366f1]">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#ecfdf3] px-3 py-1 text-sm font-medium text-[#0a9f43]">
             <BookOpen className="w-3.5 h-3.5" /> AI Generated Roadmap
           </div>
           <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-[#0f172a]">
@@ -283,7 +283,7 @@ export default function PlanDetailPage({
           </h1>
           <div className="flex flex-wrap items-center gap-3 pt-1 text-sm font-medium text-[#64748b]">
             <span className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-[#94a3b8]" /> Created on{" "}
+              <Calendar className="w-4 h-4 text-[#64748b]" aria-hidden="true" /> Created on{" "}
               {new Date(plan.createdAt).toLocaleDateString()}
             </span>
             <span
@@ -313,7 +313,7 @@ export default function PlanDetailPage({
             className={`flex cursor-pointer items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-300 ${
               plan.isCompleted
                 ? "border border-[#bbf7d0] bg-[#f0fdf4] text-[#16a34a] hover:border-[#86efac] hover:bg-white"
-                : "border border-[#e2e8f0] bg-[#f8fafc] text-[#64748b] hover:border-[#6366f1] hover:bg-[#eef2ff] hover:text-[#6366f1] active:scale-[0.98]"
+                : "border border-[#e2e8f0] bg-[#f8fafc] text-[#64748b] hover:border-[#0a9f43] hover:bg-[#ecfdf3] hover:text-[#0a9f43] active:scale-[0.98]"
             }`}
           >
             {isUpdating ? (
@@ -334,7 +334,7 @@ export default function PlanDetailPage({
 
       <div className="grid gap-6 lg:grid-cols-[16rem_1fr]">
         <aside className="self-start rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
-          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#eef2ff] text-[#6366f1]">
+          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#ecfdf3] text-[#0a9f43]">
             <ListChecks className="h-5 w-5" />
           </div>
           <div className="flex items-end justify-between gap-3">
@@ -365,7 +365,7 @@ export default function PlanDetailPage({
                     className={`flex w-full cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 text-left transition ${
                       isItemCompleted
                         ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                        : "border-[#e2e8f0] bg-[#f8fafc] text-[#334155] hover:border-[#c7d2fe] hover:bg-white"
+                        : "border-[#e2e8f0] bg-[#f8fafc] text-[#334155] hover:border-[#bbf7d0] hover:bg-white"
                     }`}
                   >
                     <span
@@ -378,7 +378,7 @@ export default function PlanDetailPage({
                       <Check className="h-3.5 w-3.5" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-xs font-medium uppercase tracking-wide text-[#94a3b8]">
+                      <span className="block text-xs font-medium uppercase tracking-wide text-[#475569]">
                         Step {index + 1}
                       </span>
                       <span

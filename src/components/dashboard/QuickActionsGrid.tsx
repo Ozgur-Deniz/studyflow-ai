@@ -26,10 +26,10 @@ export function QuickActionsGrid({
       metricLabel: "Active plans",
       metricValue: stats.activeStudyPlans,
       icon: Target,
-      color: "text-[#6366f1]",
-      bg: "bg-[#eef2ff]",
-      ring: "ring-[#c7d2fe]",
-      accent: "from-[#6366f1]",
+      color: "text-[#0a9f43]",
+      bg: "bg-[#ecfdf3]",
+      ring: "ring-[#bbf7d0]",
+      accent: "from-[#0a9f43]",
       href: "/study-plans",
     },
     {
@@ -38,10 +38,10 @@ export function QuickActionsGrid({
       metricLabel: "AI conversations",
       metricValue: stats.aiConversations,
       icon: Brain,
-      color: "text-[#8b5cf6]",
+      color: "text-[#4ade80]",
       bg: "bg-[#f5f3ff]",
       ring: "ring-[#ddd6fe]",
-      accent: "from-[#8b5cf6]",
+      accent: "from-[#4ade80]",
       href: "/ai-assistant",
     },
     {
@@ -78,7 +78,7 @@ export function QuickActionsGrid({
           shouldShow ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
         }`}
       >
-        <Sparkles size={18} className="text-[#6366f1]" />
+        <Sparkles size={18} className="text-[#0a9f43]" />
         Quick Actions
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -112,14 +112,15 @@ export function QuickActionsGrid({
                   {action.title}
                   <ArrowRight
                     size={14}
-                    className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-[#94a3b8]"
+                    className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-[#64748b]"
+                    aria-hidden="true"
                   />
                 </p>
                 <p className="text-[12px] leading-5 text-[#64748b] font-medium">
                   {action.description}
                 </p>
                 <div className="mt-auto pt-5 flex items-end justify-between gap-3">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#94a3b8]">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#475569]">
                     {action.metricLabel}
                   </span>
                   <span className={`text-3xl font-black leading-none ${action.color}`}>

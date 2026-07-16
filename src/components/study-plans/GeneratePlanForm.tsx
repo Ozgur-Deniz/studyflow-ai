@@ -51,8 +51,8 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
   return (
     <div className="bg-white p-7 rounded-2xl border border-[#e2e8f0] animate-scale-in relative overflow-hidden h-full shadow-sm">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 bg-gradient-to-br from-[#eef2ff] to-[#e0e7ff] rounded-xl flex items-center justify-center shadow-inner border border-white">
-          <Sparkles className="text-[#6366f1]" size={22} />
+        <div className="w-12 h-12 bg-gradient-to-br from-[#ecfdf3] to-[#dcfce7] rounded-xl flex items-center justify-center shadow-inner border border-white">
+          <Sparkles className="text-[#0a9f43]" size={22} />
         </div>
         <div>
           <h2 className="text-xl font-semibold text-[#0f172a] tracking-tight mb-0.5">
@@ -67,7 +67,7 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
       <form onSubmit={handleGeneratePlan} className="space-y-6">
         <div className="space-y-2.5">
           <label className="text-sm font-medium text-[#0f172a] flex items-center gap-2">
-            <Target size={16} className="text-[#6366f1]" /> What do you want to
+            <Target size={16} className="text-[#0a9f43]" /> What do you want to
             learn?
           </label>
           <input
@@ -76,13 +76,13 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             placeholder="e.g., Microprocessors final exam, Next.js routing..."
-            className="w-full px-4 py-3.5 text-[14px] bg-[#f8fafc] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 focus:bg-white focus:border-[#6366f1] transition-all duration-300 placeholder:text-[#94a3b8] text-[#0f172a] font-medium shadow-sm"
+            className="w-full px-4 py-3.5 text-[14px] bg-[#f8fafc] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10 focus:bg-white focus:border-[#0a9f43] transition-all duration-300 placeholder:text-[#64748b] text-[#0f172a] font-medium shadow-sm"
           />
         </div>
 
         <div className="space-y-2.5">
           <label className="text-sm font-medium text-[#0f172a] flex items-center gap-2">
-            <Clock size={16} className="text-[#6366f1]" /> How much time do you
+            <Clock size={16} className="text-[#0a9f43]" /> How much time do you
             have?
           </label>
           <input
@@ -91,7 +91,7 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
             value={timeframe}
             onChange={(e) => setTimeframe(e.target.value)}
             placeholder="e.g., 2 weeks, 5 days, 3 months..."
-            className="w-full px-4 py-3.5 text-[14px] bg-[#f8fafc] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 focus:bg-white focus:border-[#6366f1] transition-all duration-300 placeholder:text-[#94a3b8] text-[#0f172a] font-medium shadow-sm"
+            className="w-full px-4 py-3.5 text-[14px] bg-[#f8fafc] border border-[#e2e8f0] rounded-xl focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10 focus:bg-white focus:border-[#0a9f43] transition-all duration-300 placeholder:text-[#64748b] text-[#0f172a] font-medium shadow-sm"
           />
         </div>
 
@@ -99,7 +99,7 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
           <button
             type="submit"
             disabled={isGenerating}
-            className="group w-full py-4 px-4 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#7c3aed] hover:shadow-xl hover:shadow-indigo-200 text-white rounded-xl text-[15px] font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
+            className="group w-full py-4 px-4 bg-gradient-to-r from-[#0a9f43] to-[#4ade80] hover:from-[#087b36] hover:to-[#16b84e] hover:shadow-xl hover:shadow-emerald-200 text-white rounded-xl text-[15px] font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
           >
             {isGenerating ? (
               <>

@@ -382,7 +382,7 @@ function FlashcardsContent() {
                         {currentCard?.frontText}
                       </p>
                     </div>
-                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-primary/20 bg-primary-soft p-10 text-center text-primary shadow-soft-lg transition-colors duration-300 group-hover:border-primary/30 group-hover:bg-[#e5e8ff] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                    <div className="pointer-events-none absolute flex h-full w-full items-center justify-center rounded-[2rem] border border-primary/20 bg-primary-soft p-10 text-center text-primary shadow-soft-lg transition-colors duration-300 group-hover:border-primary/30 group-hover:bg-[#dcfce7] [backface-visibility:hidden] [transform:rotateY(180deg)]">
                       <div className="absolute left-6 top-6 rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-[0.14em] text-primary">
                         Back
                       </div>

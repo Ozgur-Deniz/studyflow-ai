@@ -284,7 +284,7 @@ export function AccountSettings() {
         </div>
 
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 shadow-md shadow-indigo-200 ring-1 ring-[#e2e8f0] transition-all duration-300">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 shadow-md shadow-emerald-200 ring-1 ring-[#e2e8f0] transition-all duration-300">
             <AvatarPreview
               avatar={selectedAvatarOption}
               className="h-full w-full object-cover"
@@ -297,12 +297,12 @@ export function AccountSettings() {
                 onClick={() =>
                   setIsPickerOpen((currentState) => !currentState)
                 }
-                className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm font-medium text-[#334155] shadow-sm transition hover:border-[#c7d2fe] hover:bg-[#f8fafc] hover:text-[#6366f1] focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10"
+                className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm font-medium text-[#334155] shadow-sm transition hover:border-[#bbf7d0] hover:bg-[#f8fafc] hover:text-[#0a9f43] focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10"
               >
                 <Palette className="h-4 w-4" />
                 Change Avatar
               </button>
-              <p className="text-xs leading-5 text-[#94a3b8]">
+              <p className="text-xs leading-5 text-[#475569]">
                 Choose an avatar style for your profile.
               </p>
             </div>
@@ -317,9 +317,9 @@ export function AccountSettings() {
                       key={avatarOption.id}
                       type="button"
                       onClick={() => setSelectedAvatar(avatarOption.id)}
-                      className={`flex h-14 w-14 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-slate-100 shadow-sm transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 ${
+                      className={`flex h-14 w-14 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-slate-100 shadow-sm transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10 ${
                         isSelected
-                          ? "ring-4 ring-indigo-500 ring-offset-2 ring-offset-white"
+                          ? "ring-4 ring-emerald-500 ring-offset-2 ring-offset-white"
                           : "ring-1 ring-white/70"
                       }`}
                       aria-label={`Select ${avatarOption.id} avatar`}
@@ -351,7 +351,7 @@ export function AccountSettings() {
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
               disabled={isLoading}
-              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#6366f1] focus:bg-white focus:ring-4 focus:ring-[#6366f1]/10"
+              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#64748b] focus:border-[#0a9f43] focus:bg-white focus:ring-4 focus:ring-[#0a9f43]/10"
             />
           </div>
 
@@ -369,7 +369,7 @@ export function AccountSettings() {
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
               disabled={isLoading}
-              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#6366f1] focus:bg-white focus:ring-4 focus:ring-[#6366f1]/10"
+              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#64748b] focus:border-[#0a9f43] focus:bg-white focus:ring-4 focus:ring-[#0a9f43]/10"
             />
           </div>
 
@@ -387,7 +387,7 @@ export function AccountSettings() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               disabled={isLoading}
-              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#6366f1] focus:bg-white focus:ring-4 focus:ring-[#6366f1]/10"
+              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#64748b] focus:border-[#0a9f43] focus:bg-white focus:ring-4 focus:ring-[#0a9f43]/10"
             />
           </div>
         </div>
@@ -397,7 +397,7 @@ export function AccountSettings() {
             type="button"
             onClick={handleSaveChanges}
             disabled={isLoading || isSaving}
-            className={`inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold shadow-sm transition-colors duration-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 ${
+            className={`inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold shadow-sm transition-colors duration-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10 ${
               hasAvatarChanged
                 ? "bg-emerald-500 text-white hover:bg-emerald-600"
                 : "bg-[#0f172a] text-white hover:bg-[#1e293b]"
@@ -434,7 +434,7 @@ export function AccountSettings() {
               value={currentPassword}
               onChange={(event) => setCurrentPassword(event.target.value)}
               disabled={isUpdatingPassword}
-              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#6366f1] focus:bg-white focus:ring-4 focus:ring-[#6366f1]/10"
+              className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#64748b] focus:border-[#0a9f43] focus:bg-white focus:ring-4 focus:ring-[#0a9f43]/10"
             />
           </div>
 
@@ -453,7 +453,7 @@ export function AccountSettings() {
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
                 disabled={isUpdatingPassword}
-                className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#6366f1] focus:bg-white focus:ring-4 focus:ring-[#6366f1]/10"
+                className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#64748b] focus:border-[#0a9f43] focus:bg-white focus:ring-4 focus:ring-[#0a9f43]/10"
               />
             </div>
 
@@ -471,7 +471,7 @@ export function AccountSettings() {
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 disabled={isUpdatingPassword}
-                className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#6366f1] focus:bg-white focus:ring-4 focus:ring-[#6366f1]/10"
+                className="h-11 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 text-sm font-medium text-[#0f172a] outline-none transition placeholder:text-[#64748b] focus:border-[#0a9f43] focus:bg-white focus:ring-4 focus:ring-[#0a9f43]/10"
               />
             </div>
           </div>
@@ -482,7 +482,7 @@ export function AccountSettings() {
             type="button"
             onClick={handleUpdatePassword}
             disabled={isUpdatingPassword}
-            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-5 text-sm font-semibold text-[#334155] shadow-sm transition hover:border-[#c7d2fe] hover:bg-[#f8fafc] hover:text-[#6366f1] focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-5 text-sm font-semibold text-[#334155] shadow-sm transition hover:border-[#bbf7d0] hover:bg-[#f8fafc] hover:text-[#0a9f43] focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Lock className="h-4 w-4" />
             {isUpdatingPassword ? "Updating..." : "Update Password"}
