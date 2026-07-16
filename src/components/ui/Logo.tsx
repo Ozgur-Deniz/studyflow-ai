@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react";
+import Image from "next/image";
 
 interface LogoProps {
   size?: "sm" | "lg";
@@ -7,25 +7,43 @@ interface LogoProps {
 export function Logo({ size = "sm" }: LogoProps) {
   const isLg = size === "lg";
 
-  return (
-    <div className={`flex items-center ${isLg ? "gap-3" : "gap-3"}`}>
-      <div
-        className={`${
-          isLg ? "w-20 h-20 rounded-2xl border border-white/25 shadow-2xl shadow-black/10" : "w-10 h-10 rounded-xl shadow-lg shadow-indigo-200"
-        } bg-gradient-to-br from-[#6366f1] to-[#8b5cf6] flex items-center justify-center transition-transform duration-300 hover:scale-110 ${isLg ? "hover:rotate-6 bg-white/15 backdrop-blur-md" : "hover:rotate-3"}`}
-      >
-        <Zap size={isLg ? 36 : 20} className="text-white" fill="white" />
+  if (isLg) {
+    return (
+      <div className="relative h-72 w-72 overflow-hidden rounded-2xl bg-white shadow-2xl shadow-emerald-950/15 ring-1 ring-white/70">
+        <Image
+          src="/logo.png"
+          alt="StudyFlow AI"
+          fill
+          priority
+          sizes="288px"
+          className="object-contain"
+        />
       </div>
-      <div>
-        <span className={`${isLg ? "text-[40px]" : "text-[18px]"} font-extrabold tracking-tight`}>
-          <span className={isLg ? "text-white" : "gradient-text"}>Study</span>
-          <span className={isLg ? "text-white" : "text-[#0f172a]"}>Flow</span>
+    );
+  }
+
+  return (
+    <div className="group flex items-center gap-2.5">
+      <div
+        aria-hidden="true"
+        className="h-11 w-11 shrink-0 rounded-xl bg-white bg-no-repeat shadow-md shadow-emerald-200/70 ring-1 ring-emerald-100 transition-transform duration-300 group-hover:scale-105"
+        style={{
+          backgroundImage: "url('/logo.png')",
+          backgroundPosition: "center -7px",
+          backgroundSize: "80px 80px",
+        }}
+      />
+      <div className="min-w-0">
+        <span className="flex items-center text-[24px] font-normal leading-tight tracking-normal">
+          <span className="text-[#071a33]">Study</span>
+          <span className="text-primary">Flow</span>
+          <span className="ml-1.5 rounded-md bg-[#24d653] px-1.5 py-0.5 text-[11px] font-semibold leading-none text-[#04351d]">
+            AI
+          </span>
         </span>
-        {!isLg && (
-          <p className="text-[10px] text-[#94a3b8] font-medium -mt-0.5 tracking-wider uppercase">
-            AI Platform
-          </p>
-        )}
+        <p className="-mt-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#64748b]">
+          Study smart
+        </p>
       </div>
     </div>
   );

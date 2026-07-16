@@ -69,7 +69,7 @@ export function Sidebar({
   return (
     <aside className="w-[270px] bg-white border-r border-[#e2e8f0] flex flex-col animate-slide-in-left relative overflow-hidden shrink-0">
       {/* Subtle gradient decoration at top */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#a855f7] animate-gradient" />
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#0a9f43] via-[#4ade80] to-[#86efac] animate-gradient" />
 
       {/* Logo */}
       <div className="h-[72px] flex items-center px-6">
@@ -78,7 +78,7 @@ export function Sidebar({
 
       {/* Navigation */}
       <nav className="flex-1 px-3 pt-4 pb-2 stagger">
-        <p className="px-4 mb-3 text-[10px] font-bold text-[#94a3b8] uppercase tracking-[0.1em]">
+        <p className="px-4 mb-3 text-[10px] font-bold text-[#475569] uppercase tracking-[0.1em]">
           Menu
         </p>
         {menuItems.map((item) => {
@@ -90,7 +90,7 @@ export function Sidebar({
               href={item.path}
               className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-semibold mb-1 transition-all duration-300 relative ${
                 isActive
-                  ? "bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white shadow-lg shadow-indigo-200/60"
+                  ? "bg-gradient-to-r from-[#0a9f43] to-[#4ade80] text-white shadow-lg shadow-emerald-200/60"
                   : "text-[#64748b] hover:bg-[#f1f5f9] hover:text-[#0f172a]"
               }`}
             >
@@ -99,8 +99,9 @@ export function Sidebar({
                 className={`transition-all duration-300 ${
                   isActive
                     ? "text-white"
-                    : "text-[#94a3b8] group-hover:text-[#6366f1] group-hover:scale-110"
+                    : "text-[#64748b] group-hover:text-[#087b36] group-hover:scale-110"
                 }`}
+                aria-hidden="true"
               />
               {item.name}
               {isActive && (
@@ -117,7 +118,8 @@ export function Sidebar({
           <button
             type="button"
             onClick={() => setIsOpen((current) => !current)}
-            className="group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#f1f5f9] focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10"
+            className="group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#f1f5f9] focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10"
+            aria-label="Open user menu"
             aria-expanded={isOpen}
             aria-haspopup="menu"
           >
@@ -131,9 +133,10 @@ export function Sidebar({
             />
             <ChevronDown
               size={14}
-              className={`text-[#94a3b8] transition-transform duration-200 group-hover:text-[#0f172a] ${
+              className={`text-[#64748b] transition-transform duration-200 group-hover:text-[#0f172a] ${
                 isOpen ? "rotate-180" : ""
               }`}
+              aria-hidden="true"
             />
           </button>
 
@@ -145,7 +148,7 @@ export function Sidebar({
               <Link
                 href="/settings"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-[#334155] transition hover:bg-[#f8fafc] hover:text-[#6366f1]"
+                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-[#334155] transition hover:bg-[#f8fafc] hover:text-[#0a9f43]"
                 role="menuitem"
               >
                 <User className="h-4 w-4" />

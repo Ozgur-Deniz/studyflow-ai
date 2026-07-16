@@ -416,7 +416,7 @@ function StatCard({
           : `${STAT_CARD_REVEAL_DELAY + index * STAT_CARD_REVEAL_STEP}ms`,
       }}
     >
-      <p className="truncate text-[10px] font-medium uppercase tracking-[0.06em] text-slate-400">
+      <p className="truncate text-[10px] font-medium uppercase tracking-[0.06em] text-slate-600">
         {label}
       </p>
       <p className="mt-1.5 text-[19px] font-semibold leading-tight tracking-tight text-slate-900">
@@ -487,7 +487,7 @@ function ActivityDonutChart({
         <span className="text-[27px] font-semibold leading-none text-slate-950">
           {activeDays}
         </span>
-        <span className="mt-1 text-[9px] font-medium uppercase tracking-[0.1em] text-slate-400">
+        <span className="mt-1 text-[9px] font-medium uppercase tracking-[0.1em] text-slate-600">
           Active Days
         </span>
       </div>
@@ -509,7 +509,7 @@ function LevelDistribution({
   return (
     <div className="min-w-0 flex-1 space-y-2.5">
       <p
-        className={`text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`text-[11px] font-medium uppercase tracking-[0.12em] text-slate-600 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           shouldShowLevels
             ? "translate-y-0 opacity-100"
             : "translate-y-2 opacity-0"
@@ -702,7 +702,7 @@ function ContributionGrid({
               {DAY_LABELS.map((label, index) => (
                 <div
                   key={`${label}-${index}`}
-                  className="flex items-center text-[10px] font-medium leading-none text-slate-400"
+                  className="flex items-center text-[10px] font-medium leading-none text-slate-600"
                 >
                   {label}
                 </div>

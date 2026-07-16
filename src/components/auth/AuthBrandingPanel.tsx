@@ -22,8 +22,8 @@ export function AuthBrandingPanel({
 }: AuthBrandingPanelProps) {
   const gradientClass =
     gradient === "indigo"
-      ? "from-[#6366f1] via-[#7c3aed] to-[#a855f7]"
-      : "from-[#8b5cf6] via-[#7c3aed] to-[#6366f1]";
+      ? "from-[#0a9f43] via-[#16b84e] to-[#86efac]"
+      : "from-[#4ade80] via-[#16b84e] to-[#0a9f43]";
 
   return (
     <div

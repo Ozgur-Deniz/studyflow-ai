@@ -35,7 +35,7 @@ export default function SettingsPage() {
         <nav className="mt-8 space-y-2">
           <Link
             href="/"
-            className="group mb-5 flex h-12 items-center gap-2.5 rounded-xl px-3 text-base font-semibold text-[#6366f1] transition-all duration-300 hover:-translate-x-0.5 hover:bg-[#eef2ff] hover:text-[#4f46e5] hover:shadow-sm focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10"
+            className="group mb-5 flex h-12 items-center gap-2.5 rounded-xl px-3 text-base font-semibold text-[#0a9f43] transition-all duration-300 hover:-translate-x-0.5 hover:bg-[#ecfdf3] hover:text-[#087b36] hover:shadow-sm focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10"
           >
             <ArrowLeft className="h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
             Back to Dashboard
@@ -52,15 +52,15 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium transition ${
                   isActive
-                    ? "bg-[#eef2ff] text-[#6366f1] shadow-sm"
+                    ? "bg-[#ecfdf3] text-[#0a9f43] shadow-sm"
                     : "text-[#64748b] hover:bg-[#f1f5f9] hover:text-[#0f172a]"
                 }`}
               >
                 <span
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
                     isActive
-                      ? "border-[#c7d2fe] bg-white text-[#6366f1]"
-                      : "border-[#e2e8f0] bg-white text-[#94a3b8]"
+                      ? "border-[#bbf7d0] bg-white text-[#0a9f43]"
+                      : "border-[#e2e8f0] bg-white text-[#475569]"
                   }`}
                 >
                   <Icon className="h-4 w-4" />

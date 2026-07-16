@@ -125,14 +125,14 @@ const CustomTooltip = ({ active, label, payload }: CustomTooltipProps) => {
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-white shadow-2xl shadow-slate-900/20 backdrop-blur-xl">
-      <p className="text-xs font-medium text-slate-400">
+      <p className="text-xs font-medium text-slate-200">
         {label}
         {point?.dateKey ? ` · ${point.dateKey}` : ""}
       </p>
       <p className="mt-1 text-base font-semibold">
         {formatNumber(payload[0].value ?? 0)} XP
       </p>
-      <p className="mt-1 text-xs text-slate-300">
+      <p className="mt-1 text-xs text-slate-200">
         Focus time: {formatFocusTime(focusMinutes)}
       </p>
     </div>
@@ -143,7 +143,7 @@ function LoadingState() {
   return (
     <div className="flex min-h-[420px] items-center justify-center rounded-2xl border border-[#e2e8f0] bg-white p-8 shadow-sm">
       <div className="flex items-center gap-3 text-sm font-semibold text-[#64748b]">
-        <Loader2 className="h-5 w-5 animate-spin text-[#6366f1]" />
+        <Loader2 className="h-5 w-5 animate-spin text-[#0a9f43]" />
         Loading performance data...
       </div>
     </div>
@@ -266,7 +266,7 @@ export function PerformanceStats() {
       value: formatNumber(data.summary.totalXp),
       trend: formatTrend(data.summary.weeklyTrend),
       icon: Sparkles,
-      iconClassName: "bg-indigo-50 text-indigo-600",
+      iconClassName: "bg-emerald-50 text-emerald-700",
     },
     {
       label: "Current Streak",
@@ -296,14 +296,14 @@ export function PerformanceStats() {
       value: formatNumber(data.summary.todayXp),
       helper: "StudySession points created today",
       icon: Sparkles,
-      iconClassName: "bg-indigo-50 text-indigo-600",
+      iconClassName: "bg-emerald-50 text-emerald-700",
     },
     {
       label: "Best Focus Hour",
       value: data.summary.bestFocusHour ?? "No data",
       helper: "Based on tracked focus minutes",
       icon: Brain,
-      iconClassName: "bg-violet-50 text-violet-600",
+      iconClassName: "bg-green-50 text-green-700",
     },
     {
       label: "Avg. Focus Session",
@@ -361,8 +361,8 @@ export function PerformanceStats() {
         })}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_22rem]">
-        <section className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
+      <div className="grid items-stretch gap-6 xl:grid-cols-[1fr_22rem]">
+        <section className="min-h-[500px] rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
           <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h3 className="text-lg font-semibold tracking-tight text-[#0f172a]">
@@ -374,7 +374,7 @@ export function PerformanceStats() {
             </div>
             <div className="relative inline-grid grid-cols-2 rounded-full border border-[#e2e8f0] bg-white/90 p-0.5 shadow-sm shadow-slate-200/60">
               <span
-                className={`absolute left-0.5 top-0.5 h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-[#6366f1] shadow-sm shadow-indigo-200 transition-transform duration-300 ease-out ${
+                className={`absolute left-0.5 top-0.5 h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-[#0a9f43] shadow-sm shadow-emerald-200 transition-transform duration-300 ease-out ${
                   chartRange === "monthly" ? "translate-x-full" : "translate-x-0"
                 }`}
                 aria-hidden="true"
@@ -401,7 +401,7 @@ export function PerformanceStats() {
             </div>
           </div>
 
-          <div className="h-[360px] w-full">
+          <div className="h-[360px] min-h-[360px] w-full">
             {data.hasActivity ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
@@ -416,9 +416,9 @@ export function PerformanceStats() {
                       x2="0"
                       y2="1"
                     >
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8} />
-                      <stop offset="55%" stopColor="#8b5cf6" stopOpacity={0.18} />
-                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#0a9f43" stopOpacity={0.8} />
+                      <stop offset="55%" stopColor="#4ade80" stopOpacity={0.18} />
+                      <stop offset="100%" stopColor="#0a9f43" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -442,19 +442,19 @@ export function PerformanceStats() {
                   />
                   <Tooltip
                     content={<CustomTooltip />}
-                    cursor={{ stroke: "#6366f1", strokeWidth: 1 }}
+                    cursor={{ stroke: "#0a9f43", strokeWidth: 1 }}
                   />
                   <Area
                     type="monotone"
                     dataKey="xp"
-                    stroke="#6366f1"
+                    stroke="#0a9f43"
                     strokeWidth={3}
                     fill="url(#xpAreaGradient)"
                     activeDot={{
                       r: 7,
                       stroke: "#ffffff",
                       strokeWidth: 3,
-                      fill: "#6366f1",
+                      fill: "#0a9f43",
                     }}
                     animationDuration={900}
                   />
@@ -466,7 +466,7 @@ export function PerformanceStats() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
+        <section className="min-h-[500px] rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
           <div className="mb-6">
             <h3 className="text-lg font-semibold tracking-tight text-[#0f172a]">
               XP Distribution
@@ -478,7 +478,7 @@ export function PerformanceStats() {
 
           {data.charts.activityDistribution.length > 0 ? (
             <>
-              <div className="h-[250px] w-full">
+              <div className="h-[250px] min-h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -553,7 +553,7 @@ export function PerformanceStats() {
               <p className="mt-1 text-2xl font-semibold tracking-tight text-[#0f172a]">
                 {item.value}
               </p>
-              <p className="mt-2 text-sm text-[#94a3b8]">{item.helper}</p>
+              <p className="mt-2 text-sm text-[#475569]">{item.helper}</p>
             </section>
           );
         })}
@@ -574,7 +574,7 @@ export function PerformanceStats() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-[#0f172a]">
-                <BookOpen className="h-4 w-4 text-[#6366f1]" />
+                <BookOpen className="h-4 w-4 text-[#0a9f43]" />
                 Study Plans
               </div>
               <p className="mt-4 text-3xl font-semibold tracking-tight text-[#0f172a]">
@@ -586,11 +586,11 @@ export function PerformanceStats() {
               </p>
               <div className="mt-4 h-2 overflow-hidden rounded-full bg-white">
                 <div
-                  className="h-full rounded-full bg-[#6366f1]"
+                  className="h-full rounded-full bg-[#0a9f43]"
                   style={{ width: `${planCompletionRate}%` }}
                 />
               </div>
-              <p className="mt-2 text-xs font-semibold text-[#6366f1]">
+              <p className="mt-2 text-xs font-semibold text-[#0a9f43]">
                 {data.resources.studyPlans.completionRate === null
                   ? "No plans yet"
                   : `${planCompletionRate}% completed`}
@@ -632,7 +632,7 @@ export function PerformanceStats() {
         </section>
 
         <section className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#eef2ff] text-[#6366f1]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#ecfdf3] text-[#0a9f43]">
             <MessageCircle className="h-5 w-5" />
           </div>
           <h3 className="mt-4 text-lg font-semibold tracking-tight text-[#0f172a]">

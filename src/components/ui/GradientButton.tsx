@@ -17,8 +17,8 @@ export function GradientButton({
 }: GradientButtonProps) {
   const gradientClass =
     gradient === "indigo"
-      ? "from-[#6366f1] to-[#8b5cf6] hover:shadow-indigo-200 focus:ring-[#6366f1]/20"
-      : "from-[#8b5cf6] to-[#6366f1] hover:shadow-purple-200 focus:ring-[#8b5cf6]/20";
+      ? "from-[#0a9f43] to-[#4ade80] hover:shadow-emerald-200 focus:ring-[#0a9f43]/20"
+      : "from-[#4ade80] to-[#0a9f43] hover:shadow-emerald-200 focus:ring-[#4ade80]/20";
 
   return (
     <button

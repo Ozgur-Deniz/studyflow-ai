@@ -90,19 +90,19 @@ export function ActivePlansList({ refreshTrigger }: ActivePlansListProps) {
   return (
     <div className="bg-white p-7 rounded-2xl border border-[#e2e8f0] h-full shadow-sm animate-scale-in">
       <h3 className="text-xl font-semibold text-[#0f172a] mb-6 flex items-center gap-2 tracking-tight">
-        <BookOpen className="w-5 h-5 text-[#6366f1]" /> Active Plans
+        <BookOpen className="w-5 h-5 text-[#0a9f43]" /> Active Plans
       </h3>
 
       {isLoading ? (
         // Loading state
         <div className="flex justify-center items-center h-48">
-          <div className="w-8 h-8 border-4 border-[#6366f1]/20 border-t-[#6366f1] rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-[#0a9f43]/20 border-t-[#0a9f43] rounded-full animate-spin"></div>
         </div>
       ) : plans.length === 0 ? (
         // Empty state
         <div className="flex flex-col items-center justify-center h-48 text-center px-4">
           <div className="w-12 h-12 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl flex items-center justify-center mb-4">
-            <BookOpen className="w-6 h-6 text-[#94a3b8]" />
+            <BookOpen className="w-6 h-6 text-[#64748b]" aria-hidden="true" />
           </div>
           <p className="text-[13px] font-medium text-[#64748b]">
             You don&apos;t have any active study plans yet. Use the AI generator to
@@ -118,7 +118,7 @@ export function ActivePlansList({ refreshTrigger }: ActivePlansListProps) {
               className={`group relative rounded-xl border bg-[#f8fafc] transition-all duration-300 hover:bg-white hover:shadow-md ${
                 plan.isCompleted
                   ? "border-emerald-300 hover:border-emerald-400"
-                  : "border-[#e2e8f0] hover:border-[#6366f1]"
+                  : "border-[#e2e8f0] hover:border-[#0a9f43]"
               }`}
             >
               <Link
@@ -138,10 +138,10 @@ export function ActivePlansList({ refreshTrigger }: ActivePlansListProps) {
                 </div>
                 <div className="flex items-center justify-between text-sm font-medium text-[#64748b]">
                   <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#94a3b8]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#64748b]" aria-hidden="true" />
                     {new Date(plan.createdAt).toLocaleDateString()}
                   </span>
-                  <span className="flex items-center gap-1 text-[#6366f1] group-hover:translate-x-1 transition-transform duration-300">
+                  <span className="flex items-center gap-1 text-[#0a9f43] group-hover:translate-x-1 transition-transform duration-300">
                     View Plan <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
@@ -150,7 +150,7 @@ export function ActivePlansList({ refreshTrigger }: ActivePlansListProps) {
                 type="button"
                 onClick={() => void handleDeletePlan(plan.id)}
                 disabled={deletingPlanId === plan.id}
-                className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-[#94a3b8] transition hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-[#64748b] transition hover:bg-rose-50 hover:text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
                 aria-label="Delete study plan"
               >
                 {deletingPlanId === plan.id ? (

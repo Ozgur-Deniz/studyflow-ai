@@ -22,11 +22,11 @@ type ActivityCategory =
   | "Other";
 
 const ACTIVITY_COLORS: Record<ActivityCategory, string> = {
-  "Pomodoro Focus": "#6366f1",
+  "Pomodoro Focus": "#0a9f43",
   Quizzes: "#f43f5e",
   Flashcards: "#14b8a6",
   "Study Plans": "#f59e0b",
-  "AI Assistant": "#8b5cf6",
+  "AI Assistant": "#4ade80",
   Other: "#64748b",
 };
 

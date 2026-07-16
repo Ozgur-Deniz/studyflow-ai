@@ -19,12 +19,17 @@ export const metadata: Metadata = {
     "quizzes",
     "learning dashboard",
   ],
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f6f7fb",
+  themeColor: "#f4fbf6",
 };
 
 export default function RootLayout({
