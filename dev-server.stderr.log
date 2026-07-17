@@ -1,8 +1,61 @@
-⨯ Another next dev server is already running.
-
-- Local:        http://localhost:3000
-- PID:          18456
-- Dir:          C:\Users\jokdeniz07\Desktop\Next Project\studyflow-ai
-- Log:          .next\dev\logs\next-development.log
-
-Run taskkill /PID 18456 /F to stop it.
+Registration error:  SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at async POST (src\app\api\auth\register\route.ts:11:18)
+   9 | export async function POST(req: Request) {
+  10 |   try {
+> 11 |     const body = await req.json();
+     |                  ^
+  12 |     const { name, email, password } = body;
+  13 |     const normalizedName = typeof name === "string" ? name.trim() : "";
+  14 |     const normalizedEmail = typeof email === "string" ? email.trim() : "";
+Verification email could not be sent: {
+  statusCode: 403,
+  name: 'validation_error',
+  message: 'You can only send testing emails to your own email address (denizozgur.190707@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain.'
+}
+Verification email could not be sent: Error: Verification email could not be sent.
+    at sendVerificationEmail (src\lib\mail.ts:160:13)
+    at async POST (src\app\api\auth\register\route.ts:58:7)
+  158 |     if (error) {
+  159 |       console.error("Verification email could not be sent:", error);
+> 160 |       throw new Error("Verification email could not be sent.");
+      |             ^
+  161 |     }
+  162 |   } catch (error) {
+  163 |     console.error("Verification email could not be sent:", error);
+Registration error:  Error: Verification email could not be sent.
+    at sendVerificationEmail (src\lib\mail.ts:160:13)
+    at async POST (src\app\api\auth\register\route.ts:58:7)
+  158 |     if (error) {
+  159 |       console.error("Verification email could not be sent:", error);
+> 160 |       throw new Error("Verification email could not be sent.");
+      |             ^
+  161 |     }
+  162 |   } catch (error) {
+  163 |     console.error("Verification email could not be sent:", error);
+Verification email could not be sent: {
+  statusCode: 403,
+  name: 'validation_error',
+  message: 'You can only send testing emails to your own email address (denizozgur.190707@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain.'
+}
+Verification email could not be sent: Error: Verification email could not be sent.
+    at sendVerificationEmail (src\lib\mail.ts:160:13)
+    at async POST (src\app\api\auth\register\route.ts:58:7)
+  158 |     if (error) {
+  159 |       console.error("Verification email could not be sent:", error);
+> 160 |       throw new Error("Verification email could not be sent.");
+      |             ^
+  161 |     }
+  162 |   } catch (error) {
+  163 |     console.error("Verification email could not be sent:", error);
+Registration error:  Error: Verification email could not be sent.
+    at sendVerificationEmail (src\lib\mail.ts:160:13)
+    at async POST (src\app\api\auth\register\route.ts:58:7)
+  158 |     if (error) {
+  159 |       console.error("Verification email could not be sent:", error);
+> 160 |       throw new Error("Verification email could not be sent.");
+      |             ^
+  161 |     }
+  162 |   } catch (error) {
+  163 |     console.error("Verification email could not be sent:", error);
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/jokdeniz07/Desktop/Next Project/studyflow-ai/.next/dev/static/chunks/node_modules_next_dist_115brz8._.js:2477:13)
