@@ -19,14 +19,45 @@ import {
   AuthSubmitButton,
 } from "@/components/auth/AuthShell";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type LoginErrors = {
+  email?: string;
+  password?: string;
+};
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const validateForm = () => {
+    const nextErrors: LoginErrors = {};
+    const normalizedEmail = email.trim();
+
+    if (!normalizedEmail) {
+      nextErrors.email = "Email address is required.";
+    } else if (!EMAIL_PATTERN.test(normalizedEmail)) {
+      nextErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!password) {
+      nextErrors.password = "Password is required.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -35,7 +66,7 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
       const data = await response.json();
 
@@ -97,16 +128,20 @@ export default function LoginPage() {
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="stagger space-y-5">
+      <form onSubmit={handleSubmit} className="stagger space-y-5" noValidate>
         <AuthField
           id="email"
           label="Email address"
           type="email"
           icon={Mail}
           value={email}
-          onChange={setEmail}
+          onChange={(value) => {
+            setEmail(value);
+            setErrors((current) => ({ ...current, email: undefined }));
+          }}
           placeholder="you@example.com"
           autoComplete="email"
+          error={errors.email}
           autoFocus
           required
         />
@@ -116,11 +151,23 @@ export default function LoginPage() {
           type="password"
           icon={LockKeyhole}
           value={password}
-          onChange={setPassword}
+          onChange={(value) => {
+            setPassword(value);
+            setErrors((current) => ({ ...current, password: undefined }));
+          }}
           placeholder="Enter your password"
           autoComplete="current-password"
+          error={errors.password}
           required
         />
+        <div className="-mt-2 text-right text-sm">
+          <Link
+            href="/forgot-password"
+            className="inline-flex cursor-pointer rounded-lg px-2 py-1 font-semibold text-[#087b36] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ecfdf3] hover:text-[#054f25] hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0a9f43]/20"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <AuthSubmitButton
           label="Sign in"
           loadingLabel="Signing in..."

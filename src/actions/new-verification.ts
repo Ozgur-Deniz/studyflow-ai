@@ -3,46 +3,58 @@
 import { prisma } from "@/lib/prisma";
 
 export async function newVerification(token: string) {
-  const existingToken = await prisma.verificationToken.findUnique({
+  const pendingRegistration = await prisma.pendingRegistration.findUnique({
     where: {
       token,
     },
   });
 
-  if (!existingToken) {
+  if (!pendingRegistration) {
     return { error: "Verification code not found." };
   }
 
-  const hasExpired = new Date(existingToken.expires) < new Date();
+  const hasExpired = new Date(pendingRegistration.expires) < new Date();
 
   if (hasExpired) {
+    await prisma.pendingRegistration.delete({
+      where: {
+        id: pendingRegistration.id,
+      },
+    });
+
     return { error: "Verification code has expired." };
   }
 
   const existingUser = await prisma.user.findUnique({
     where: {
-      email: existingToken.email,
+      email: pendingRegistration.email,
     },
   });
 
-  if (!existingUser) {
-    return { error: "User not found." };
+  if (existingUser) {
+    await prisma.pendingRegistration.delete({
+      where: {
+        id: pendingRegistration.id,
+      },
+    });
+
+    return { error: "This email address is already in use." };
   }
 
-  await prisma.user.update({
-    where: {
-      id: existingUser.id,
-    },
+  await prisma.user.create({
     data: {
+      name: pendingRegistration.name,
+      email: pendingRegistration.email,
+      password: pendingRegistration.password,
       emailVerified: new Date(),
     },
   });
 
-  await prisma.verificationToken.delete({
+  await prisma.pendingRegistration.delete({
     where: {
-      id: existingToken.id,
+      id: pendingRegistration.id,
     },
   });
 
-  return { success: "Email verified successfully." };
+  return { success: "Account verified and created successfully." };
 }

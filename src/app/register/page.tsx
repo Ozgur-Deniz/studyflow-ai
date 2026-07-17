@@ -20,15 +20,77 @@ import {
   AuthSubmitButton,
 } from "@/components/auth/AuthShell";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_MISMATCH_ERROR = "Passwords do not match.";
+
+type RegisterErrors = {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+};
+
+async function readApiResponse(response: Response) {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  return {
+    message: response.ok
+      ? "Request completed."
+      : "Registration request failed. Please try again.",
+  };
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<RegisterErrors>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const validateForm = () => {
+    const nextErrors: RegisterErrors = {};
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim();
+
+    if (!normalizedName) {
+      nextErrors.name = "Full name is required.";
+    }
+
+    if (!normalizedEmail) {
+      nextErrors.email = "Email address is required.";
+    } else if (!EMAIL_PATTERN.test(normalizedEmail)) {
+      nextErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!password) {
+      nextErrors.password = "Password is required.";
+    } else if (password.length < 6) {
+      nextErrors.password = "Password must be at least 6 characters.";
+    }
+
+    if (!confirmPassword) {
+      nextErrors.confirmPassword = "Please confirm your password.";
+    } else if (password && password !== confirmPassword) {
+      nextErrors.confirmPassword = PASSWORD_MISMATCH_ERROR;
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -37,9 +99,13 @@ export default function RegisterPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          password,
+        }),
       });
-      const data = await response.json();
+      const data = await readApiResponse(response);
 
       if (!response.ok) {
         throw new Error(
@@ -111,16 +177,20 @@ export default function RegisterPage() {
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="stagger space-y-5">
+      <form onSubmit={handleSubmit} className="stagger space-y-5" noValidate>
         <AuthField
           id="name"
           label="Full name"
           type="text"
           icon={UserRound}
           value={name}
-          onChange={setName}
+          onChange={(value) => {
+            setName(value);
+            setErrors((current) => ({ ...current, name: undefined }));
+          }}
           placeholder="Your full name"
           autoComplete="name"
+          error={errors.name}
           autoFocus
           required
         />
@@ -130,9 +200,13 @@ export default function RegisterPage() {
           type="email"
           icon={Mail}
           value={email}
-          onChange={setEmail}
+          onChange={(value) => {
+            setEmail(value);
+            setErrors((current) => ({ ...current, email: undefined }));
+          }}
           placeholder="you@example.com"
           autoComplete="email"
+          error={errors.email}
           required
         />
         <AuthField
@@ -141,10 +215,39 @@ export default function RegisterPage() {
           type="password"
           icon={LockKeyhole}
           value={password}
-          onChange={setPassword}
+          onChange={(value) => {
+            setPassword(value);
+            setErrors((current) => ({
+              ...current,
+              password: undefined,
+              confirmPassword:
+                current.confirmPassword === PASSWORD_MISMATCH_ERROR
+                  ? undefined
+                  : current.confirmPassword,
+            }));
+          }}
           placeholder="Create a secure password"
           autoComplete="new-password"
           minLength={6}
+          error={errors.password}
+          required
+        />
+        <AuthField
+          id="confirmPassword"
+          label="Confirm password"
+          type="password"
+          icon={LockKeyhole}
+          value={confirmPassword}
+          onChange={(value) => {
+            setConfirmPassword(value);
+            setErrors((current) => ({
+              ...current,
+              confirmPassword: undefined,
+            }));
+          }}
+          placeholder="Enter your password again"
+          autoComplete="new-password"
+          error={errors.confirmPassword}
           required
         />
         <AuthSubmitButton

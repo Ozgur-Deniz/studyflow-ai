@@ -2,22 +2,41 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { sendVerificationEmail } from "@/lib/mail";
-import { generateVerificationToken } from "@/lib/tokens";
+import { generatePendingRegistration } from "@/lib/tokens";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { name, email, password } = body;
+    const normalizedName = typeof name === "string" ? name.trim() : "";
+    const normalizedEmail = typeof email === "string" ? email.trim() : "";
+    const normalizedPassword = typeof password === "string" ? password : "";
 
-    if (!email || !name || !password) {
+    if (!normalizedEmail || !normalizedName || !normalizedPassword) {
       return NextResponse.json(
         { message: "Please fill in all fields." },
         { status: 400 },
       );
     }
 
+    if (!EMAIL_PATTERN.test(normalizedEmail)) {
+      return NextResponse.json(
+        { message: "Please enter a valid email address." },
+        { status: 400 },
+      );
+    }
+
+    if (normalizedPassword.length < 6) {
+      return NextResponse.json(
+        { message: "Password must be at least 6 characters." },
+        { status: 400 },
+      );
+    }
+
     const existingUser = await prisma.user.findUnique({
-      where: { email: email },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
@@ -27,23 +46,30 @@ export async function POST(req: Request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(normalizedPassword, 10);
 
-    await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
+    const pendingRegistration = await generatePendingRegistration({
+      name: normalizedName,
+      email: normalizedEmail,
+      password: hashedPassword,
     });
 
-    const verificationToken = await generateVerificationToken(email);
-    await sendVerificationEmail(email, verificationToken.token);
+    try {
+      await sendVerificationEmail(normalizedEmail, pendingRegistration.token);
+    } catch (error) {
+      await prisma.pendingRegistration.delete({
+        where: {
+          id: pendingRegistration.id,
+        },
+      });
+
+      throw error;
+    }
 
     return NextResponse.json(
       {
         success: "Verification code sent! Please check your inbox.",
-        verificationExpiresAt: verificationToken.expires.toISOString(),
+        verificationExpiresAt: pendingRegistration.expires.toISOString(),
       },
       { status: 201 },
     );

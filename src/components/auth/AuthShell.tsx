@@ -48,6 +48,7 @@ interface AuthFieldProps
   value: string;
   icon: LucideIcon;
   onChange: (value: string) => void;
+  error?: string;
 }
 
 interface AuthSubmitButtonProps {
@@ -256,11 +257,13 @@ export function AuthField({
   value,
   icon: Icon,
   onChange,
+  error,
   ...inputProps
 }: AuthFieldProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const isPassword = type === "password";
   const inputType = isPassword && isPasswordVisible ? "text" : type;
+  const errorId = `${id}-error`;
 
   return (
     <div>
@@ -281,7 +284,13 @@ export function AuthField({
           type={inputType}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className={`h-12 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] pl-10 text-sm font-medium text-[#0f172a] outline-none transition-all duration-200 placeholder:text-[#94a3b8] focus:bg-white ${
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
+          className={`h-12 w-full rounded-xl border bg-[#f8fafc] pl-10 text-sm font-medium text-[#0f172a] outline-none transition-all duration-200 placeholder:text-[#94a3b8] focus:bg-white ${
+            error
+              ? "border-[#ef4444] focus:ring-2 focus:ring-[#ef4444]/15"
+              : "border-[#e2e8f0] focus:ring-2 focus:ring-[#0a9f43]/15"
+          } ${
             isPassword ? "pr-11" : "pr-3.5"
           }`}
         />
@@ -303,6 +312,11 @@ export function AuthField({
           </button>
         )}
       </div>
+      {error && (
+        <p id={errorId} className="mt-2 text-[12px] font-medium text-[#dc2626]">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

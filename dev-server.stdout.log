@@ -1,10 +1,65 @@
 
 > studyflow-ai@0.1.0 dev
-> next dev --port 3001
+> next dev
 
 ▲ Next.js 16.2.6 (Turbopack)
-- Local:         http://localhost:3001
-- Network:       http://192.168.1.109:3001
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.110:3000
 - Environments: .env
-✓ Ready in 857ms
+✓ Ready in 923ms
+
+ GET /register 200 in 725ms (next.js: 177ms, proxy.ts: 219ms, application-code: 328ms)
+ POST /api/auth/register 500 in 382ms (next.js: 192ms, application-code: 190ms)
+ POST /api/auth/register 500 in 1983ms (next.js: 5ms, application-code: 1978ms)
+ GET /register 200 in 116ms (next.js: 7ms, proxy.ts: 13ms, application-code: 96ms)
+ POST /api/auth/register 500 in 1803ms (next.js: 4ms, application-code: 1799ms)
+ POST /api/auth/register 201 in 2.1s (next.js: 6ms, application-code: 2.1s)
+ GET /auth/new-verification 200 in 1624ms (next.js: 1584ms, proxy.ts: 8ms, application-code: 31ms)
+ POST /auth/new-verification 200 in 1276ms (next.js: 6ms, proxy.ts: 5ms, application-code: 1264ms)
+  └─ ƒ newVerification("943807") in 1234ms src/actions/new-verification.ts
+ GET /login 200 in 452ms (next.js: 413ms, proxy.ts: 9ms, application-code: 30ms)
+ POST /api/auth/login 200 in 728ms (next.js: 53ms, application-code: 675ms)
+ GET / 200 in 2.7s (next.js: 2.7s, proxy.ts: 8ms, application-code: 27ms)
+ GET / 200 in 65ms (next.js: 8ms, proxy.ts: 20ms, application-code: 37ms)
+ GET /api/auth/session 200 in 377ms (next.js: 193ms, application-code: 184ms)
+ GET /api/auth/session 200 in 2.2s (next.js: 202ms, application-code: 1969ms)
+ GET /api/auth/session 200 in 255ms (next.js: 3ms, application-code: 251ms)
+ GET /api/auth/session 200 in 2.8s (next.js: 206ms, application-code: 2.6s)
+[Dashboard Stats API] Stats successfully retrieved for user: cmronrw9l0003mwty8d2dfxhv
+ GET /api/dashboard/stats 200 in 2.6s (next.js: 148ms, application-code: 2.4s)
+ GET /api/dashboard/heatmap?timeZone=Europe%2FIstanbul 200 in 290ms (next.js: 123ms, application-code: 167ms)
+[Dashboard Stats API] Stats successfully retrieved for user: cmronrw9l0003mwty8d2dfxhv
+ GET /api/dashboard/stats 200 in 620ms (next.js: 3ms, application-code: 617ms)
+ GET /api/dashboard/heatmap?timeZone=Europe%2FIstanbul 200 in 157ms (next.js: 3ms, application-code: 154ms)
+ POST /api/auth/logout 200 in 115ms (next.js: 108ms, application-code: 7ms)
+ GET /login 200 in 39ms (next.js: 6ms, proxy.ts: 7ms, application-code: 26ms)
+ GET /login 200 in 18ms (next.js: 5ms, proxy.ts: 4ms, application-code: 9ms)
+✓ Compiled in 839ms
+ GET /login 200 in 888ms (next.js: 715ms, proxy.ts: 116ms, application-code: 57ms)
+ GET /forgot-password 200 in 823ms (next.js: 576ms, proxy.ts: 8ms, application-code: 240ms)
+ HEAD /forgot-password 200 in 64ms (next.js: 7ms, proxy.ts: 4ms, application-code: 53ms)
+ GET /forgot-password 200 in 38ms (next.js: 10ms, proxy.ts: 4ms, application-code: 24ms)
+ POST /api/auth/forgot-password 200 in 1725ms (next.js: 213ms, application-code: 1511ms)
+ POST /api/auth/forgot-password/verify 400 in 1883ms (next.js: 141ms, application-code: 1742ms)
+ POST /api/auth/forgot-password/verify 200 in 175ms (next.js: 14ms, application-code: 161ms)
+ POST /api/auth/forgot-password/reset 200 in 1375ms (next.js: 145ms, application-code: 1231ms)
+ GET /login 200 in 36ms (next.js: 5ms, proxy.ts: 6ms, application-code: 25ms)
+ GET /register 200 in 471ms (next.js: 426ms, proxy.ts: 8ms, application-code: 38ms)
+ GET /login 200 in 40ms (next.js: 9ms, proxy.ts: 4ms, application-code: 26ms)
+✓ Compiled in 373ms
+ GET /login 200 in 392ms (next.js: 188ms, proxy.ts: 124ms, application-code: 80ms)
+ GET /forgot-password 200 in 64ms (next.js: 28ms, proxy.ts: 4ms, application-code: 32ms)
+ GET /login 200 in 67ms (next.js: 9ms, proxy.ts: 12ms, application-code: 45ms)
+ GET /register 200 in 99ms (next.js: 31ms, proxy.ts: 7ms, application-code: 61ms)
+ GET /login 200 in 52ms (next.js: 7ms, proxy.ts: 7ms, application-code: 37ms)
+ GET /login 200 in 162ms (next.js: 8ms, proxy.ts: 4ms, application-code: 150ms)
+ GET /login 200 in 58ms (next.js: 5ms, proxy.ts: 5ms, application-code: 47ms)
+✓ Compiled in 254ms
+ GET /login 200 in 335ms (next.js: 173ms, proxy.ts: 107ms, application-code: 55ms)
+ GET /login 200 in 162ms (next.js: 7ms, proxy.ts: 5ms, application-code: 150ms)
+ GET /login 200 in 65ms (next.js: 9ms, proxy.ts: 7ms, application-code: 49ms)
+ GET /login 200 in 59ms (next.js: 5ms, proxy.ts: 5ms, application-code: 50ms)
+ GET /login 200 in 73ms (next.js: 15ms, proxy.ts: 5ms, application-code: 53ms)
+ GET /login 200 in 67ms (next.js: 8ms, proxy.ts: 3ms, application-code: 56ms)
+ GET /login 200 in 70ms (next.js: 10ms, proxy.ts: 4ms, application-code: 56ms)
 [?25h
