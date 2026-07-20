@@ -47,6 +47,8 @@ model StudySession {
   createdAt       DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
 
 model Conversation {

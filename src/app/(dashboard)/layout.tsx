@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Sidebar } from "../../components/layout/Sidebar";
 import { DashboardHeader } from "../../components/layout/DashboardHeader";
+import { DashboardUserProvider } from "../../components/layout/DashboardUserContext";
 
 export default function DashboardLayout({
   children,
@@ -52,19 +53,21 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex h-screen bg-[#f5f7fa]">
-      <Sidebar
-        userName={userName}
-        userInitial={userInitial}
-        userAvatarId={userAvatarId}
-        onLogout={handleLogout}
-        isLoggingOut={isLoggingOut}
-      />
+    <DashboardUserProvider userName={userName}>
+      <div className="flex h-screen bg-[#f5f7fa]">
+        <Sidebar
+          userName={userName}
+          userInitial={userInitial}
+          userAvatarId={userAvatarId}
+          onLogout={handleLogout}
+          isLoggingOut={isLoggingOut}
+        />
 
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader />
-        <div className="flex-1 overflow-auto p-8">{children}</div>
-      </main>
-    </div>
+        <main className="flex-1 flex flex-col overflow-hidden">
+          <DashboardHeader />
+          <div className="flex-1 overflow-auto p-8">{children}</div>
+        </main>
+      </div>
+    </DashboardUserProvider>
   );
 }

@@ -358,6 +358,37 @@ export default function AIAssistantPage() {
   }, [fetchConversations]);
 
   useEffect(() => {
+    const openRequestedConversation = () => {
+      const requestedConversationId = new URLSearchParams(
+        window.location.hash.slice(1),
+      ).get("conversation");
+
+      if (
+        !requestedConversationId ||
+        !conversations.some(
+          (conversation) => conversation.id === requestedConversationId,
+        )
+      ) {
+        return;
+      }
+
+      setCurrentConversationId(requestedConversationId);
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}`,
+      );
+    };
+
+    openRequestedConversation();
+    window.addEventListener("hashchange", openRequestedConversation);
+
+    return () => {
+      window.removeEventListener("hashchange", openRequestedConversation);
+    };
+  }, [conversations]);
+
+  useEffect(() => {
     if (!currentConversationId || isLoading) {
       return;
     }

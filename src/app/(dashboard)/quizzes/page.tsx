@@ -93,6 +93,7 @@ function QuizzesContent() {
   const [deletingQuizId, setDeletingQuizId] = useState<string | null>(null);
 
   const questions = selectedQuiz?.questions ?? [];
+  const requestedQuizId = searchParams.get("quiz") ?? undefined;
   const currentQuestion = questions[currentQuestionIndex] ?? null;
   const isFirstQuestion = currentQuestionIndex === 0;
   const isLastQuestion =
@@ -166,9 +167,9 @@ function QuizzesContent() {
 
   useEffect(() => {
     queueMicrotask(() => {
-      void fetchQuizzes();
+      void fetchQuizzes(requestedQuizId);
     });
-  }, [fetchQuizzes]);
+  }, [fetchQuizzes, requestedQuizId]);
 
   useEffect(() => {
     if (searchParams.get("autoGenerate") !== "true") {

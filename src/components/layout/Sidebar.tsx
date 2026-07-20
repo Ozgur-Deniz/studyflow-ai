@@ -68,9 +68,6 @@ export function Sidebar({
 
   return (
     <aside className="w-[270px] bg-white border-r border-[#e2e8f0] flex flex-col animate-slide-in-left relative overflow-hidden shrink-0">
-      {/* Subtle gradient decoration at top */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#0a9f43] via-[#4ade80] to-[#86efac] animate-gradient" />
-
       {/* Logo */}
       <div className="h-[72px] flex items-center px-6">
         <Logo size="sm" />
@@ -90,22 +87,25 @@ export function Sidebar({
               href={item.path}
               className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-semibold mb-1 transition-all duration-300 relative ${
                 isActive
-                  ? "bg-gradient-to-r from-[#0a9f43] to-[#4ade80] text-white shadow-lg shadow-emerald-200/60"
+                  ? "bg-[#e9fbee] text-[#064e2a] ring-1 ring-inset ring-[#bbf7d0] shadow-[0_14px_34px_-24px_rgba(10,159,67,0.55)]"
                   : "text-[#64748b] hover:bg-[#f1f5f9] hover:text-[#0f172a]"
               }`}
             >
+              {isActive && (
+                <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-[#24d653]" />
+              )}
               <Icon
                 size={20}
                 className={`transition-all duration-300 ${
                   isActive
-                    ? "text-white"
-                    : "text-[#64748b] group-hover:text-[#087b36] group-hover:scale-110"
+                    ? "text-[#0a9f43]"
+                    : "text-[#64748b] group-hover:text-[#0a9f43] group-hover:scale-110"
                 }`}
                 aria-hidden="true"
               />
               {item.name}
               {isActive && (
-                <span className="absolute right-3 w-2 h-2 bg-white rounded-full animate-pulse" />
+                <span className="absolute right-3 h-2 w-2 rounded-full bg-[#24d653] shadow-[0_0_0_4px_rgba(36,214,83,0.16)]" />
               )}
             </Link>
           );
@@ -118,7 +118,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={() => setIsOpen((current) => !current)}
-            className="group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#f1f5f9] focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/10"
+            className="group flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#f1f5f9] focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10"
             aria-label="Open user menu"
             aria-expanded={isOpen}
             aria-haspopup="menu"
@@ -148,7 +148,7 @@ export function Sidebar({
               <Link
                 href="/settings"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-[#334155] transition hover:bg-[#f8fafc] hover:text-[#0a9f43]"
+                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-[#334155] transition hover:bg-[#f8fafc] hover:text-[#4f46e5]"
                 role="menuitem"
               >
                 <User className="h-4 w-4" />
