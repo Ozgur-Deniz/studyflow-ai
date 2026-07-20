@@ -7,6 +7,7 @@ import {
   StudyActivityHeatmap,
   type HeatmapDataPoint,
 } from "@/components/dashboard/StudyActivityHeatmap";
+import { useDashboardUser } from "@/components/layout/DashboardUserContext";
 
 interface DashboardStats {
   activeStudyPlans: number;
@@ -37,7 +38,7 @@ const DEFAULT_REVEAL_STATE = {
 };
 
 export default function DashboardPage() {
-  const [userName, setUserName] = useState("");
+  const { userName } = useDashboardUser();
   const [stats, setStats] = useState<DashboardStats>({
     activeStudyPlans: 0,
     aiConversations: 0,
@@ -50,75 +51,99 @@ export default function DashboardPage() {
   const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
   const [revealState, setRevealState] = useState(DEFAULT_REVEAL_STATE);
   const [heatmapData, setHeatmapData] = useState<HeatmapDataPoint[]>([]);
+  const [isHeatmapLoading, setIsHeatmapLoading] = useState(true);
   const [typedUserName, setTypedUserName] = useState("");
 
   useEffect(() => {
     let isMounted = true;
+    let heatmapStreak: number | null = null;
+    const controller = new AbortController();
 
     const fetchDashboardData = async () => {
-      try {
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        // 1. Fetch Session
-        const sessionRes = await fetch("/api/auth/session", {
-          cache: "no-store",
-        });
-        if (sessionRes.ok && isMounted) {
-          const sessionData = await sessionRes.json();
-          setUserName(sessionData.user.name);
-        }
-
-        // 2. Fetch Stats
-        const statsRes = await fetch("/api/dashboard/stats", {
-          cache: "no-store",
-        });
-        if (statsRes.ok && isMounted) {
-          const statsData = await statsRes.json();
-          setStats(statsData.stats);
-        }
-
-        const heatmapRes = await fetch(
-          `/api/dashboard/heatmap?timeZone=${encodeURIComponent(timeZone)}`,
-          {
+      const loadStats = async () => {
+        try {
+          const statsRes = await fetch("/api/dashboard/stats", {
             cache: "no-store",
-          },
-        );
+            signal: controller.signal,
+          });
 
-        if (heatmapRes.ok && isMounted) {
-          const heatmapBody = (await heatmapRes.json()) as HeatmapApiResponse;
+          if (!statsRes.ok) {
+            throw new Error(`Dashboard stats request failed: ${statsRes.status}`);
+          }
 
-          setHeatmapData(heatmapBody.heatmapData);
-          setStats((currentStats) => ({
-            ...currentStats,
-            currentStreak: heatmapBody.stats.currentStreak,
-          }));
+          if (isMounted) {
+            const statsData = (await statsRes.json()) as {
+              stats: DashboardStats;
+            };
+            setStats({
+              ...statsData.stats,
+              currentStreak:
+                heatmapStreak ?? statsData.stats.currentStreak,
+            });
+          }
+        } finally {
+          if (isMounted) {
+            setIsLoading(false);
+          }
         }
-      } catch (error) {
-        console.error("[Dashboard] Error during data fetch:", error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
+      };
+
+      const loadHeatmap = async () => {
+        try {
+          const heatmapRes = await fetch(
+            `/api/dashboard/heatmap?timeZone=${encodeURIComponent(timeZone)}`,
+            {
+              cache: "no-store",
+              signal: controller.signal,
+            },
+          );
+
+          if (!heatmapRes.ok) {
+            throw new Error(
+              `Dashboard heatmap request failed: ${heatmapRes.status}`,
+            );
+          }
+
+          if (isMounted) {
+            const heatmapBody = (await heatmapRes.json()) as HeatmapApiResponse;
+            heatmapStreak = heatmapBody.stats.currentStreak;
+            setHeatmapData(heatmapBody.heatmapData);
+            setStats((currentStats) => ({
+              ...currentStats,
+              currentStreak: heatmapBody.stats.currentStreak,
+            }));
+          }
+        } finally {
+          if (isMounted) {
+            setIsHeatmapLoading(false);
+          }
         }
+      };
+
+      const [statsResult, heatmapResult] = await Promise.allSettled([
+        loadStats(),
+        loadHeatmap(),
+      ]);
+
+      if (statsResult.status === "rejected" && !controller.signal.aborted) {
+        console.error("[Dashboard] Error fetching stats:", statsResult.reason);
       }
+      if (heatmapResult.status === "rejected" && !controller.signal.aborted) {
+        console.error(
+          "[Dashboard] Error fetching heatmap:",
+          heatmapResult.reason,
+        );
+      }
+
     };
 
     void fetchDashboardData();
 
-    const refreshWhenVisible = () => {
-      if (document.visibilityState === "visible") {
-        void fetchDashboardData();
-      }
-    };
-
-    window.addEventListener("focus", fetchDashboardData);
-    window.addEventListener("pageshow", fetchDashboardData);
-    document.addEventListener("visibilitychange", refreshWhenVisible);
-
     return () => {
       isMounted = false;
-      window.removeEventListener("focus", fetchDashboardData);
-      window.removeEventListener("pageshow", fetchDashboardData);
-      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      controller.abort();
     };
   }, []);
 
@@ -276,6 +301,7 @@ export default function DashboardPage() {
       >
         <StudyActivityHeatmap
           data={heatmapData}
+          isLoading={isHeatmapLoading}
           animationReady={revealState.studyActivity || shouldReduceMotion}
         />
       </div>

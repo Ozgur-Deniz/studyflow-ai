@@ -49,7 +49,10 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
   };
 
   return (
-    <div className="bg-white p-7 rounded-2xl border border-[#e2e8f0] animate-scale-in relative overflow-hidden h-full shadow-sm">
+    <div
+      id="generate-plan"
+      className="bg-white p-7 rounded-2xl border border-[#e2e8f0] animate-scale-in relative overflow-hidden h-full scroll-mt-6 shadow-sm"
+    >
       <div className="flex items-center gap-4 mb-8">
         <div className="w-12 h-12 bg-gradient-to-br from-[#ecfdf3] to-[#dcfce7] rounded-xl flex items-center justify-center shadow-inner border border-white">
           <Sparkles className="text-[#0a9f43]" size={22} />

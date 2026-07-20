@@ -62,6 +62,7 @@ function FlashcardsContent() {
 
   const currentCards = useMemo(() => getDeckCards(selectedDeck), [selectedDeck]);
   const currentCard = currentCards[currentCardIndex] ?? null;
+  const requestedDeckId = searchParams.get("deck") ?? undefined;
   const isFirstCard = currentCardIndex === 0;
   const isLastCard =
     currentCards.length === 0 || currentCardIndex === currentCards.length - 1;
@@ -105,9 +106,9 @@ function FlashcardsContent() {
 
   useEffect(() => {
     queueMicrotask(() => {
-      void fetchDecks();
+      void fetchDecks(requestedDeckId);
     });
-  }, [fetchDecks]);
+  }, [fetchDecks, requestedDeckId]);
 
   useEffect(() => {
     if (searchParams.get("autoGenerate") !== "true") {
