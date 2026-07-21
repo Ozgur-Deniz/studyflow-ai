@@ -15,6 +15,7 @@ import {
   Search,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DASHBOARD_NOTIFICATIONS_REFRESH_EVENT } from "@/lib/dashboard-notifications";
 
 type ActivePanel = "search" | "create" | "notifications" | null;
 type SearchResultType =
@@ -34,6 +35,7 @@ type SearchResult = {
 
 type ActivityNotification = {
   id: string;
+  kind: "study-plan" | "flashcard" | "quiz" | "activity";
   title: string;
   detail: string;
   href: string;
@@ -91,6 +93,28 @@ const quickCreateItems = [
     iconClassName: "bg-sky-50 text-sky-700",
   },
 ];
+
+const notificationKindMeta = {
+  "study-plan": {
+    icon: BookOpen,
+    iconClassName: "bg-fuchsia-50 text-fuchsia-700",
+  },
+  flashcard: {
+    icon: Layers,
+    iconClassName: "bg-amber-50 text-amber-700",
+  },
+  quiz: {
+    icon: ClipboardList,
+    iconClassName: "bg-sky-50 text-sky-700",
+  },
+  activity: {
+    icon: CheckCircle2,
+    iconClassName: "bg-[#ecfdf3] text-[#087b36]",
+  },
+} satisfies Record<
+  ActivityNotification["kind"],
+  { icon: typeof BookOpen; iconClassName: string }
+>;
 
 function formatRelativeTime(value: string): string {
   const elapsedSeconds = Math.max(
@@ -191,6 +215,24 @@ export function DashboardHeader() {
     return () => {
       window.cancelAnimationFrame(animationFrameId);
       controller.abort();
+    };
+  }, [loadNotifications]);
+
+  useEffect(() => {
+    const handleNotificationsRefresh = () => {
+      void loadNotifications();
+    };
+
+    window.addEventListener(
+      DASHBOARD_NOTIFICATIONS_REFRESH_EVENT,
+      handleNotificationsRefresh,
+    );
+
+    return () => {
+      window.removeEventListener(
+        DASHBOARD_NOTIFICATIONS_REFRESH_EVENT,
+        handleNotificationsRefresh,
+      );
     };
   }, [loadNotifications]);
 
@@ -304,6 +346,16 @@ export function DashboardHeader() {
     setActivePanel(null);
     setQuery("");
     router.push(result.href);
+  };
+
+  const toggleNotifications = () => {
+    const isOpening = activePanel !== "notifications";
+
+    if (isOpening) {
+      void loadNotifications();
+    }
+
+    setActivePanel(isOpening ? "notifications" : null);
   };
 
   const handleSearchKeyDown = (
@@ -512,11 +564,7 @@ export function DashboardHeader() {
               aria-label="Open notifications"
               title="Notifications"
               aria-expanded={activePanel === "notifications"}
-              onClick={() =>
-                setActivePanel((currentPanel) =>
-                  currentPanel === "notifications" ? null : "notifications",
-                )
-              }
+              onClick={toggleNotifications}
               className="relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-[#dbe2ea] bg-white text-[#64748b] transition-colors duration-200 hover:border-[#bbf7d0] hover:bg-[#f8fafc] hover:text-[#087b36]"
             >
               <Bell size={18} aria-hidden="true" />
@@ -567,31 +615,38 @@ export function DashboardHeader() {
                   </div>
                 ) : (
                   <div className="max-h-[390px] overflow-y-auto p-1.5">
-                    {notifications.map((notification) => (
-                      <Link
-                        key={notification.id}
-                        href={notification.href}
-                        onClick={() => setActivePanel(null)}
-                        className="flex gap-3 rounded-md px-3 py-3 transition-colors hover:bg-[#f8fafc]"
-                      >
-                        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#ecfdf3] text-[#087b36]">
-                          <CheckCircle2 size={16} aria-hidden="true" />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="flex items-start justify-between gap-3">
-                            <span className="truncate text-[12px] font-semibold text-[#0f172a]">
-                              {notification.title}
+                    {notifications.map((notification) => {
+                      const meta = notificationKindMeta[notification.kind];
+                      const Icon = meta.icon;
+
+                      return (
+                        <Link
+                          key={notification.id}
+                          href={notification.href}
+                          onClick={() => setActivePanel(null)}
+                          className="flex gap-3 rounded-md px-3 py-3 transition-colors hover:bg-[#f8fafc]"
+                        >
+                          <span
+                            className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${meta.iconClassName}`}
+                          >
+                            <Icon size={16} aria-hidden="true" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-start justify-between gap-3">
+                              <span className="truncate text-[12px] font-semibold text-[#0f172a]">
+                                {notification.title}
+                              </span>
+                              <span className="shrink-0 text-[10px] font-medium text-[#94a3b8]">
+                                {formatRelativeTime(notification.createdAt)}
+                              </span>
                             </span>
-                            <span className="shrink-0 text-[10px] font-medium text-[#94a3b8]">
-                              {formatRelativeTime(notification.createdAt)}
+                            <span className="mt-1 block text-[11px] font-medium text-[#64748b]">
+                              {notification.detail}
                             </span>
                           </span>
-                          <span className="mt-1 block text-[11px] font-medium text-[#64748b]">
-                            {notification.detail}
-                          </span>
-                        </span>
-                      </Link>
-                    ))}
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
               </div>

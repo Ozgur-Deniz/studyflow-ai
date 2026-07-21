@@ -31,6 +31,10 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import {
+  refreshDashboardActivity,
+  refreshDashboardNotifications,
+} from "@/lib/dashboard-notifications";
 
 interface Message {
   id: string;
@@ -633,14 +637,16 @@ export default function AIAssistantPage() {
       showResourceToast({
         type: "success",
         title: isFlashcard
-          ? "Flashcards are ready"
-          : "Quiz created successfully",
+          ? "Flashcards created"
+          : "Quiz created",
         description: isFlashcard
           ? "A new deck was created in the background."
           : "A new quiz was created in the background.",
         href: isFlashcard ? "/flashcards" : "/quizzes",
         actionLabel: isFlashcard ? "Open deck" : "Open quiz",
       });
+      refreshDashboardNotifications();
+      refreshDashboardActivity();
     } catch (error) {
       console.error("Failed to generate linked AI resource:", error);
 
@@ -780,6 +786,8 @@ export default function AIAssistantPage() {
           `AI assistant request failed with status ${response.status}.`,
         );
       }
+
+      refreshDashboardActivity();
 
       if (!response.body) {
         throw new Error("AI assistant response body is missing.");

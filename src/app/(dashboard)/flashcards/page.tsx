@@ -10,8 +10,10 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Layers, Loader2, Sparkles } from "lucide-react";
-
-
+import {
+  notifyResourceCreated,
+  refreshDashboardActivity,
+} from "@/lib/dashboard-notifications";
 
 interface Flashcard {
   id: string;
@@ -157,6 +159,7 @@ function FlashcardsContent() {
 
       setIsModalOpen(false);
       setGenerateTopic("");
+      notifyResourceCreated("flashcard", data.deck?.id);
       await fetchDecks(data.deck?.id);
     } catch (generateError) {
       console.error("Failed to generate flashcard deck:", generateError);
@@ -170,7 +173,7 @@ function FlashcardsContent() {
     deckId: string,
   ) => {
     try {
-      await fetch("/api/flashcards/activity", {
+      const response = await fetch("/api/flashcards/activity", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -180,6 +183,10 @@ function FlashcardsContent() {
           deckId,
         }),
       });
+
+      if (response.ok) {
+        refreshDashboardActivity();
+      }
     } catch (activityError) {
       console.error("Failed to record flashcard activity:", activityError);
     }

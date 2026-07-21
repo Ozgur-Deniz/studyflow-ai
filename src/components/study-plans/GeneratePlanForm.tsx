@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Sparkles, Target, Clock } from "lucide-react";
+import { notifyResourceCreated } from "@/lib/dashboard-notifications";
 
 interface GeneratePlanFormProps {
   onPlanGenerated?: () => void;
@@ -30,11 +31,9 @@ export function GeneratePlanForm({ onPlanGenerated }: GeneratePlanFormProps) {
           data.plan.title,
         );
 
-        // Formu temizle
         setTopic("");
         setTimeframe("");
-
-        // Notify the parent component that a new plan was created
+        notifyResourceCreated("study-plan", data.plan.id);
         onPlanGenerated?.();
       } else {
         const errorData = await response.json();
