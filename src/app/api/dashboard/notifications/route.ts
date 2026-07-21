@@ -10,10 +10,8 @@ const NOTIFICATION_ACTIONS = [
   "QUIZ_COMPLETED",
   "FLASHCARD_REVIEWED",
   "FLASHCARD_DECK_COMPLETED",
-  "STUDY_PLAN_CREATED",
   "STUDY_PLAN_COMPLETED",
   "AI_MESSAGE_SENT",
-  "AI_RESOURCE_GENERATED",
 ] as const;
 
 type NotificationAction = (typeof NOTIFICATION_ACTIONS)[number];
@@ -35,10 +33,6 @@ const ACTION_META: Record<
     title: "Flashcard deck completed",
     href: "/flashcards",
   },
-  STUDY_PLAN_CREATED: {
-    title: "Study plan created",
-    href: "/study-plans",
-  },
   STUDY_PLAN_COMPLETED: {
     title: "Study plan completed",
     href: "/study-plans",
@@ -47,32 +41,55 @@ const ACTION_META: Record<
     title: "AI study session updated",
     href: "/ai-assistant",
   },
-  AI_RESOURCE_GENERATED: {
-    title: "AI resource generated",
-    href: "/ai-assistant",
-  },
 };
 
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromRequest(request);
-    const sessions = await prisma.studySession.findMany({
-      where: {
-        userId,
-        actionType: { in: [...NOTIFICATION_ACTIONS] },
-      },
-      select: {
-        id: true,
-        actionType: true,
-        points: true,
-        durationMinutes: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-      take: 8,
-    });
+    const [sessions, studyPlans, flashcardDecks, quizzes] = await Promise.all([
+      prisma.studySession.findMany({
+        where: {
+          userId,
+          actionType: { in: [...NOTIFICATION_ACTIONS] },
+        },
+        select: {
+          id: true,
+          actionType: true,
+          points: true,
+          durationMinutes: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      }),
+      prisma.studyPlan.findMany({
+        where: { userId },
+        select: { id: true, title: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.flashcardDeck.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          _count: { select: { flashcards: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.quiz.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          _count: { select: { questions: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
 
-    const notifications = sessions.map((session) => {
+    const activityNotifications = sessions.map((session) => {
       const action = session.actionType as NotificationAction;
       const meta = ACTION_META[action];
       const focusDetail =
@@ -81,13 +98,50 @@ export async function GET(request: NextRequest) {
           : `+${session.points} XP added to your activity`;
 
       return {
-        id: session.id,
+        id: `activity-${session.id}`,
+        kind: "activity" as const,
         title: meta.title,
         detail: focusDetail,
         href: meta.href,
         createdAt: session.createdAt.toISOString(),
       };
     });
+
+    const creationNotifications = [
+      ...studyPlans.map((plan) => ({
+        id: `study-plan-${plan.id}`,
+        kind: "study-plan" as const,
+        title: "Study plan created",
+        detail: plan.title,
+        href: `/study-plans/${encodeURIComponent(plan.id)}`,
+        createdAt: plan.createdAt.toISOString(),
+      })),
+      ...flashcardDecks.map((deck) => ({
+        id: `flashcard-${deck.id}`,
+        kind: "flashcard" as const,
+        title: "Flashcards created",
+        detail: `${deck.title} - ${deck._count.flashcards} cards`,
+        href: `/flashcards?deck=${encodeURIComponent(deck.id)}`,
+        createdAt: deck.createdAt.toISOString(),
+      })),
+      ...quizzes.map((quiz) => ({
+        id: `quiz-${quiz.id}`,
+        kind: "quiz" as const,
+        title: "Quiz created",
+        detail: `${quiz.title} - ${quiz._count.questions} questions`,
+        href: `/quizzes?quiz=${encodeURIComponent(quiz.id)}`,
+        createdAt: quiz.createdAt.toISOString(),
+      })),
+    ];
+
+    const notifications = [
+      ...creationNotifications,
+      ...activityNotifications,
+    ].sort(
+      (left, right) =>
+        new Date(right.createdAt).getTime() -
+        new Date(left.createdAt).getTime(),
+    );
 
     return NextResponse.json(
       { notifications },

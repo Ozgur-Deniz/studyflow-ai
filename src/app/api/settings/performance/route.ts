@@ -141,6 +141,7 @@ export async function GET(request: NextRequest) {
       prisma.studySession.findMany({
         where: { userId },
         select: {
+          id: true,
           actionType: true,
           points: true,
           durationMinutes: true,
@@ -328,6 +329,15 @@ export async function GET(request: NextRequest) {
           },
           aiConversations: conversationCount,
         },
+        recentActivity: [...allSessions]
+          .reverse()
+          .map((session) => ({
+            id: session.id,
+            actionType: session.actionType,
+            points: session.points,
+            durationMinutes: session.durationMinutes,
+            createdAt: session.createdAt.toISOString(),
+          })),
         hasActivity: allSessions.length > 0,
       },
       {

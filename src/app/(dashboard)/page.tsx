@@ -8,6 +8,10 @@ import {
   type HeatmapDataPoint,
 } from "@/components/dashboard/StudyActivityHeatmap";
 import { useDashboardUser } from "@/components/layout/DashboardUserContext";
+import {
+  DASHBOARD_ACTIVITY_REFRESH_EVENT,
+  DASHBOARD_ACTIVITY_STORAGE_KEY,
+} from "@/lib/dashboard-notifications";
 
 interface DashboardStats {
   activeStudyPlans: number;
@@ -144,6 +148,76 @@ export default function DashboardPage() {
     return () => {
       isMounted = false;
       controller.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    let refreshController: AbortController | null = null;
+
+    const refreshHeatmap = async () => {
+      refreshController?.abort();
+      refreshController = new AbortController();
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      try {
+        const response = await fetch(
+          `/api/dashboard/heatmap?timeZone=${encodeURIComponent(timeZone)}`,
+          {
+            cache: "no-store",
+            signal: refreshController.signal,
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`Dashboard heatmap refresh failed: ${response.status}`);
+        }
+
+        const body = (await response.json()) as HeatmapApiResponse;
+        setHeatmapData(body.heatmapData);
+        setStats((currentStats) => ({
+          ...currentStats,
+          currentStreak: body.stats.currentStreak,
+        }));
+      } catch (refreshError) {
+        if (
+          refreshError instanceof DOMException &&
+          refreshError.name === "AbortError"
+        ) {
+          return;
+        }
+
+        console.error("[Dashboard] Heatmap refresh failed:", refreshError);
+      }
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === DASHBOARD_ACTIVITY_STORAGE_KEY) {
+        void refreshHeatmap();
+      }
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void refreshHeatmap();
+      }
+    };
+
+    window.addEventListener(
+      DASHBOARD_ACTIVITY_REFRESH_EVENT,
+      refreshHeatmap,
+    );
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", refreshHeatmap);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      refreshController?.abort();
+      window.removeEventListener(
+        DASHBOARD_ACTIVITY_REFRESH_EVENT,
+        refreshHeatmap,
+      );
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", refreshHeatmap);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 

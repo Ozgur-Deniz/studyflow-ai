@@ -86,7 +86,6 @@ export async function GET(request: NextRequest) {
         userId,
         createdAt: {
           gte: queryStartDate,
-          lte: now,
         },
       },
       select: {

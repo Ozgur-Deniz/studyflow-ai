@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Brain, Coffee, Pause, Play, RotateCcw } from "lucide-react";
 import { toast } from "react-toastify";
 import { usePomodoroStore } from "@/store/usePomodoroStore";
+import { refreshDashboardActivity } from "@/lib/dashboard-notifications";
 
 type PomodoroMode = "focus" | "shortBreak" | "longBreak";
 
@@ -187,7 +188,7 @@ export function PomodoroTimer() {
 
       try {
         if (mode === "focus") {
-          await fetch("/api/study-sessions", {
+          const response = await fetch("/api/study-sessions", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -197,6 +198,10 @@ export function PomodoroTimer() {
               durationSeconds: MODE_DURATIONS.focus,
             }),
           });
+
+          if (response.ok) {
+            refreshDashboardActivity();
+          }
         }
       } finally {
         resetTimer();

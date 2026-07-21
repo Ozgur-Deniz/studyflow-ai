@@ -26,6 +26,10 @@ import {
   MessageCircle,
   Sparkles,
 } from "lucide-react";
+import {
+  RecentActivityTimeline,
+  type PerformanceActivity,
+} from "@/components/settings/RecentActivityTimeline";
 
 interface XpDataPoint {
   label: string;
@@ -76,6 +80,7 @@ interface PerformanceData {
     };
     aiConversations: number;
   };
+  recentActivity: PerformanceActivity[];
   hasActivity: boolean;
 }
 
@@ -558,6 +563,8 @@ export function PerformanceStats() {
           );
         })}
       </div>
+
+      <RecentActivityTimeline activities={data.recentActivity ?? []} />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_22rem]">
         <section className="rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">

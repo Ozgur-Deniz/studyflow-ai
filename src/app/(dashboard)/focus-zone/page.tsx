@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Ubuntu_Sans } from "next/font/google";
 import { Pause, Play, RotateCcw, Timer } from "lucide-react";
 import { recordFocusSession } from "@/app/actions/focus-session.actions";
+import { refreshDashboardActivity } from "@/lib/dashboard-notifications";
 
 type FocusTab = "Pomodoro" | "Stopwatch" | "Countdown";
 type PomodoroMode = "focus" | "shortBreak" | "longBreak" | "deepWork";
@@ -114,7 +115,10 @@ export default function FocusZonePage() {
     }).then((result) => {
       if (!result.success) {
         console.error("[Focus Zone] Focus session was not recorded:", result.error);
+        return;
       }
+
+      refreshDashboardActivity();
     });
   }, [activePomodoroMode, activeTab, initialTime, timeLeft]);
 

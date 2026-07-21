@@ -14,6 +14,7 @@ import {
   ListChecks,
 } from "lucide-react";
 import Link from "next/link";
+import { refreshDashboardActivity } from "@/lib/dashboard-notifications";
 
 interface StudyPlan {
   id: string;
@@ -242,6 +243,10 @@ export default function PlanDetailPage({
         setPlan((prev) =>
           data.plan ?? (prev ? { ...prev, isCompleted: nextIsCompleted } : null),
         );
+
+        if (nextIsCompleted) {
+          refreshDashboardActivity();
+        }
       } else {
         alert("Failed to update plan status.");
       }

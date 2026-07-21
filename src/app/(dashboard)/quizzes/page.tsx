@@ -19,6 +19,10 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react";
+import {
+  notifyResourceCreated,
+  refreshDashboardActivity,
+} from "@/lib/dashboard-notifications";
 
 interface Question {
   id: string;
@@ -217,6 +221,7 @@ function QuizzesContent() {
 
       setIsModalOpen(false);
       setGenerateTopic("");
+      notifyResourceCreated("quiz", data.quiz?.id);
       await fetchQuizzes(data.quiz?.id);
     } catch (generateError) {
       console.error("Failed to generate quiz:", generateError);
@@ -286,6 +291,7 @@ function QuizzesContent() {
       );
       setSelectedQuiz(completedQuiz);
       setIsFinished(true);
+      refreshDashboardActivity();
     } catch (completeError) {
       console.error("Failed to complete quiz:", completeError);
       window.alert("Quiz could not be marked as completed.");
