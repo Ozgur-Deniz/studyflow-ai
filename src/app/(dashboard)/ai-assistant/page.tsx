@@ -21,6 +21,7 @@ import {
   Layers,
   Lightbulb,
   Loader2,
+  Menu,
   MessageSquare,
   MessageSquarePlus,
   Paperclip,
@@ -291,6 +292,7 @@ export default function AIAssistantPage() {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_CHAT_MODEL);
   const [exhaustedModels, setExhaustedModels] = useState<string[]>([]);
   const [isModelMenuOpen, setIsModelMenuOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isGeneratingResource, setIsGeneratingResource] = useState(false);
   const [generatingResourceType, setGeneratingResourceType] =
     useState<ResourceType | null>(null);
@@ -474,6 +476,7 @@ export default function AIAssistantPage() {
   };
 
   const handleNewChat = () => {
+    setIsHistoryOpen(false);
     setCurrentConversationId(null);
     setMessages([]);
     setInput("");
@@ -909,8 +912,24 @@ export default function AIAssistantPage() {
         </div>
       )}
 
-      <aside className="hidden w-80 shrink-0 flex-col border-r border-white/70 bg-surface/72 backdrop-blur md:flex">
-        <div className="border-b border-border/70 p-4">
+      <button
+        type="button"
+        onClick={() => setIsHistoryOpen(false)}
+        aria-label="Close chat history"
+        className={`fixed inset-0 z-40 bg-slate-950/35 backdrop-blur-sm transition-opacity duration-300 min-[1200px]:hidden ${
+          isHistoryOpen
+            ? "visible opacity-100"
+            : "pointer-events-none invisible opacity-0"
+        }`}
+      />
+
+      <aside
+        id="chat-history-panel"
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,calc(100vw-2rem))] shrink-0 flex-col border-r border-white/70 bg-surface/95 shadow-2xl backdrop-blur-xl transition-transform duration-300 ease-out min-[1200px]:relative min-[1200px]:inset-auto min-[1200px]:z-auto min-[1200px]:w-80 min-[1200px]:translate-x-0 min-[1200px]:bg-surface/72 min-[1200px]:shadow-none ${
+          isHistoryOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center gap-2 border-b border-border/70 p-4">
           <button
             type="button"
             onClick={handleNewChat}
@@ -918,6 +937,14 @@ export default function AIAssistantPage() {
           >
             <MessageSquarePlus className="h-4 w-4 transition-transform group-hover:rotate-6" />
             New Chat
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsHistoryOpen(false)}
+            className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-white text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-primary/10 min-[1200px]:hidden"
+            aria-label="Close chat history"
+          >
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -955,7 +982,10 @@ export default function AIAssistantPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => setCurrentConversationId(conversation.id)}
+                    onClick={() => {
+                      setCurrentConversationId(conversation.id);
+                      setIsHistoryOpen(false);
+                    }}
                     className="flex min-w-0 flex-1 cursor-pointer items-start gap-2 text-left"
                   >
                     <MessageSquare className="mt-0.5 h-4 w-4 shrink-0" />
@@ -989,9 +1019,19 @@ export default function AIAssistantPage() {
         </div>
       </aside>
 
-      <section className="flex min-w-0 flex-1 flex-col bg-white/42">
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col bg-white/42">
         <div className="flex items-center justify-between border-b border-white/70 bg-white/70 px-4 py-3 backdrop-blur-xl sm:px-6">
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsHistoryOpen(true)}
+              aria-label="Open chat history"
+              aria-expanded={isHistoryOpen}
+              aria-controls="chat-history-panel"
+              className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-border bg-white text-slate-600 shadow-soft-sm transition-colors hover:bg-slate-50 hover:text-primary focus:outline-none focus:ring-4 focus:ring-primary/10 min-[1200px]:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-white shadow-soft-sm">
               <Sparkles className="h-4 w-4" />
             </div>
@@ -1022,7 +1062,9 @@ export default function AIAssistantPage() {
 
         <div
           className={`flex-1 bg-[linear-gradient(180deg,rgba(246,247,251,0.66),rgba(255,255,255,0.72))] px-4 scroll-smooth sm:px-8 ${
-            isEmptyChat ? "overflow-hidden py-3" : "overflow-y-auto py-7"
+            isEmptyChat
+              ? "overflow-y-auto py-3 min-[1200px]:overflow-hidden"
+              : "overflow-y-auto py-7"
           }`}
         >
           {isFetchingHistory && (

@@ -136,7 +136,7 @@ export function AIRecommendationCard({
   const brief = buildFocusBrief(stats);
 
   return (
-    <section className="relative w-full overflow-hidden rounded-3xl border border-slate-200 bg-[radial-gradient(circle_at_12%_20%,rgba(10,159,67,0.14),transparent_28%),radial-gradient(circle_at_86%_18%,rgba(20,184,166,0.12),transparent_26%),linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#ecfdf3_100%)] p-5 shadow-soft sm:p-6">
+    <section className="relative w-full overflow-hidden rounded-3xl border border-slate-200 bg-[radial-gradient(circle_at_12%_20%,rgba(10,159,67,0.14),transparent_28%),radial-gradient(circle_at_86%_18%,rgba(20,184,166,0.12),transparent_26%),linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#ecfdf3_100%)] p-4 shadow-soft sm:p-6">
       <div
         className="pointer-events-none absolute inset-0 opacity-35"
         style={{
@@ -152,15 +152,15 @@ export function AIRecommendationCard({
       <div className="pointer-events-none absolute -bottom-24 left-20 h-56 w-56 animate-float-slow rounded-full bg-emerald-200/35 blur-3xl" />
       <div className="pointer-events-none absolute right-1/3 top-1/2 h-20 w-20 animate-pulse rounded-full bg-green-200/30 blur-2xl" />
 
-      <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="min-w-0 rounded-2xl border border-white/80 bg-white/74 p-5 shadow-soft-sm backdrop-blur-xl">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div className="relative grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+        <div className="min-w-0 rounded-2xl border border-white/80 bg-white/74 p-4 shadow-soft-sm backdrop-blur-xl sm:p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-emerald-700">
                 <Sparkles className="h-3.5 w-3.5" />
                 Focus Brief
               </div>
-              <h2 className="text-[22px] font-semibold tracking-tight text-slate-950">
+              <h2 className="text-xl font-semibold tracking-tight text-slate-950 md:text-[22px]">
                 {isLoading ? "Reading your workspace..." : brief.priority}
               </h2>
               <p className="mt-2 max-w-2xl text-[13px] font-medium leading-6 text-slate-500">
@@ -170,14 +170,14 @@ export function AIRecommendationCard({
 
             <Link
               href="/ai-assistant"
-              className="inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-emerald-100 bg-white px-4 text-[13px] font-medium text-emerald-700 shadow-soft-sm transition hover:-translate-y-0.5 hover:bg-emerald-50 hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-emerald-100"
+              className="inline-flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-emerald-100 bg-white px-4 text-[13px] font-medium text-emerald-700 shadow-soft-sm transition hover:-translate-y-0.5 hover:bg-emerald-50 hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-emerald-100 lg:w-auto"
             >
               Ask AI
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="mt-5 grid gap-2 md:grid-cols-3">
+          <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
             {brief.sequence.map((item, index) => (
               <div
                 key={item}
@@ -206,7 +206,7 @@ export function AIRecommendationCard({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/80 bg-white/74 p-5 shadow-soft-sm backdrop-blur-xl">
+        <div className="rounded-2xl border border-white/80 bg-white/74 p-4 shadow-soft-sm backdrop-blur-xl sm:p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-600">
@@ -221,7 +221,7 @@ export function AIRecommendationCard({
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {brief.status.map((item) => (
               <div
                 key={item.label}

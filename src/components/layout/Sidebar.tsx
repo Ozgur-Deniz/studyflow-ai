@@ -13,6 +13,7 @@ import {
   ClipboardList,
   User,
   Timer,
+  X,
 } from "lucide-react";
 import { Logo } from "../ui/Logo";
 import { UserAvatar } from "../ui/UserAvatar";
@@ -23,6 +24,8 @@ interface SidebarProps {
   userAvatarId?: string | null;
   onLogout: () => void;
   isLoggingOut: boolean;
+  isMobileOpen: boolean;
+  onMobileClose: () => void;
 }
 
 export function Sidebar({
@@ -31,6 +34,8 @@ export function Sidebar({
   userAvatarId,
   onLogout,
   isLoggingOut,
+  isMobileOpen,
+  onMobileClose,
 }: SidebarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -67,10 +72,34 @@ export function Sidebar({
   ];
 
   return (
-    <aside className="w-[270px] bg-white border-r border-[#e2e8f0] flex flex-col animate-slide-in-left relative overflow-hidden shrink-0">
+    <>
+      <button
+        type="button"
+        aria-label="Close navigation menu"
+        onClick={onMobileClose}
+        className={`fixed inset-0 z-40 bg-[#0f172a]/40 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          isMobileOpen
+            ? "visible opacity-100"
+            : "pointer-events-none invisible opacity-0"
+        }`}
+      />
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-[270px] shrink-0 flex-col overflow-hidden border-r border-[#e2e8f0] bg-white shadow-2xl transition-transform duration-300 ease-out md:relative md:z-auto md:translate-x-0 md:shadow-none ${
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
       {/* Logo */}
-      <div className="h-[72px] flex items-center px-6">
+      <div className="flex h-16 items-center px-6 pr-20 md:h-[76px] md:pr-6">
         <Logo size="sm" />
+        <button
+          type="button"
+          onClick={onMobileClose}
+          aria-label="Close navigation menu"
+          className="absolute right-4 top-2 flex h-9 w-9 items-center justify-center rounded-lg text-[#64748b] transition-colors hover:bg-[#f1f5f9] hover:text-[#0f172a] focus:outline-none focus:ring-4 focus:ring-[#22c55e]/10 md:hidden"
+        >
+          <X size={20} aria-hidden="true" />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -85,6 +114,7 @@ export function Sidebar({
             <Link
               key={item.name}
               href={item.path}
+              onClick={onMobileClose}
               className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-semibold mb-1 transition-all duration-300 relative ${
                 isActive
                   ? "bg-[#e9fbee] text-[#064e2a] ring-1 ring-inset ring-[#bbf7d0] shadow-[0_14px_34px_-24px_rgba(10,159,67,0.55)]"
@@ -147,7 +177,10 @@ export function Sidebar({
             >
               <Link
                 href="/settings"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  onMobileClose();
+                }}
                 className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-[#334155] transition hover:bg-[#f8fafc] hover:text-[#4f46e5]"
                 role="menuitem"
               >
@@ -168,6 +201,7 @@ export function Sidebar({
           )}
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

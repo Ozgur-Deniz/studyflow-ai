@@ -82,7 +82,7 @@ export function AuthShell({
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f5f7fa] px-5 py-6 text-[#0f172a] sm:px-8 sm:py-8">
+    <main className="relative min-h-screen overflow-hidden bg-[#f5f7fa] px-4 py-6 text-[#0f172a] sm:px-8 sm:py-8">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-60 [background-image:linear-gradient(rgba(10,159,67,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(10,159,67,0.045)_1px,transparent_1px)] [background-size:36px_36px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]"
@@ -103,7 +103,7 @@ export function AuthShell({
           </Link>
         </header>
 
-        <section className="flex flex-1 items-center justify-center py-8 sm:py-10">
+        <section className="flex flex-1 items-center justify-center py-6 sm:py-10">
           <div
             className={`grid w-full items-center ${
               visual
@@ -180,7 +180,7 @@ export function AuthShell({
               </aside>
             )}
 
-            <div className="w-full">
+            <div className="mx-auto w-full max-w-md">
               <div className="animate-fade-in-up text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-[#bbf7d0] bg-[#ecfdf3] text-[#087b36] shadow-soft-sm">
                 <Icon className="h-5 w-5" aria-hidden="true" />
@@ -188,7 +188,7 @@ export function AuthShell({
               <p className="mt-5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#0a9f43]">
                 {eyebrow}
               </p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#0f172a]">
+              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[#0f172a] sm:text-3xl">
                 {title}
               </h1>
               <p className="mx-auto mt-3 max-w-sm text-sm font-medium leading-6 text-[#64748b]">
@@ -226,7 +226,7 @@ export function AuthShell({
             )}
 
             <div
-              className="relative mt-7 animate-fade-in-up overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-soft sm:p-7"
+              className="relative mx-auto mt-7 w-full max-w-md animate-fade-in-up overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-soft sm:p-7"
               style={{ animationDelay: "140ms" }}
             >
               <div
@@ -286,12 +286,12 @@ export function AuthField({
           onChange={(event) => onChange(event.target.value)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className={`h-12 w-full rounded-xl border bg-[#f8fafc] pl-10 text-sm font-medium text-[#0f172a] outline-none transition-all duration-200 placeholder:text-[#94a3b8] focus:bg-white ${
+          className={`min-h-12 w-full rounded-xl border bg-[#f8fafc] py-3 pl-10 text-sm font-medium text-[#0f172a] outline-none transition-all duration-200 placeholder:text-[#94a3b8] focus:bg-white ${
             error
               ? "border-[#ef4444] focus:ring-2 focus:ring-[#ef4444]/15"
               : "border-[#e2e8f0] focus:ring-2 focus:ring-[#0a9f43]/15"
           } ${
-            isPassword ? "pr-11" : "pr-3.5"
+            isPassword ? "pr-12" : "pr-3.5"
           }`}
         />
         {isPassword && (
@@ -302,7 +302,7 @@ export function AuthField({
               isPasswordVisible ? "Hide password" : "Show password"
             }
             title={isPasswordVisible ? "Hide password" : "Show password"}
-            className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#94a3b8] transition hover:bg-[#eef2f7] hover:text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#0a9f43]/20"
+            className="absolute right-0.5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-[#94a3b8] transition hover:bg-[#eef2f7] hover:text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#0a9f43]/20"
           >
             {isPasswordVisible ? (
               <EyeOff className="h-[18px] w-[18px]" aria-hidden="true" />
@@ -330,7 +330,7 @@ export function AuthSubmitButton({
     <button
       type="submit"
       disabled={isLoading}
-      className="group animate-shimmer flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-gradient-to-r from-[#0a9f43] via-[#22c55e] to-[#4ade80] px-5 text-sm font-semibold text-white shadow-lg shadow-emerald-200/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-200/70 focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/15 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-65"
+      className="group animate-shimmer flex min-h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-gradient-to-r from-[#0a9f43] via-[#22c55e] to-[#4ade80] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-200/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-200/70 focus:outline-none focus:ring-4 focus:ring-[#0a9f43]/15 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-65"
     >
       {isLoading ? (
         <span className="flex items-center gap-2">

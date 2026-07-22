@@ -10,6 +10,7 @@ import {
   ClipboardList,
   Layers,
   Loader2,
+  Menu,
   MessageSquare,
   Plus,
   Search,
@@ -150,7 +151,11 @@ function formatRelativeTime(value: string): string {
   }).format(new Date(value));
 }
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMenuClick: () => void;
+}
+
+export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const router = useRouter();
   const headerRef = useRef<HTMLElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -394,9 +399,19 @@ export function DashboardHeader() {
   return (
     <header
       ref={headerRef}
-      className="relative z-40 h-[76px] shrink-0 border-b border-[#e2e8f0] bg-white/95 px-5 backdrop-blur-xl animate-fade-in sm:px-6 lg:px-8"
+      className="relative z-40 h-16 shrink-0 animate-fade-in border-b border-[#e2e8f0] bg-white/95 px-4 backdrop-blur-xl md:h-[76px] md:px-6 lg:px-8"
     >
       <div className="mx-auto flex h-full w-full max-w-[1600px] items-center gap-3 lg:gap-5">
+        <button
+          type="button"
+          onClick={onMenuClick}
+          aria-label="Open navigation menu"
+          title="Menu"
+          className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-[#dbe2ea] bg-white text-[#64748b] transition-colors duration-200 hover:border-[#bbf7d0] hover:bg-[#f8fafc] hover:text-[#087b36] focus:outline-none focus:ring-4 focus:ring-[#22c55e]/10 md:hidden"
+        >
+          <Menu size={20} aria-hidden="true" />
+        </button>
+
         <div className="group relative min-w-0 flex-1 lg:max-w-[760px]">
           <Search
             size={17}
@@ -429,7 +444,7 @@ export function DashboardHeader() {
             aria-controls="dashboard-search-results"
             placeholder="Search plans, flashcards, quizzes, conversations..."
             autoComplete="off"
-            className="h-11 w-full rounded-lg border border-[#dbe2ea] bg-[#f8fafc] pl-10 pr-[76px] text-[13px] font-medium text-[#0f172a] outline-none transition-[border-color,background-color,box-shadow] duration-200 placeholder:text-[#94a3b8] focus:border-[#86efac] focus:bg-white focus:ring-4 focus:ring-[#22c55e]/10"
+            className="h-11 w-full rounded-lg border border-[#dbe2ea] bg-[#f8fafc] pl-10 pr-3 text-[13px] font-medium text-[#0f172a] outline-none transition-[border-color,background-color,box-shadow] duration-200 placeholder:text-[#94a3b8] focus:border-[#86efac] focus:bg-white focus:ring-4 focus:ring-[#22c55e]/10 sm:pr-[76px]"
           />
           <div className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 items-center gap-1 sm:flex">
             <kbd className="flex h-6 min-w-6 items-center justify-center rounded-md border border-[#dbe2ea] bg-white px-1.5 text-[10px] font-semibold text-[#64748b] shadow-sm">

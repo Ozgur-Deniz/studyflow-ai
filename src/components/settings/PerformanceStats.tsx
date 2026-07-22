@@ -324,7 +324,7 @@ export function PerformanceStats() {
   const planCompletionRate = data.resources.studyPlans.completionRate ?? 0;
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-[#0f172a]">
           Performance Overview
@@ -367,7 +367,7 @@ export function PerformanceStats() {
       </div>
 
       <div className="grid items-stretch gap-6 xl:grid-cols-[1fr_22rem]">
-        <section className="min-h-[500px] rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
+        <section className="min-w-0 overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm md:min-h-[500px] md:p-6">
           <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h3 className="text-lg font-semibold tracking-tight text-[#0f172a]">
@@ -406,7 +406,7 @@ export function PerformanceStats() {
             </div>
           </div>
 
-          <div className="h-[360px] min-h-[360px] w-full">
+          <div className="h-[250px] min-h-[250px] w-full min-w-0 overflow-hidden md:h-[350px] md:min-h-[350px]">
             {data.hasActivity ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
@@ -471,7 +471,7 @@ export function PerformanceStats() {
           </div>
         </section>
 
-        <section className="min-h-[500px] rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-sm">
+        <section className="min-w-0 overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm md:min-h-[500px] md:p-6">
           <div className="mb-6">
             <h3 className="text-lg font-semibold tracking-tight text-[#0f172a]">
               XP Distribution
@@ -483,7 +483,7 @@ export function PerformanceStats() {
 
           {data.charts.activityDistribution.length > 0 ? (
             <>
-              <div className="h-[250px] min-h-[250px] w-full">
+              <div className="h-[250px] min-h-[250px] w-full min-w-0 overflow-hidden md:h-[350px] md:min-h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -531,7 +531,7 @@ export function PerformanceStats() {
               </div>
             </>
           ) : (
-            <div className="flex h-[250px] items-center justify-center rounded-xl bg-[#f8fafc] text-center text-sm text-[#64748b]">
+            <div className="flex h-[250px] items-center justify-center rounded-xl bg-[#f8fafc] text-center text-sm text-[#64748b] md:h-[350px]">
               No XP sessions yet.
             </div>
           )}

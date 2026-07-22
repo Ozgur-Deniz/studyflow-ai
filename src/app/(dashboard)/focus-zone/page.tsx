@@ -196,7 +196,7 @@ export default function FocusZonePage() {
         </div>
       </div>
 
-      <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 xl:p-8">
         <div className="grid grid-cols-3 rounded-xl bg-slate-100 p-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab;
@@ -223,7 +223,7 @@ export default function FocusZonePage() {
                     setInitialTime(0);
                   }
                 }}
-                className={`cursor-pointer rounded-lg px-3 py-2.5 text-sm font-medium transition-all sm:text-base ${
+                className={`cursor-pointer rounded-lg px-1 py-2.5 text-[11px] font-medium transition-all min-[400px]:px-3 min-[400px]:text-sm sm:text-base ${
                   isActive
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
@@ -235,9 +235,9 @@ export default function FocusZonePage() {
           })}
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-4 lg:px-4">
+        <div className="mt-8 grid min-w-0 gap-6 xl:grid-cols-4 xl:gap-8 xl:px-4">
           {activeTab === "Pomodoro" && (
-            <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-5 lg:col-span-1">
+            <aside className="rounded-2xl border border-slate-200 bg-slate-50 p-5 xl:col-span-1">
               <div className="mb-5">
                 <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">
                   Select Mode
@@ -370,11 +370,13 @@ export default function FocusZonePage() {
           )}
 
           <div
-            className={`flex flex-col ${
+            className={`@container flex min-w-0 flex-col ${
               activeTab === "Countdown"
                 ? "order-2 min-h-0 justify-start pt-0"
                 : "min-h-[28rem] justify-center"
-            } ${activeTab === "Stopwatch" ? "lg:col-span-4" : "lg:col-span-3"}`}
+            } ${
+              activeTab === "Pomodoro" ? "xl:col-span-3" : "xl:col-span-4"
+            }`}
           >
             {activeTab === "Pomodoro" && (
               <div className="mb-7 text-center">
@@ -390,40 +392,40 @@ export default function FocusZonePage() {
               </div>
             )}
 
-            <div className="flex justify-center text-center">
+            <div className="flex min-w-0 max-w-full justify-center text-center">
               <div
-                className={`rounded-[2rem] border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-inner ${
+                className={`max-w-full rounded-[2rem] border border-slate-200 bg-gradient-to-b from-white to-slate-50 px-[clamp(0.75rem,2cqw,3rem)] shadow-inner ${
                   showHours
-                    ? "px-3 py-6 sm:px-5 lg:px-6 lg:py-8"
-                    : "px-5 py-8 sm:px-8 lg:px-12 lg:py-10"
+                    ? "py-6 xl:py-8"
+                    : "py-8 xl:py-10"
                 }`}
               >
-                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                <div className="flex min-w-0 items-center justify-center gap-[clamp(0.375rem,1.25cqw,0.75rem)]">
                   {flipGroups.map((group, groupIndex) => (
                     <div
                       key={`${groupIndex}-${group}`}
-                      className="flex items-center gap-2 sm:gap-3"
+                      className="flex min-w-0 items-center gap-[clamp(0.375rem,1.25cqw,0.75rem)]"
                     >
                       {groupIndex > 0 && (
                         <div
-                          className={`mx-1 flex flex-col justify-center ${
+                          className={`mx-[clamp(0rem,0.5cqw,0.5rem)] flex shrink-0 flex-col justify-center ${
                             showHours
-                              ? "h-24 gap-2 sm:h-28 lg:h-32"
-                              : "h-24 gap-3 sm:mx-2 sm:h-32 lg:h-40"
+                              ? "h-[clamp(6rem,16cqw,8rem)] gap-2"
+                              : "h-[clamp(6rem,20cqw,10rem)] gap-3"
                           }`}
                         >
                           <span
                             className={`rounded-full bg-slate-800 shadow-inner ${
                               showHours
-                                ? "h-2.5 w-2.5 sm:h-3 sm:w-3"
-                                : "h-3 w-3 sm:h-4 sm:w-4"
+                              ? "h-2.5 w-2.5 xl:h-3 xl:w-3"
+                                : "h-3 w-3 xl:h-4 xl:w-4"
                             }`}
                           />
                           <span
                             className={`rounded-full bg-slate-800 shadow-inner ${
                               showHours
-                                ? "h-2.5 w-2.5 sm:h-3 sm:w-3"
-                                : "h-3 w-3 sm:h-4 sm:w-4"
+                              ? "h-2.5 w-2.5 xl:h-3 xl:w-3"
+                                : "h-3 w-3 xl:h-4 xl:w-4"
                             }`}
                           />
                         </div>
@@ -433,13 +435,13 @@ export default function FocusZonePage() {
                           key={`${groupIndex}-${digitIndex}-${digit}-${group}`}
                           className={`relative rounded-xl border border-slate-200 bg-white text-slate-950 shadow-[inset_0_2px_12px_rgba(255,255,255,0.95),inset_0_-14px_24px_rgba(15,23,42,0.08),0_16px_30px_rgba(15,23,42,0.10)] ${
                             showHours
-                              ? "h-28 w-14 sm:h-32 sm:w-20 lg:h-36 lg:w-24"
-                              : "h-28 w-16 sm:h-36 sm:w-24 lg:h-44 lg:w-28"
+                              ? "h-[clamp(7rem,18cqw,9rem)] w-[clamp(2.75rem,10.5cqw,6rem)]"
+                              : "h-[clamp(7rem,24cqw,11rem)] w-[clamp(3rem,16cqw,7rem)]"
                           }`}
                           style={{ perspective: "900px" }}
                         >
-                          <span className="absolute -top-2 left-4 z-20 h-4 w-1.5 rounded-full border border-gray-700 bg-gradient-to-b from-gray-300 to-gray-500 shadow sm:left-6" />
-                          <span className="absolute -top-2 right-4 z-20 h-4 w-1.5 rounded-full border border-gray-700 bg-gradient-to-b from-gray-300 to-gray-500 shadow sm:right-6" />
+                          <span className="absolute -top-2 left-[28%] z-20 h-4 w-1.5 rounded-full border border-gray-700 bg-gradient-to-b from-gray-300 to-gray-500 shadow" />
+                          <span className="absolute -top-2 right-[28%] z-20 h-4 w-1.5 rounded-full border border-gray-700 bg-gradient-to-b from-gray-300 to-gray-500 shadow" />
                           <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-xl bg-gradient-to-b from-white to-slate-100" />
                           <div className="absolute inset-x-0 bottom-0 h-1/2 rounded-b-xl bg-gradient-to-b from-slate-50 to-slate-200" />
                           <div className="absolute left-0 right-0 top-1/2 z-10 h-px -translate-y-1/2 border-b border-slate-300 bg-slate-400/70 shadow-[0_1px_0_rgba(255,255,255,0.9)]" />
@@ -447,8 +449,8 @@ export default function FocusZonePage() {
                           <div
                             className={`${ubuntuSans.className} absolute inset-0 z-10 flex items-center justify-center font-bold leading-none tracking-tight ${
                               showHours
-                                ? "text-6xl sm:text-7xl lg:text-8xl"
-                                : "text-7xl sm:text-8xl lg:text-9xl"
+                                ? "text-[clamp(3.5rem,10cqw,6rem)]"
+                                : "text-[clamp(4rem,14cqw,8rem)]"
                             }`}
                           >
                             {digit}
@@ -456,8 +458,8 @@ export default function FocusZonePage() {
                           <div
                             className={`${ubuntuSans.className} flip-card-top pointer-events-none absolute inset-x-0 top-0 z-20 flex h-1/2 items-end justify-center overflow-hidden rounded-t-xl border-b border-slate-300 bg-gradient-to-b from-white to-slate-200 font-bold leading-none tracking-tight text-slate-950 shadow-lg ${
                               showHours
-                                ? "text-6xl sm:text-7xl lg:text-8xl"
-                                : "text-7xl sm:text-8xl lg:text-9xl"
+                                ? "text-[clamp(3.5rem,10cqw,6rem)]"
+                                : "text-[clamp(4rem,14cqw,8rem)]"
                             }`}
                           >
                             <span className="translate-y-1/2">{digit}</span>
@@ -513,7 +515,7 @@ export default function FocusZonePage() {
           </div>
 
           {activeTab === "Countdown" && (
-            <aside className="order-1 w-fit self-start rounded-2xl border border-slate-200 bg-slate-50 p-3 lg:col-span-1">
+            <aside className="order-1 w-fit max-w-full self-start justify-self-center rounded-2xl border border-slate-200 bg-slate-50 p-3 xl:col-span-4">
               <div className="mb-3 text-center">
                 <p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">
                   Set Countdown

@@ -163,7 +163,7 @@ export default function LoginPage() {
         <div className="-mt-2 text-right text-sm">
           <Link
             href="/forgot-password"
-            className="inline-flex cursor-pointer rounded-lg px-2 py-1 font-semibold text-[#087b36] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ecfdf3] hover:text-[#054f25] hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0a9f43]/20"
+            className="inline-flex cursor-pointer rounded-lg px-2 py-2 font-semibold text-[#087b36] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ecfdf3] hover:text-[#054f25] hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0a9f43]/20"
           >
             Forgot password?
           </Link>

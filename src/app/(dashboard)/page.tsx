@@ -329,10 +329,10 @@ export default function DashboardPage() {
   const displayUserName = shouldReduceMotion ? userName : typedUserName;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
       {/* Welcome Area */}
       <div>
-        <h1 className="text-3xl font-medium text-[#0f172a] mb-2 tracking-tight">
+        <h1 className="mb-2 text-2xl font-medium tracking-tight text-[#0f172a] md:text-3xl">
           {isLoading ? (
             "Loading..."
           ) : (
@@ -353,7 +353,7 @@ export default function DashboardPage() {
             </>
           )}{" "}
         </h1>
-        <p className="text-[#64748b]">
+        <p className="text-sm text-[#64748b] md:text-base">
           Here is your study overview. Keep up the great work!
         </p>
       </div>

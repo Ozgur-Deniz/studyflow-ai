@@ -96,7 +96,7 @@ export function UserAvatar({
       </div>
 
       {showName && name && (
-        <div className="hidden lg:block flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <p className={`font-semibold text-[#0f172a] truncate leading-tight ${isMd ? "text-[13px]" : "text-[13px]"}`}>
             {name}
           </p>
