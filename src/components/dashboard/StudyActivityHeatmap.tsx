@@ -65,9 +65,9 @@ const LEGEND_LEVELS: IntensityLevel[] = [
   "very-high",
 ];
 const CELL_SIZE = 11;
-const GRID_CELL_SIZE = "clamp(7px,0.6vw,10px)";
-const GRID_ROW_GAP = "clamp(2px,0.18vw,3px)";
-const WEEK_COLUMN_GAP = "clamp(1px,0.18vw,3px)";
+const GRID_CELL_SIZE = "10px";
+const GRID_ROW_GAP = "3px";
+const WEEK_COLUMN_GAP = "3px";
 const LEVEL_REVEAL_DELAYS: Record<IntensityLevel, number> = {
   none: 0,
   low: 300,
@@ -419,7 +419,7 @@ function StatCard({
       <p className="truncate text-[10px] font-medium uppercase tracking-[0.06em] text-slate-600">
         {label}
       </p>
-      <p className="mt-1.5 text-[19px] font-semibold leading-tight tracking-tight text-slate-900">
+      <p className="mt-1.5 text-lg font-semibold leading-tight tracking-tight text-slate-900 md:text-[19px]">
         {value}
       </p>
     </div>
@@ -441,7 +441,7 @@ function ActivityDonutChart({
 
   return (
     <div
-      className={`relative mx-auto h-[220px] w-full shrink-0 transition-[opacity,transform] duration-[720ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`relative mx-auto h-[250px] w-full min-w-0 shrink-0 overflow-hidden transition-[opacity,transform] duration-[720ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:w-auto sm:flex-1 sm:shrink md:h-[350px] 2xl:h-[250px] 2xl:w-full 2xl:flex-none 2xl:shrink-0 ${
         shouldShowDonut ? "scale-100 opacity-100" : "scale-95 opacity-0"
       }`}
       style={{
@@ -525,7 +525,7 @@ function LevelDistribution({
       {distribution.map((item, index) => (
         <div
           key={item.level}
-          className={`flex items-center justify-between gap-3 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`flex items-center justify-between gap-3 transition-[opacity,transform] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)] xl:grid xl:grid-cols-[minmax(0,8rem)_auto] xl:justify-start xl:gap-2 ${
             shouldShowLevels
               ? "translate-y-0 opacity-100"
               : "translate-y-2 opacity-0"
@@ -650,16 +650,16 @@ function ContributionGrid({
   isVisible: boolean;
   shouldReduceMotion: boolean;
 }) {
-  const weekColumnTemplate = `repeat(${grid.weeks.length}, minmax(0, 1fr))`;
+  const weekColumnTemplate = `repeat(${grid.weeks.length}, minmax(${GRID_CELL_SIZE}, 1fr))`;
 
   return (
-    <div className="flex h-full w-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-slate-50/60 p-4 shadow-sm shadow-slate-200/35 sm:p-5">
-      <div className="w-full min-w-0 pb-4">
-        <div className="w-full min-w-0">
+    <div className="flex h-full w-full min-w-0 max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60 p-4 shadow-sm shadow-slate-200/35 sm:p-5">
+      <div className="w-full min-w-0 max-w-full touch-pan-x overflow-x-auto overscroll-x-contain pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="w-full min-w-[686px] md:min-w-[724px]">
           <div
-            className="mb-1 grid w-full min-w-0 grid-cols-[32px_minmax(0,1fr)] gap-x-1.5"
+            className="mb-1 grid w-full min-w-0 grid-cols-[0_minmax(0,1fr)] gap-x-0 md:grid-cols-[32px_minmax(0,1fr)] md:gap-x-1.5"
           >
-            <div aria-hidden="true" />
+            <div className="hidden md:block" aria-hidden="true" />
             <div
               className="grid h-5 w-full min-w-0 overflow-visible"
               style={{
@@ -690,10 +690,10 @@ function ContributionGrid({
           </div>
 
           <div
-            className="grid w-full min-w-0 grid-cols-[32px_minmax(0,1fr)] gap-x-1.5"
+            className="grid w-full min-w-0 grid-cols-[0_minmax(0,1fr)] gap-x-0 md:grid-cols-[32px_minmax(0,1fr)] md:gap-x-1.5"
           >
             <div
-              className="grid"
+              className="hidden md:grid"
               style={{
                 gridTemplateRows: `repeat(7, ${GRID_CELL_SIZE})`,
                 rowGap: GRID_ROW_GAP,
@@ -748,7 +748,7 @@ function ContributionGrid({
                     >
                       {day.isInRange ? (
                         <div
-                          className={`size-[clamp(7px,0.6vw,10px)] shrink-0 rounded-full border transition-[opacity,transform] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-125 hover:ring-2 hover:ring-emerald-200 ${getIntensityClass(
+                          className={`size-[10px] shrink-0 rounded-full border transition-[opacity,transform] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-125 hover:ring-2 hover:ring-emerald-200 ${getIntensityClass(
                             level,
                           )} ${
                             isToday
@@ -772,7 +772,7 @@ function ContributionGrid({
                         />
                       ) : (
                         <div
-                          className="size-[clamp(7px,0.6vw,10px)] shrink-0"
+                          className="size-[10px] shrink-0"
                           aria-hidden="true"
                         />
                       )}
@@ -909,24 +909,24 @@ export function StudyActivityHeatmap({
   if (isLoading) {
     return (
       <section
-        className="w-full min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
+        className="w-full min-w-0 max-w-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-soft sm:p-6"
         aria-busy="true"
         aria-label="Loading study activity"
       >
         <div className="flex w-full min-w-0 flex-col gap-4">
           <div>
-            <h2 className="text-[22px] font-semibold tracking-tight text-slate-950">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950 md:text-[22px]">
               Study Activity
             </h2>
             <div className="mt-2 h-4 w-48 animate-pulse rounded bg-slate-200" />
           </div>
 
-          <div className="grid w-full min-w-0 items-stretch gap-5 xl:grid-cols-[minmax(0,4fr)_minmax(220px,1fr)]">
+          <div className="grid w-full min-w-0 items-stretch gap-5 2xl:grid-cols-[minmax(0,3fr)_minmax(300px,1fr)]">
             <div className="h-[210px] animate-pulse rounded-2xl border border-slate-200 bg-slate-100" />
             <div className="h-[210px] animate-pulse rounded-2xl border border-slate-200 bg-slate-100" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 7 }, (_, index) => (
               <div
                 key={index}
@@ -942,11 +942,11 @@ export function StudyActivityHeatmap({
   return (
     <section
       ref={sectionRef}
-      className="w-full min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6"
+      className="w-full min-w-0 max-w-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-soft sm:p-6"
     >
       <div className="flex w-full min-w-0 flex-col gap-4">
         <div>
-          <h2 className="text-[22px] font-semibold tracking-tight text-slate-950">
+          <h2 className="text-xl font-semibold tracking-tight text-slate-950 md:text-[22px]">
             Study Activity
           </h2>
           <p className="mt-1 text-[13px] font-medium text-slate-500">
@@ -954,7 +954,7 @@ export function StudyActivityHeatmap({
           </p>
         </div>
 
-        <div className="grid w-full min-w-0 items-stretch gap-5 xl:grid-cols-[minmax(0,4fr)_minmax(220px,1fr)]">
+        <div className="grid w-full min-w-0 items-stretch gap-5 2xl:grid-cols-[minmax(0,3fr)_minmax(300px,1fr)]">
           <ContributionGrid
             grid={grid}
             monthLabels={monthLabels}
@@ -963,8 +963,8 @@ export function StudyActivityHeatmap({
             shouldReduceMotion={shouldReduceMotion}
           />
 
-          <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/45">
-            <div className="flex h-full w-full min-w-0 flex-col justify-center gap-5 sm:flex-row sm:items-center xl:flex-col xl:items-stretch">
+          <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/45 sm:p-5">
+            <div className="flex h-full w-full min-w-0 flex-col justify-center gap-5 sm:flex-row sm:items-center 2xl:flex-col 2xl:items-stretch">
               <ActivityDonutChart
                 distribution={levelDistribution}
                 activeDays={activeDays}
@@ -980,7 +980,7 @@ export function StudyActivityHeatmap({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
             <StatCard
               key={stat.label}

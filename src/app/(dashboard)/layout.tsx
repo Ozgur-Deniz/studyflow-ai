@@ -16,6 +16,7 @@ export default function DashboardLayout({
   const [userName, setUserName] = useState("");
   const [userInitial, setUserInitial] = useState("U");
   const [userAvatarId, setUserAvatarId] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -61,11 +62,15 @@ export default function DashboardLayout({
           userAvatarId={userAvatarId}
           onLogout={handleLogout}
           isLoggingOut={isLoggingOut}
+          isMobileOpen={isMobileSidebarOpen}
+          onMobileClose={() => setIsMobileSidebarOpen(false)}
         />
 
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <DashboardHeader />
-          <div className="flex-1 overflow-auto p-8">{children}</div>
+        <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <DashboardHeader
+            onMenuClick={() => setIsMobileSidebarOpen((current) => !current)}
+          />
+          <div className="flex-1 overflow-auto p-4 md:p-8">{children}</div>
         </main>
       </div>
     </DashboardUserProvider>
